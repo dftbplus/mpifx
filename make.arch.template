@@ -1,0 +1,21 @@
+############################################################################
+# Architecture dependent makefile settings
+############################################################################
+
+# Fortran 2003 compiler
+FXX = mpif90
+
+# Fortran compiler otions
+FXXOPT = -assume realloc_lhs -stand f03 -warn
+
+# Linker
+LN = $(FXX)
+
+# Linker options
+LNOPT = 
+
+# M4 interpreter
+M4 = m4
+
+# M4 interpreter options
+M4OPT = ""
