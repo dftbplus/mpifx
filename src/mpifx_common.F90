@@ -1,42 +1,12 @@
 include(mpifx_common.m4)
 
-!> Common helper routines.
+!> Exports constants, helper functions, MPI descriptor and legace MPI routines.
 !! \cond HIDDEN
 module mpifx_common_module
-  use mpi                    ! Must be provided by the MPI framework
+  use mpi
+  use mpifx_helper_module
+  use mpifx_comm_module
   public
-
-  integer, parameter :: default_tag = 0
-  integer, parameter :: default_communicator = MPI_COMM_WORLD
-  integer, parameter :: sp = kind(1.0)
-  integer, parameter :: dp = kind(1.0d0)
-
-contains
-
-  !> Handles optional error flag.
-  !!
-  !! \param error0  Error flag as returned by some routine.
-  !! \param msg  Msg to print out, if program is stopped.
-  !! \param error  Optional error flag. If present, error0 is passed to it,
-  !!     otherwise if error0 was not zero, the error message in msg is printed
-  !!     and the program is stopped.
-  !!
-  subroutine handle_errorflag(error0, msg, error)
-    integer, intent(in) :: error0
-    character(*), intent(in) :: msg
-    integer, intent(out), optional :: error
-  
-    if (present(error)) then
-      error = error0
-    elseif (error0 /= 0) then
-      write(*, "(A)") "Operation failed!"
-      write(*, "(A)") msg
-      write(*, "(A,I0)") "Error: ", error0
-      stop
-    end if
-
-  end subroutine handle_errorflag
-
 
 end module mpifx_common_module
 

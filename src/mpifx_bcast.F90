@@ -1,28 +1,8 @@
 include(mpifx_bcast.m4)
 
-!> Fortran 2003 wrapper for MPI_BCAST.
-!!
-!! Example:
-!!
-!!     program test_bcast
-!!       use libmpifx_module
-!!     
-!!       type(mpifx) :: mympi
-!!       integer :: buffer(3)
-!!     
-!!       call mympi%init()
-!!       if (mympi%master) then
-!!         buffer(:) = [ 1, 2, 3 ]
-!!       end if
-!!       call mpifx_bcast(mympi, buffer)
-!!       print "(A,I2.2,A,3I5)", "BUFFER:", mympi%iproc, ":", buffer
-!!       call mympi%destruct()
-!!       
-!!     end program test_bcast
-!!
+!> Contains wrapper for \c MPI_BCAST.
 module mpifx_bcast_module
   use mpifx_common_module
-  use mpifx_comm_module
   implicit none
   private
 
@@ -32,11 +12,29 @@ module mpifx_bcast_module
   !!
   !! \details All functions have the same argument list only differing in the
   !! type and rank of the second argument. The second argument can be of
-  !! type integer (i), real (s) and double precision (d), complex (c) and
-  !! double complex (z), logical (l) and character (h). It can be a scalar
-  !! or an array of rank one to six.
+  !! type integer (i), real (s), double precision (d), complex (c),
+  !! double complex (z), logical (l) and character (h). Its rank can vary from
+  !! zero (scalar) up to the maximum rank.
   !!
-  !! \see MPI documentation (routine mpi_bcast)
+  !! \see MPI documentation (\c MPI_BCAST)
+  !!
+  !! Example:
+  !!
+  !!     program test_bcast
+  !!       use libmpifx_module
+  !!     
+  !!       type(mpifx) :: mycomm
+  !!       integer :: buffer(3)
+  !!     
+  !!       call mycomm%init()
+  !!       if (mycomm%master) then
+  !!         buffer(:) = [ 1, 2, 3 ]
+  !!       end if
+  !!       call mpifx_bcast(mycomm, buffer)
+  !!       print "(A,I2.2,A,3I5)", "BUFFER:", mycomm%iproc, ":", buffer
+  !!       call mycomm%destruct()
+  !!       
+  !!     end program test_bcast
   !!
   interface mpifx_bcast
     module procedure mpifx_bcast_i0, mpifx_bcast_i1, mpifx_bcast_i2, &

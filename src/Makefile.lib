@@ -17,8 +17,9 @@
 .SUFFIXES:
 .SUFFIXES: .f90 .F90 .o
 
-FILENAMES = libmpifx mpifx_comm mpifx_common mpifx_barrier mpifx_bcast \
-    mpifx_send_recv mpifx_abort mpifx_init mpifx_finalize
+FILENAMES = libmpifx mpifx_helper mpifx_comm mpifx_common mpifx_barrier \
+    mpifx_bcast mpifx_send mpifx_recv mpifx_abort mpifx_init mpifx_finalize \
+    mpifx_reduce mpi_constants
 TARGETLIB = libmpifx.a
 
 $(TARGETLIB): $(patsubst %,%.o,$(FILENAMES))
@@ -42,16 +43,21 @@ realclean: clean
 
 
 # Explicit dependencies
-libmpifx.o: mpifx_comm.o mpifx_bcast.o mpifx_barrier.o mpifx_send_recv.o \
-    mpifx_abort.o mpifx_init.o mpifx_finalize.o
-mpifx_comm.o: mpifx_common.o
-mpifx_common.o: 
-mpifx_barrier.o: mpifx_comm.o mpifx_common.o
-mpifx_bcast.o: mpifx_comm.o mpifx_common.o
-mpifx_send_recv.o: mpifx_comm.o mpifx_common.o
-mpifx_abort.o: mpifx_comm.o mpifx_common.o
-mpifx_init.o: mpifx_common.o
+libmpifx.o: mpi_constants.o mpifx_comm.o mpifx_abort.o mpifx_barrier.o \
+    mpifx_bcast.o mpifx_finalize.o mpifx_init.o mpifx_send.o mpifx_recv.o \
+    mpifx_reduce.o
+mpifx_abort.o: mpifx_common.o
+mpifx_barrier.o: mpifx_common.o
+mpifx_bcast.o: mpifx_common.o
+mpifx_comm.o: mpifx_helper.o
+mpifx_common.o: mpifx_helper.o mpifx_comm.o
+mpi_constants.o:
 mpifx_finalize.o: mpifx_common.o
+mpifx_helper.o: 
+mpifx_init.o: mpifx_common.o
+mpifx_reduce.o: mpifx_common.o mpifx_common.o
+mpifx_send.o: mpifx_common.o
+mpifx_recv.o: mpifx_common.o
 
 
 ### Local Variables:

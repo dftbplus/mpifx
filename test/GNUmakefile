@@ -8,7 +8,7 @@
 ############################################################################
 
 # Directory where library source can be found
-SRCDIR_MPIFX = ../src
+SRCDIR = ../src
 
 include ../make.arch
 
@@ -23,17 +23,13 @@ include ../make.arch
 .SUFFIXES:
 .SUFFIXES: .f90 .F90 .o .m4
 
-BINARIES = test_bcast test_send_recv
+BINARIES = test_bcast test_send_recv test_comm_split test_reduce
 
 all: $(BINARIES)
 
-
-test_bcast: test_bcast.o
+# General rule for executables (without suffix)
+%: %.o
 	$(LN) $(LNOPT) -o $@ $^ -L./ -lmpifx
-
-test_send_recv: test_send_recv.o
-	$(LN) $(LNOPT) -o $@ $^ -L./ -lmpifx
-
 
 
 %.o: %.f90
@@ -41,18 +37,17 @@ test_send_recv: test_send_recv.o
 
 .PHONY: clean realclean
 clean:
-	$(MAKE) -f $(SRCDIR_MPIFX)/Makefile.lib clean
+	$(MAKE) -f $(SRCDIR)/Makefile.lib clean
 	rm -f *.mod *.o
 
 realclean: clean
-	$(MAKE) -f $(SRCDIR_MPIFX)/Makefile.lib realclean
+	$(MAKE) -f $(SRCDIR)/Makefile.lib realclean
 	rm -f $(BINARIES)
 
 
 # Dependencies: test programs can only be compiled after library is done as
 # the compiler needs the .mod files
-test_bcast.o: libmpifx.a
-test_send_recv: libmpifx.a
+$(BINARIES): libmpifx.a
 
 
 ############################################################################
@@ -62,6 +57,6 @@ libmpifx.a:
 	$(MAKE) \
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
-            M4="$(M4)" M4OPT="-I $(SRCDIR_MPIFX) $(M4OPT)" \
-	    VPATH="$(SRCDIR_MPIFX)" \
-            -f "$(SRCDIR_MPIFX)/Makefile.lib"
+            M4="$(M4)" M4OPT="-I $(SRCDIR) $(M4OPT)" \
+	    VPATH="$(SRCDIR)" \
+            -f "$(SRCDIR)/Makefile.lib"

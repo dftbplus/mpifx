@@ -1,8 +1,8 @@
 include(mpifx_barrier.m4)
-  
+
+!> Contains wrapper for \c MPI_BARRIER.  
 module mpifx_barrier_module
   use mpifx_common_module
-  use mpifx_comm_module
   implicit none
   private
 
@@ -11,15 +11,34 @@ module mpifx_barrier_module
 contains
 
   !> Sets a barrier.
-  !! \param mympi  MPI handler.
+  !!
+  !! \param mycomm  MPI communicator.
   !! \param error  Optional error flag.
-  subroutine mpifx_barrier(mympi, error)
-    type(mpifx_comm), intent(in) :: mympi
+  !!
+  !! Example:
+  !!
+  !!     program test_barrier
+  !!       use libmpifx_module
+  !!       implicit none
+  !!
+  !!       type(mpifx_comm) :: mycomm
+  !!
+  !!       call mpifx_init()
+  !!       call mycomm%init()
+  !!       :
+  !!       ! Processes will wait until all processes arrive here.
+  !!       call mpifx_barrier(mycomm)
+  !!       :
+  !!
+  !!     end program test_barrier
+  !!
+  subroutine mpifx_barrier(mycomm, error)
+    type(mpifx_comm), intent(in) :: mycomm
     integer, intent(out), optional :: error
     
     integer :: error0
     
-    call mpi_barrier(mympi%id, error0)
+    call mpi_barrier(mycomm%id, error0)
     call handle_errorflag(error0, "MPI_BARRIER in mpifx_barrier", error)
     
   end subroutine mpifx_barrier
