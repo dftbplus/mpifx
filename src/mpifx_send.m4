@@ -1,4 +1,4 @@
-include(common.m4)
+include(mpifx_common.m4)
 
 dnl ************************************************************************
 dnl *** mpifx_send

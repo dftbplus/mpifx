@@ -8,7 +8,7 @@ module mpifx_helper_module
   private
 
   public :: default_tag, sp, dp
-  public :: handle_errorflag
+  public :: handle_errorflag, assertfailed
 
   !> Default tag
   integer, parameter :: default_tag = 0
@@ -49,6 +49,24 @@ contains
     end if
 
   end subroutine handle_errorflag
+
+
+  !> Stops code signalizing failed a
+  subroutine assertfailed(file, line)
+    character(*), intent(in) :: file
+    integer, intent(in) :: line
+
+    integer :: aborterror
+
+    write(*, "(A)") "Assertion failed"
+    write(*, "(A,A)") "File:", file
+    write(*, "(A,I0)") "Line:", line
+      call mpi_abort(MPI_COMM_WORLD, -1, aborterror)
+      if (aborterror /= 0) then
+        write(*, "(A)") "Stopping code did not succeed, hope for the best."
+      end if
+
+    end subroutine assertfailed
 
 
 end module mpifx_helper_module

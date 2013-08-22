@@ -1,1 +1,1 @@
-include(common.m4)
+include(mpifx_helper.m4)

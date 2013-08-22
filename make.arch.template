@@ -17,5 +17,5 @@ LNOPT =
 # M4 interpreter
 M4 = m4
 
-# M4 interpreter options
+# M4 interpreter options (e.g. -DDEBUG for debug mode)
 M4OPT = ""

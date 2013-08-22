@@ -8,7 +8,7 @@
 #     M4: M4 macro processor
 #     M4OPT: Options for the M4 macro processor. You should use the -I option
 #         with this directory, if you are invoking the makefile from somewhere
-#         else.
+#         else. You may also use the -D option to define macros (e.g. DEBUG)
 #     VPATH: The path to this directory, if you invoke the makefile from
 #         somewhere else.
 #
@@ -19,7 +19,8 @@
 
 FILENAMES = libmpifx mpifx_helper mpifx_comm mpifx_common mpifx_barrier \
     mpifx_bcast mpifx_send mpifx_recv mpifx_abort mpifx_init mpifx_finalize \
-    mpifx_reduce mpi_constants
+    mpifx_reduce mpifx_allreduce mpifx_constants mpifx_gather mpifx_allgather \
+    mpifx_scatter
 TARGETLIB = libmpifx.a
 
 $(TARGETLIB): $(patsubst %,%.o,$(FILENAMES))
@@ -43,22 +44,26 @@ realclean: clean
 
 
 # Explicit dependencies
-libmpifx.o: mpi_constants.o mpifx_comm.o mpifx_abort.o mpifx_barrier.o \
+libmpifx.o: mpifx_comm.o mpifx_abort.o mpifx_barrier.o \
     mpifx_bcast.o mpifx_finalize.o mpifx_init.o mpifx_send.o mpifx_recv.o \
-    mpifx_reduce.o
+    mpifx_reduce.o mpifx_allreduce.o mpifx_constants.o mpifx_gather.o \
+    mpifx_allgather.o mpifx_scatter.o
 mpifx_abort.o: mpifx_common.o
 mpifx_barrier.o: mpifx_common.o
 mpifx_bcast.o: mpifx_common.o
 mpifx_comm.o: mpifx_helper.o
 mpifx_common.o: mpifx_helper.o mpifx_comm.o
-mpi_constants.o:
+mpifx_constants.o:
 mpifx_finalize.o: mpifx_common.o
 mpifx_helper.o: 
 mpifx_init.o: mpifx_common.o
-mpifx_reduce.o: mpifx_common.o mpifx_common.o
+mpifx_reduce.o: mpifx_common.o
+mpifx_allreduce.o: mpifx_common.o
 mpifx_send.o: mpifx_common.o
 mpifx_recv.o: mpifx_common.o
-
+mpifx_gather.o: mpifx_common.o
+mpifx_allgather.o: mpifx_common.o
+mpifx_scatter.o: mpifx_common.o
 
 ### Local Variables:
 ### mode:makefile

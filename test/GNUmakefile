@@ -23,7 +23,8 @@ include ../make.arch
 .SUFFIXES:
 .SUFFIXES: .f90 .F90 .o .m4
 
-BINARIES = test_bcast test_send_recv test_comm_split test_reduce
+BINARIES = test_bcast test_send_recv test_comm_split test_reduce \
+    test_allreduce test_gather test_allgather test_scatter
 
 all: $(BINARIES)
 
