@@ -14,7 +14,7 @@ dnl $5: corresponding MPI type
 !! \param mycomm MPI descriptor
 !! \param msg  Msg to be broadcasted on root and received on non-root
 !!     nodes.
-!! \param root  Root node for the broadcast (default: mycomm%imaster).
+!! \param root  Root node for the broadcast (default: mycomm%masterrank).
 !! \param error  Optional error handling flag.
 !!
 subroutine mpifx_bcast_$1(mycomm, msg, root, error)
@@ -25,7 +25,7 @@ subroutine mpifx_bcast_$1(mycomm, msg, root, error)
 
   integer :: root0, error0
 
-  _handle_inoptflag(root0, root, mycomm%imaster)
+  _handle_inoptflag(root0, root, mycomm%masterrank)
   call mpi_bcast(msg, $4, $5, root0, mycomm%id, error0)
   call handle_errorflag(error0, "MPI_BCAST in mpifx_bcast_$1", error)
     

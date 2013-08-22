@@ -32,11 +32,11 @@ module mpifx_send_module
   !!     call mpifx_init()
   !!     call mycomm%init()
   !!     if (.not. mycomm%master) then
-  !!       write(msg, "(A,I0,A)") "Hello from process ", mycomm%iproc, "!"
-  !!       call mpifx_send(mycomm, msg, mycomm%imaster)
+  !!       write(msg, "(A,I0,A)") "Hello from process ", mycomm%rank, "!"
+  !!       call mpifx_send(mycomm, msg, mycomm%masterrank)
   !!     else
   !!       write(*, "(A)") "Master node:"
-  !!       do source = 1, mycomm%nproc - 1
+  !!       do source = 1, mycomm%size - 1
   !!         call mpifx_recv(mycomm, msg, source)
   !!         write(*,"(A,A)") "Message received: ", trim(msg)
   !!       end do

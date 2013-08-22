@@ -12,9 +12,9 @@ module mpifx_comm_module
   !> MPI communicator with some additional information.
   type mpifx_comm
     integer :: id         !< Communicator id.
-    integer :: nproc      !< Nr. of processes (size).
-    integer :: iproc      !< Index (rank) of the current process.
-    integer :: imaster    !< Index of the master node.
+    integer :: size       !< Nr. of processes (size).
+    integer :: rank       !< Rank of the current process.
+    integer :: masterrank !< Index of the master node.
     logical :: master     !< True if current process is the master (rank == 0).
   contains
     !> Initializes the MPI environment.
@@ -42,18 +42,18 @@ contains
     integer :: error0
 
     _handle_inoptflag(self%id, commid, MPI_COMM_WORLD)
-    call mpi_comm_size(self%id, self%nproc, error0)
+    call mpi_comm_size(self%id, self%size, error0)
     call handle_errorflag(error0, "mpi_comm_size() in mpifx_comm_init()", error)
     if (error0 /= 0) then
       return
     end if
-    call mpi_comm_rank(self%id, self%iproc, error0)
+    call mpi_comm_rank(self%id, self%rank, error0)
     call handle_errorflag(error0, "mpi_comm_rank() in mpifx_comm_init()", error)
     if (error0 /= 0) then
       return
     end if
-    self%imaster = 0
-    self%master = (self%iproc == self%imaster)
+    self%masterrank = 0
+    self%master = (self%rank == self%masterrank)
     
   end subroutine mpifx_comm_init
 
@@ -80,11 +80,11 @@ contains
   !!     
   !!       call mpifx_init()
   !!       call allproc%init()
-  !!       groupsize = allproc%nproc / 2
-  !!       mygroup = allproc%iproc / groupsize
-  !!       call allproc%split(mygroup, allproc%iproc, groupproc)
-  !!       write(*, "(3(A,1X,I0,1X))") "ID:", allproc%iproc, "SUBGROUP", &
-  !!           & mygroup, "SUBGROUP ID", groupproc%iproc
+  !!       groupsize = allproc%size / 2
+  !!       mygroup = allproc%rank / groupsize
+  !!       call allproc%split(mygroup, allproc%rank, groupproc)
+  !!       write(*, "(3(A,1X,I0,1X))") "ID:", allproc%rank, "SUBGROUP", &
+  !!           & mygroup, "SUBGROUP ID", groupproc%rank
   !!       call mpifx_finalize()
   !!       
   !!     end program test_split

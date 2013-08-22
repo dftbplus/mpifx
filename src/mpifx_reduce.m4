@@ -16,7 +16,7 @@ dnl $5: corresponding MPI type
 !! \param operand  Quantity to be reduced.
 !! \param result  Contains result on exit.
 !! \param operator  Reduction operator
-!! \param root  Root process for the result (default: mycomm%imaster)
+!! \param root  Root process for the result (default: mycomm%masterrank)
 !! \param error  Error code on exit.
 !!
 subroutine mpifx_reduce_$1(mycomm, operand, result, operator, root, error)
@@ -29,7 +29,7 @@ subroutine mpifx_reduce_$1(mycomm, operand, result, operator, root, error)
 
   integer :: root0, error0
 
-  _handle_inoptflag(root0, root, mycomm%imaster)
+  _handle_inoptflag(root0, root, mycomm%masterrank)
   call mpi_reduce(operand, result, $4, $5, operator, root0, mycomm%id, error0)
   call handle_errorflag(error0, "MPI_REDUCE in mpifx_reduce_$1", error)
     

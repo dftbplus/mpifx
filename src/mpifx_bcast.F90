@@ -31,7 +31,7 @@ module mpifx_bcast_module
   !!         buffer(:) = [ 1, 2, 3 ]
   !!       end if
   !!       call mpifx_bcast(mycomm, buffer)
-  !!       print "(A,I2.2,A,3I5)", "BUFFER:", mycomm%iproc, ":", buffer
+  !!       print "(A,I2.2,A,3I5)", "BUFFER:", mycomm%rank, ":", buffer
   !!       call mycomm%destruct()
   !!       
   !!     end program test_bcast

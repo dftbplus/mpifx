@@ -33,12 +33,12 @@ module mpifx_reduce_module
   !!
   !!       call mpifx_init()
   !!       call mycomm%init()
-  !!       valr(:) = [ (mycomm%iproc + 1) * 1.2_dp, &
-  !!           & (mycomm%iproc + 1) * 4.3_dp, (mycomm%iproc + 1) * 3.8_dp ]
-  !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 3, mycomm%iproc, &
+  !!       valr(:) = [ (mycomm%rank + 1) * 1.2_dp, &
+  !!           & (mycomm%rank + 1) * 4.3_dp, (mycomm%rank + 1) * 3.8_dp ]
+  !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 3, mycomm%rank, &
   !!           & "Value to be operated on:", valr(:)
   !!       call mpifx_reduce(mycomm, valr, resvalr, MPI_PROD)
-  !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%iproc, &
+  !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%rank, &
   !!           & "Obtained result (prod):", resvalr(:)
   !!       call mpifx_finalize()
   !!       

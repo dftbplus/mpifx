@@ -11,18 +11,18 @@ program test_reduce
   call mpifx_init()
   call mycomm%init()
 
-  vali0 = mycomm%iproc * 2
-  write(*, "(I2.2,'-',I3.3,'|',1X,A,I0)") 1, mycomm%iproc, &
+  vali0 = mycomm%rank * 2
+  write(*, "(I2.2,'-',I3.3,'|',1X,A,I0)") 1, mycomm%rank, &
       & "Value to be operated on:", vali0
   call mpifx_reduce(mycomm, vali0, resvali0, MPI_SUM)
-  write(*, "(I2.2,'-',I3.3,'|',1X,A,I0)") 2, mycomm%iproc, &
+  write(*, "(I2.2,'-',I3.3,'|',1X,A,I0)") 2, mycomm%rank, &
       & "Obtained result (sum):", resvali0
-  valr(:) = [ real(mycomm%iproc + 1, dp) * 1.2, &
-      & real(mycomm%iproc + 1, dp) * 4.3, real(mycomm%iproc + 1, dp) * 3.8 ]
-  write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 3, mycomm%iproc, &
+  valr(:) = [ real(mycomm%rank + 1, dp) * 1.2, &
+      & real(mycomm%rank + 1, dp) * 4.3, real(mycomm%rank + 1, dp) * 3.8 ]
+  write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 3, mycomm%rank, &
       & "Value to be operated on:", valr(:)
   call mpifx_reduce(mycomm, valr, resvalr, MPI_PROD)
-  write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%iproc, &
+  write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%rank, &
       & "Obtained result (prod):", resvalr(:)
   call mpifx_finalize()
   
