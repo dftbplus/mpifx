@@ -6,7 +6,7 @@ an effort to provide modern Fortran (Fortran 2003) wrappers around
 routines of the MPI library to make their use as simple as possible.
 
 A few essential communication routines are already covered. See the
-documentation or the `online API DOCUMENTATION
+documentation or the `online API documentation
 <https://aradi.bitbucket.org/mpifx/api/annotated.html>`_ whether the routines
 you need are there. If not, you are cordially invited to extend MPIFX and to
 share it in order to let others profit from your work. MPIFX is licensed under
