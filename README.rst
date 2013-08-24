@@ -1,12 +1,19 @@
 MPIFX - Modern Fortran Interface for MPI
 ========================================
 
-The MPIFX project is devoted to create **modern Fortran interfaces** for
-the MPI library.
+The open source library `MPIFX <https://www.bitbucket.org/aradi/mpifx>`_ is
+an effort to provide modern Fortran (Fortran 2003) wrappers around
+routines of the MPI library to make their use as simple as possible.
 
-It contains only a few routines for so far, but if those happen the ones
-you need, feel free to use them (MPIFX is licensed under the **simplified BSD
-license**).
+A few essential communication routines are already covered. See the
+documentation or the `online API DOCUMENTATION
+<https://aradi.bitbucket.org/mpifx/api/annotated.html>`_ whether the routines
+you need are there. If not, you are cordially invited to extend MPIFX and to
+share it in order to let others profit from your work. MPIFX is licensed under
+the **simplified BSD license**.
 
-If your routine is not wrapped yet, you could wrap it yourself and contribute it
-to the project to enable to cover the target library sooner.
+Information about installation and usage of the library you find in the
+documentation in the source or in the `online documentation
+<https://aradi.bitbucket.org/mpifx/>`_. Project status, current source code,
+bugtracker etc. can be found on the `MPIFX project home page
+<https://www.bitbucket.org/aradi/mpifx>`_.

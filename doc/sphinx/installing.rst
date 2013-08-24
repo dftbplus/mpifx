@@ -1,0 +1,83 @@
+Compiling and installing MPIFX
+==============================
+
+In order to compile MPIFX, you need following prerequisites:
+
+* Fortran 2003 compiler,
+
+* GNU M4 macro interpreter,
+
+* GNU Make.
+
+There are basically two different ways of invoking the library into your
+project:
+
+* `Precompiling the library`_ and linking it later to your project.
+
+* `Compiling the library during your build process`_.
+
+Both are described below in details.
+
+
+Precompiling the library
+************************
+
+In order to create a precompiled library
+
+#. Copy the file `make.arch.template` to `make.arch` in the root directory of
+   the source and customize the settings for the compilers and the linker
+   according to your system.
+
+#. Change to the `src/` folder.
+
+#. Issue `make` to build the library.
+
+#. Copy *all* module files (usually ending on `.mod` and the library
+   `libmpifx.a` to a place, where your Fortran compiler and your linker can
+   recognize them.
+
+During the build process of your project, you may link the library with the
+`-lmpifx` option.  Eventually, you may need to specify options for your compiler
+and your linker to specify the location of those directories. Assuming you've
+put the module files in the directory `<MODFILEDIR>` and the library file in
+`<LIBRARYDIR>`, you would typically invoke your compiler for the source files
+using the `libmpifx_module` as::
+
+    F2003_COMPILER -I<MODFILEDIR> -c somesource.f90::
+
+and link your object files at the end with::
+
+    LINKER -I<LIBRARYDIR> somesource.o ... -L<LIBRARYDIR> -lmpifx
+
+
+Compiling the library during your build process
+***********************************************
+
+In order to build the library during the build process of your project:
+
+#. Copy the content of the `src/` folder into a *separate* folder within your
+   project.
+
+#. During the make process of your project, invoke the library makefile
+   (`Makefile.lib`) to build the module files and the library in the build
+   directory of your project. You must pass the compiler and linker options via
+   variable defintions at the make command line. Assuming that the variables
+   `$(FXX)`, `$(FXXOPT)`, `$(LN)` and `$(LNOPT)`, `$(M4)` and `$(M4OPT)` contain
+   the Fortran compiler, the Fortran compiler options, the linker, the linker
+   options, the M4 preprocessor and its options, respectively, you would have
+   something like::
+
+       libmpifx.a:
+               $(MAKE) \
+                   FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
+                   LN="$(LN)" LNOPT="$(LNOPT)" \
+                   M4="$(M4)" M4OPT="-I $(SRCDIR) $(M4OPT)" \
+       	           VPATH="$(SRCDIR)" \
+                   -f "$(SRCDIR)/Makefile.lib"
+
+   in the makefile of your project with `$(SCRDIR)` being the directory where
+   you put the source of MPIFX.
+
+You should also have a look at the `GNUmakefile` in the `test/` folder of MPIFX,
+which uses exactly the same technique to compile the library during the build
+process for the tests.
