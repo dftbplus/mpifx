@@ -8,16 +8,14 @@
 
 include ../make.arch
 
-libmpifx.a:
+.PHONY: _FORCED_SUBMAKE_
+_FORCED_SUBMAKE_:
 	$(MAKE) \
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
             M4="$(M4)" M4OPT="$(M4OPT)" \
             -f Makefile.lib
 
-.PHONY: clean realclean
-clean:
-	$(MAKE) -f Makefile.lib clean
-
-realclean: clean
-	$(MAKE) -f Makefile.lib realclean
+.PHONY: clean distclean
+clean distclean:
+	$(MAKE) -f Makefile.lib $@

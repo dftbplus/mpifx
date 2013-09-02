@@ -1,0 +1,112 @@
+.SECONDEXPANSION:
+
+mpifx_barrier.o: mpifx_barrier.m4 $$(_modobj_mpifx_common_module)
+mpifx_barrier.o = mpifx_barrier.o $(mpifx_barrier.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_barrier_module = mpifx_barrier.o
+
+mpifx_init.m4: mpifx_common.m4
+mpifx_init.m4 = $(mpifx_common.m4)
+
+mpifx_abort.o: mpifx_abort.m4 $$(_modobj_mpifx_common_module)
+mpifx_abort.o = mpifx_abort.o $(mpifx_abort.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_abort_module = mpifx_abort.o
+
+mpifx_constants.o: mpifx_constants.m4 $$(_modobj_mpi)
+mpifx_constants.o = mpifx_constants.o $(mpifx_constants.m4) $($(_modobj_mpi))
+_modobj_mpifx_constants_module = mpifx_constants.o
+
+mpifx_allreduce.o: mpifx_allreduce.m4 $$(_modobj_mpifx_common_module)
+mpifx_allreduce.o = mpifx_allreduce.o $(mpifx_allreduce.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_allreduce_module = mpifx_allreduce.o
+
+mpifx_send.o: mpifx_send.m4 $$(_modobj_mpifx_common_module)
+mpifx_send.o = mpifx_send.o $(mpifx_send.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_send_module = mpifx_send.o
+
+mpifx_reduce.m4: mpifx_common.m4
+mpifx_reduce.m4 = $(mpifx_common.m4)
+
+mpifx_gather.o: $$(_modobj_mpifx_common_module) mpifx_gather.m4
+mpifx_gather.o = mpifx_gather.o $($(_modobj_mpifx_common_module)) $(mpifx_gather.m4)
+_modobj_mpifx_gather_module = mpifx_gather.o
+
+mpifx_comm.o: $$(_modobj_mpi) $$(_modobj_mpifx_helper_module) mpifx_comm.m4
+mpifx_comm.o = mpifx_comm.o $($(_modobj_mpi)) $($(_modobj_mpifx_helper_module)) $(mpifx_comm.m4)
+_modobj_mpifx_comm_module = mpifx_comm.o
+
+mpifx_scatter.o: $$(_modobj_mpifx_common_module) mpifx_scatter.m4
+mpifx_scatter.o = mpifx_scatter.o $($(_modobj_mpifx_common_module)) $(mpifx_scatter.m4)
+_modobj_mpifx_scatter_module = mpifx_scatter.o
+
+mpifx_scatter.m4: mpifx_common.m4
+mpifx_scatter.m4 = $(mpifx_common.m4)
+
+mpifx_finalize.o: mpifx_finalize.m4 $$(_modobj_mpifx_common_module)
+mpifx_finalize.o = mpifx_finalize.o $(mpifx_finalize.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_finalize_module = mpifx_finalize.o
+
+mpifx_barrier.m4: mpifx_common.m4
+mpifx_barrier.m4 = $(mpifx_common.m4)
+
+mpifx_recv.m4: mpifx_common.m4
+mpifx_recv.m4 = $(mpifx_common.m4)
+
+mpifx_helper.o: mpifx_helper.m4 $$(_modobj_mpi)
+mpifx_helper.o = mpifx_helper.o $(mpifx_helper.m4) $($(_modobj_mpi))
+_modobj_mpifx_helper_module = mpifx_helper.o
+
+mpifx_gather.m4: mpifx_common.m4
+mpifx_gather.m4 = $(mpifx_common.m4)
+
+mpifx_finalize.m4: mpifx_common.m4
+mpifx_finalize.m4 = $(mpifx_common.m4)
+
+mpifx_allgather.o: mpifx_allgather.m4 $$(_modobj_mpifx_common_module)
+mpifx_allgather.o = mpifx_allgather.o $(mpifx_allgather.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_allgather_module = mpifx_allgather.o
+
+mpifx_init.o: mpifx_init.m4 $$(_modobj_mpifx_common_module)
+mpifx_init.o = mpifx_init.o $(mpifx_init.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_init_module = mpifx_init.o
+
+mpifx_abort.m4: mpifx_common.m4
+mpifx_abort.m4 = $(mpifx_common.m4)
+
+mpifx_bcast.o: $$(_modobj_mpifx_common_module) mpifx_bcast.m4
+mpifx_bcast.o = mpifx_bcast.o $($(_modobj_mpifx_common_module)) $(mpifx_bcast.m4)
+_modobj_mpifx_bcast_module = mpifx_bcast.o
+
+mpifx_send.m4: mpifx_common.m4
+mpifx_send.m4 = $(mpifx_common.m4)
+
+mpifx_common.o: $$(_modobj_mpi) mpifx_common.m4 $$(_modobj_mpifx_comm_module) $$(_modobj_mpifx_helper_module)
+mpifx_common.o = mpifx_common.o $($(_modobj_mpi)) $(mpifx_common.m4) $($(_modobj_mpifx_comm_module)) $($(_modobj_mpifx_helper_module))
+_modobj_mpifx_common_module = mpifx_common.o
+
+mpifx_common.m4: mpifx_helper.m4
+mpifx_common.m4 = $(mpifx_helper.m4)
+
+mpifx_bcast.m4: mpifx_common.m4
+mpifx_bcast.m4 = $(mpifx_common.m4)
+
+libmpifx.o: $$(_modobj_mpifx_send_module) $$(_modobj_mpifx_scatter_module) $$(_modobj_mpifx_allgather_module) $$(_modobj_mpifx_finalize_module) $$(_modobj_mpifx_barrier_module) $$(_modobj_mpifx_abort_module) $$(_modobj_mpifx_init_module) $$(_modobj_mpifx_constants_module) $$(_modobj_mpifx_recv_module) $$(_modobj_mpifx_bcast_module) $$(_modobj_mpifx_gather_module) $$(_modobj_mpifx_allreduce_module) $$(_modobj_mpifx_reduce_module) $$(_modobj_mpifx_comm_module)
+libmpifx.o = libmpifx.o $($(_modobj_mpifx_send_module)) $($(_modobj_mpifx_scatter_module)) $($(_modobj_mpifx_allgather_module)) $($(_modobj_mpifx_finalize_module)) $($(_modobj_mpifx_barrier_module)) $($(_modobj_mpifx_abort_module)) $($(_modobj_mpifx_init_module)) $($(_modobj_mpifx_constants_module)) $($(_modobj_mpifx_recv_module)) $($(_modobj_mpifx_bcast_module)) $($(_modobj_mpifx_gather_module)) $($(_modobj_mpifx_allreduce_module)) $($(_modobj_mpifx_reduce_module)) $($(_modobj_mpifx_comm_module))
+_modobj_libmpifx_module = libmpifx.o
+
+mpifx_allreduce.m4: mpifx_common.m4
+mpifx_allreduce.m4 = $(mpifx_common.m4)
+
+mpifx_reduce.o: mpifx_reduce.m4 $$(_modobj_mpifx_common_module)
+mpifx_reduce.o = mpifx_reduce.o $(mpifx_reduce.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_reduce_module = mpifx_reduce.o
+
+mpifx_recv.o: $$(_modobj_mpifx_common_module) mpifx_recv.m4
+mpifx_recv.o = mpifx_recv.o $($(_modobj_mpifx_common_module)) $(mpifx_recv.m4)
+_modobj_mpifx_recv_module = mpifx_recv.o
+
+mpifx_comm.m4: mpifx_helper.m4
+mpifx_comm.m4 = $(mpifx_helper.m4)
+
+mpifx_allgather.m4: mpifx_common.m4
+mpifx_allgather.m4 = $(mpifx_common.m4)
+

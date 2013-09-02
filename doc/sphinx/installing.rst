@@ -43,7 +43,7 @@ put the module files in the directory `<MODFILEDIR>` and the library file in
 `<LIBRARYDIR>`, you would typically invoke your compiler for the source files
 using the `libmpifx_module` as::
 
-    F2003_COMPILER -I<MODFILEDIR> -c somesource.f90::
+    F2003_COMPILER -I<MODFILEDIR> -c somesource.f90
 
 and link your object files at the end with::
 
@@ -59,24 +59,24 @@ In order to build the library during the build process of your project:
    project.
 
 #. During the make process of your project, invoke the library makefile
-   (`Makefile.lib`) to build the module files and the library in the build
-   directory of your project. You must pass the compiler and linker options via
-   variable defintions at the make command line. Assuming that the variables
-   `$(FXX)`, `$(FXXOPT)`, `$(LN)` and `$(LNOPT)`, `$(M4)` and `$(M4OPT)` contain
-   the Fortran compiler, the Fortran compiler options, the linker, the linker
-   options, the M4 preprocessor and its options, respectively, you would have
-   something like::
+   (`Makefile.lib`) to build the module files and the library in the folder
+   where you've put the library sources.
+
+   You must pass the compiler and linker options via variable defintions at the
+   make command line. Assuming that the variables `$(FXX)`, `$(FXXOPT)`, `$(LN)`
+   and `$(LNOPT)`, `$(M4)` and `$(M4OPT)` contain the Fortran compiler, the
+   Fortran compiler options, the linker, the linker options, the M4 preprocessor
+   and its options, respectively, you would have something like::
 
        libmpifx.a:
-               $(MAKE) \
+               $(MAKE) -C $(MPIFX_SRCDIR) \
                    FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
                    LN="$(LN)" LNOPT="$(LNOPT)" \
-                   M4="$(M4)" M4OPT="-I $(SRCDIR) $(M4OPT)" \
-       	           VPATH="$(SRCDIR)" \
-                   -f "$(SRCDIR)/Makefile.lib"
+                   M4="$(M4)" M4OPT="$(M4OPT)" \
+                   -f Makefile.lib
 
-   in the makefile of your project with `$(SCRDIR)` being the directory where
-   you put the source of MPIFX.
+   in the makefile of your project with `$(MPIFX_SRCDIR)` being the directory
+   where you've put the source of MPIFX.
 
 You should also have a look at the `GNUmakefile` in the `test/` folder of MPIFX,
 which uses exactly the same technique to compile the library during the build
