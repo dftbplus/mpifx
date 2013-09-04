@@ -32,3 +32,34 @@ subroutine mpifx_allreduce_$1(mycomm, operand, result, operator, error)
     
 end subroutine mpifx_allreduce_$1
 ')
+
+dnl ************************************************************************
+dnl *** mpifx_allreduceip
+dnl ************************************************************************
+
+define(`_subroutine_mpifx_allreduceip',`dnl
+dnl $1: subroutine suffix
+dnl $2: dummy arguments type
+dnl $3: dummy arguments rank specifier ("", (:), (:,:), etc.)
+dnl $4: dummy arguments size (1 or size(dummyname))
+dnl $5: corresponding MPI type
+!> Reduces results on one process (type $1).
+!!
+!! \param mycomm  MPI communicator.
+!! \param opres  Quantity to be reduced on input, result on exit
+!! \param operator  Reduction operator
+!! \param error  Error code on exit.
+!!
+subroutine mpifx_allreduceip_$1(mycomm, opres, operator, error)
+  type(mpifx_comm), intent(in) :: mycomm
+  $2, intent(inout) :: opres$3
+  integer, intent(in) :: operator
+  integer, intent(out), optional :: error
+
+  integer :: error0
+
+  call mpi_allreduce(MPI_IN_PLACE, opres, $4, $5, operator, mycomm%id, error0)
+  call handle_errorflag(error0, "MPI_REDUCE in mpifx_allreduceip_$1", error)
+    
+end subroutine mpifx_allreduceip_$1
+')
