@@ -15,6 +15,7 @@ module libmpifx_module
   use mpifx_constants_module
   use mpifx_comm_module
   use mpifx_abort_module
+  use mpifx_get_processor_name_module
   use mpifx_barrier_module
   use mpifx_bcast_module
   use mpifx_finalize_module
