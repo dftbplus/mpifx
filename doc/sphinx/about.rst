@@ -1,9 +1,9 @@
 About MPIFX
 ===========
 
-`MPIFX <http://www.bitbucket.org/aradi/mpifx/>`_ is a library containing modern
-Fortran (Fortran 2003) wrappers around MPI routines. The goal is to make the use
-of MPI as simple as possible in Fortran.
+`MPIFX <http://www.bitbucket.org/dftbplus/mpifx/>`_ is a library containing
+modern Fortran (Fortran 2003) wrappers around MPI routines. The goal is to make
+the use of MPI as simple as possible in Fortran.
 
 Consider for example a simple MPI broadcast. In order to broadcast an integer
 array with 25 elements using the legacy MPI routine, you have to issue::
@@ -38,4 +38,4 @@ A few essential communication routines are already covered (see
 :ref:`sec_routines`). If your desired MPI-routine is not among them yet, you are
 cordially invited to extend MPIFX and to share it in order to let others profit
 from your work (MPIFX is licensed under the simplified BSD license). For more
-details see the `project page <http://www.bitbucket.org/aradi/mpifx/>`_.
+details see the `project page <http://www.bitbucket.org/dftbplus/mpifx/>`_.
