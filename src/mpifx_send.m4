@@ -5,7 +5,7 @@ dnl *** mpifx_send
 dnl ************************************************************************
 
 define(`_subroutine_mpifx_send', `dnl
-dnl $1: subroutien suffix
+dnl $1: subroutine suffix
 dnl $2: dummy arguments type
 dnl $3: dummy arguments rank specifier ("", (:), (:,:), etc.)
 dnl $4: dummy arguments size (1 or len(msg) or size(msg))
