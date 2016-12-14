@@ -1,9 +1,7 @@
-include(mpifx_comm.m4)
-
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
-  use mpifx_helper_module
   use mpi
+  use mpifx_helper_module
   implicit none
   private
 
@@ -41,7 +39,7 @@ contains
 
     integer :: error0
 
-    _handle_inoptflag(self%id, commid, MPI_COMM_WORLD)
+    call getoptarg(MPI_COMM_WORLD, self%id, commid)
     call mpi_comm_size(self%id, self%size, error0)
     call handle_errorflag(error0, "mpi_comm_size() in mpifx_comm_init()", error)
     if (error0 /= 0) then
@@ -56,6 +54,7 @@ contains
     self%master = (self%rank == self%masterrank)
     
   end subroutine mpifx_comm_init
+
 
   !> Creates a new communicators by splitting the old one.
   !!
@@ -100,8 +99,7 @@ contains
     integer :: error0, newcommid
     
     call mpi_comm_split(self%id, splitkey, rankkey, newcommid, error0)
-    call handle_errorflag(error0, "mpi_comm_split() in mpifx_comm_split()",  &
-        & error)
+    call handle_errorflag(error0, "mpi_comm_split() in mpifx_comm_split()", error)
     if (error0 /= 0) then
       return
     end if

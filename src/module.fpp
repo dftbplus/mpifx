@@ -1,14 +1,14 @@
 !> \mainpage Modern Fortran wrappers around MPI routines
 !!
-!! The open source library [MPIFX](https://www.bitbucket.org/aradi/mpifx) is
+!! The open source library [MPIFX](https://www.bitbucket.org/dftbplus/mpifx) is
 !! an effort to provide modern Fortran (Fortran 2003) wrappers around
 !! routines of the MPI library to make their use as simple as possible.
 !! 
 !! For more information see the following sources:
-!! * [Online documentation](https://aradi.bitbucket.org/mpifx/)
+!! * [Online documentation](https://dftbplus.bitbucket.org/mpifx/)
 !!   for installation and usage of the library
 !! * [API documentation](annotated.html) for the reference manual.
-!! * [Project home page](https://www.bitbucket.org/aradi/mpifx/)
+!! * [Project home page](https://www.bitbucket.org/dftbplus/mpifx/)
 !!   for the source code, bug tracker and further information on the project.
 !!
 module libmpifx_module

@@ -5,15 +5,15 @@
 # Needs following variables:
 #     FXX: Fortran 2003 compiler
 #     FXXOPT: Options for the Fortran 2003 compiler
-#     M4: M4 macro processor
-#     M4OPT: Options for the M4 macro processor. You should use the -I option
+#     FYPP: FYPP pre-processor
+#     FYPPOPT: Options for the FYPP pre-processor. You should use the -I option
 #         with this directory, if you are invoking the makefile from somewhere
 #         else. You may also use the -D option to define macros (e.g. DEBUG)
 #
 ###############################################################################
 
 .SUFFIXES:
-.SUFFIXES: .f90 .F90 .o
+.SUFFIXES: .f90 .fpp .o
 
 TARGETLIB = libmpifx.a
 
@@ -22,11 +22,11 @@ all: $(TARGETLIB)
 
 include Makefile.dep
 
-$(TARGETLIB): $(libmpifx.o)
+$(TARGETLIB): $(module.o)
 	ar r $@ $^
 
-%.f90: %.F90
-	$(M4) $(M4OPT) $< > $@
+%.f90: %.fpp
+	$(FYPP) $(FYPPOPT) $< > $@
 
 %.o: %.f90
 	$(FXX) $(FXXOPT) -c $<

@@ -1,5 +1,3 @@
-include(mpifx_abort.m4)
-
 !> Contains wrapper for \c MPI_ABORT.  
 module mpifx_abort_module
   use mpifx_common_module
@@ -13,7 +11,7 @@ contains
   !> Aborts MPI processes for the given communicator.
   !!
   !! \param mycomm  MPI handler.
-  !! \param errorcode  Exit error code for the operating system. (default: -1)
+  !! \param errorcode  Exit error code for the operating system. (default: 1)
   !! \param error  Optional error flag.
   !!
   !! \see MPI documentation (\c MPI_ABORT)
@@ -41,9 +39,15 @@ contains
     
     integer :: error0, errorcode0
 
-    _handle_inoptflag(errorcode0, errorcode, -1)
+    if (present(errorcode)) then
+      errorcode0 = errorcode
+    else
+      errorcode0 = 1
+    end if
     call mpi_abort(mycomm%id, errorcode0, error0)
-    call handle_errorflag(error0, "MPI_ABORT in mpifx_abort", error)
+    if (present(error)) then
+      error = error0
+    end if
     
   end subroutine mpifx_abort
 

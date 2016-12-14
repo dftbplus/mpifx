@@ -14,8 +14,8 @@ LN = $(FXX)
 # Linker options
 LNOPT = 
 
-# M4 interpreter
-M4 = m4
+# FYPP interpreter
+FYPP = fypp
 
-# M4 interpreter options (e.g. -DDEBUG for debug mode)
-M4OPT = ""
+# FYPP interpreter options (e.g. -DDEBUG for debug mode)
+FYPPOPT = ""

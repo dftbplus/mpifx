@@ -1,0 +1,72 @@
+#:mute
+  
+#! Set DEBUG to 0 unless DEBUG level is specified explicitely
+#:set DEBUG = getvar('DEBUG', 0)
+
+#! Build normal library unless stub library is explicitly requested
+#!#:set STUB_LIBRARY = defined('STUB_LIBRARY')
+
+#:set INT_TYPES = ['int']
+
+#:set FLOAT_TYPES = ['real', 'dreal', 'complex', 'dcomplex']
+
+#:set LOGICAL_TYPES = ['logical']
+
+#:set CHAR_TYPES = ['char']
+
+#:set NUMERIC_TYPES = INT_TYPES + FLOAT_TYPES
+
+#:set ALL_TYPES = NUMERIC_TYPES + LOGICAL_TYPES + CHAR_TYPES
+  
+#:set TYPE_ABBREVS = {'int': 'i', 'real': 's', 'dreal': 'd', 'complex': 'c', 'dcomplex': 'z',&
+    & 'logical': 'l', 'char': 'h'}
+
+#! Fortran types
+#:set FORTRAN_TYPES = {'int': 'integer', 'real': 'real(sp)', 'dreal': 'real(dp)',&
+    & 'complex': 'complex(sp)', 'dcomplex': 'complex(dp)',  'logical': 'logical',&
+    & 'char': 'character(len=*)'}
+
+#! Corresponding MPI types
+#:set MPI_TYPES = {'int': 'MPI_INTEGER', 'real': 'MPI_REAL', 'dreal': 'MPI_DOUBLE_PRECISION',&
+    & 'complex': 'MPI_COMPLEX', 'dcomplex': 'MPI_DOUBLE_COMPLEX', 'logical': 'MPI_LOGICAL', &
+    & 'char': 'MPI_CHARACTER'}
+
+#! Whether length must be taken into account, if count is calculated
+#:set HAS_LENGTH = {'int': False, 'real': False, 'dreal': False, 'complex': False,&
+    &'dcomplex': False, 'logical': False, 'char': True}
+
+#! Maximal rank covered in the wrappers
+#:set MAX_RANK = getvar('MAX_RANK', 6)
+
+    
+#! Returns colons within paranthesis according to the rank or empty string
+#! if rank is zero.  
+#:def ranksuffix(rank)
+${'' if rank == 0 else '(' + ':' + ',:' * (rank - 1) +')'}$
+#:enddef ranksuffix
+
+
+#! Indicates debug code.
+#!
+#! code: Code to insert, if DEBUG > 0
+#! 
+#:def debug_code(code)
+#:if DEBUG > 0
+$:code
+#:endif
+#:enddef debug_code
+
+
+#! Asserts the validity of a condition.
+#!
+#! cond: Condition
+#!
+#:def ensure(cond)
+#:call debug_code
+if (.not. (${cond}$)) then
+  call ensure_failed("${_FILE_}$", ${_LINE_}$)
+end if
+#:endcall
+#:enddef ensure
+
+#:endmute

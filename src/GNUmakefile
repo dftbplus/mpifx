@@ -6,6 +6,8 @@
 #
 ############################################################################
 
+ROOT = ..
+
 include ../make.arch
 
 .PHONY: _FORCED_SUBMAKE_
@@ -13,7 +15,7 @@ _FORCED_SUBMAKE_:
 	$(MAKE) \
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
-            M4="$(M4)" M4OPT="$(M4OPT)" \
+            FYPP="$(FYPP)" FYPPOPT="$(FYPPOPT)" \
             -f Makefile.lib
 
 .PHONY: clean distclean

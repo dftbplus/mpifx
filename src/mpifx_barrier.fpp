@@ -1,4 +1,4 @@
-include(mpifx_barrier.m4)
+#:include 'mpifx.fypp'
 
 !> Contains wrapper for \c MPI_BARRIER.  
 module mpifx_barrier_module

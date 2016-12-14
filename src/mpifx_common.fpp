@@ -1,6 +1,4 @@
-include(mpifx_common.m4)
-
-!> Exports constants, helper functions, MPI descriptor and legace MPI routines.
+!> Exports constants, helper functions, MPI descriptor and legacy MPI routines.
 !! \cond HIDDEN
 module mpifx_common_module
   use mpi

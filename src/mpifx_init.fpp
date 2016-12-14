@@ -1,21 +1,19 @@
-include(mpifx_finalize.m4)
-
-!> Contains wrapper for \c MPI_FINALIZE.  
-module mpifx_finalize_module
+!> Contains wrapper for \c MPI_INIT.
+module mpifx_init_module
   use mpifx_common_module
   implicit none
   private
 
-  public :: mpifx_finalize
+  public :: mpifx_init
 
 contains
 
-  !> Finalizes the MPI framework.
+  !> Initializes the MPI environment.
   !!
   !! \param error Error code on return. If not present and error code would have
   !!     been non-zero, routine aborts program execution.
   !!
-  !! \see MPI documentation (\c MPI_FINALIZE)
+  !! \see MPI documentation (\c MPI_INIT)
   !!
   !! Example:
   !!
@@ -32,15 +30,14 @@ contains
   !!
   !!     end program test_mpifx
   !!
-  subroutine mpifx_finalize(error)
+  subroutine mpifx_init(error)
     integer, intent(out), optional :: error
 
     integer :: error0
 
-    call mpi_finalize(error0)
-    call handle_errorflag(error0, "Error: mpi_finalize() in mpifx_finalize()", &
-        & error)
+    call mpi_init(error0)
+    call handle_errorflag(error0, "Error: mpi_init() in mpifx_init()", error)
 
-  end subroutine mpifx_finalize
+  end subroutine mpifx_init
       
-end module mpifx_finalize_module
+end module mpifx_init_module

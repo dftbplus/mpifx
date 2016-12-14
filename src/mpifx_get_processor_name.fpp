@@ -1,9 +1,6 @@
-include(mpifx_get_processor_name.m4)
-
 !> Contains the extended MPI communicator.
 module mpifx_get_processor_name_module
-  use mpifx_helper_module
-  use mpi
+  use mpifx_common_module
   implicit none
   private
 
@@ -24,8 +21,7 @@ contains
     character(MPI_MAX_PROCESSOR_NAME) :: buffer
 
     call mpi_get_processor_name(buffer, length, error0)
-    call handle_errorflag(error0, "mpi_get_processor_name() in &
-      & mpifx_get_processor_name", error)
+    call handle_errorflag(error0, "mpi_get_processor_name() in mpifx_get_processor_name", error)
     if (error0 /= 0) then
       return
     end if

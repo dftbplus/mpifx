@@ -9,8 +9,11 @@
 
 include ../make.arch
 
+# Root directory
+ROOT = ..
+
 # Directory where library source can be found
-SRCDIR = ../src
+SRCDIR = $(ROOT)/src
 
 ############################################################################
 # Building the test programs.
@@ -20,7 +23,7 @@ SRCDIR = ../src
 ############################################################################
 
 .SUFFIXES:
-.SUFFIXES: .f90 .F90 .o .m4
+.SUFFIXES: .f90 .o
 
 TARGETS = test_bcast test_send_recv test_comm_split test_reduce \
     test_allreduce test_gather test_allgather test_scatter
@@ -63,5 +66,5 @@ _FORCED_SUBMAKE_:
 	$(MAKE) \
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
-            M4="$(M4)" M4OPT="$(M4OPT)" \
+            FYPP="$(FYPP)" FYPPOPT="$(FYPPOPT)" \
 	    -C $(SRCDIR) -f Makefile.lib

@@ -1,0 +1,394 @@
+#!/usr/bin/env python
+###############################################################################
+#
+# Copyright (c) 2013, Balint Aradi
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright notice, 
+#     this list of conditions and the following disclaimer.
+#
+#   * Redistributions in binary form must reproduce the above copyright notice,
+#     this list of conditions and the following disclaimer in the documentation
+#     and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+###############################################################################
+from __future__ import print_function
+import argparse
+import re
+import os
+import copy
+
+DESCRIPTION = """Creates dependency information for the GNU Make system by
+analyzing Fortran 90+ source files.
+
+It searches the source files in the given directory for module inclusions and
+module definitions (via the 'use' and 'module' statements). In every directory
+it creates a file 'Makefile.dep' which can be included by the actual makefile.
+If the source files contain CPP conditionals (#if, #ifdef, #else,
+#endif), they will be included in the dependency file, so that preprocessing
+the dependency file with CPP will give the correct dependencies.
+"""
+
+# Patterns for branch constructs: #if*, #else, #endif
+PAT_IF = re.compile(r"^[ \t]*#[ \t]*if(?P<cond>(?:n?def)?[ \t]+.*)$",
+                    re.MULTILINE)
+PAT_ELSE = re.compile(r"^[ \t]*#[ \t]*else[ \t]*$", re.MULTILINE)
+PAT_ENDIF = re.compile(r"^[ \t]*#[ \t]*endif\s*$", re.MULTILINE)
+
+# Patterns for other constructs: #include, use, module
+PAT_INCLUDE = re.compile(r"""^[ \t]*\#[ \t]*include\s+
+                             (?:'(?P<name1>[^']+)'
+                             |\"(?P<name2>[^\"]+)\")
+                         """, re.MULTILINE | re.VERBOSE)
+
+PAT_USE = re.compile(r"^[ \t]*use[ \t]+(?P<mod>[^ \s,]*)",
+                     re.MULTILINE | re.IGNORECASE)
+
+PAT_MODULE = re.compile(r"^[ \t]*module[ \t]+(?P<mod>\S+)[ \t]*$",
+                        re.MULTILINE | re.IGNORECASE)
+
+PAT_INCLUDE2 = re.compile(r"^[ \t]*include\s*['\"(](?P<name>[^'\")]+)['\")]",
+                          re.MULTILINE | re.IGNORECASE)
+
+# List of all patterns
+PATTERNS = ( PAT_IF, PAT_ELSE, PAT_ENDIF, PAT_INCLUDE, PAT_USE, PAT_MODULE,
+             PAT_INCLUDE2 )
+
+# Dependency information types
+DEP_MODULE = 0
+DEP_INCLUDE = 1
+
+# Definition types
+DFN_MODULE = 0
+
+# Pattern to select files to process:
+PAT_FILE = re.compile(r"\.f90$|\.h$|\.inc|\.fpp$", re.IGNORECASE)
+
+# Extensions to be considered Fortran source files
+FORTRAN_EXTENSIONS = (".f90", ".f", ".fpp")
+
+# Name of the dependency output
+DEPFILE = "Makefile.dep"
+
+class MakedepException(Exception):
+    pass
+
+
+class BranchBlock(object):
+    """Contains information on a block which may contain dependency information
+    and a branch point"""
+
+    def __init__(self):
+        """Initialises a BranchBlock"""
+        self._dependencies = set() # Dependencies
+        self._definitions = set()  # Defined entities
+        self._condition = ""       # Condition for the branch point
+        self._truechild = None     # True block of the branch
+        self._falsechild = None    # False block of the branch
+        self._hasbranch = False    # If current block contains a branch
+
+
+    def add_dependency(self, dep, deptype):
+        """Adds a dependency to the current block
+        dep         -- name of the dependency
+        deptype -- type of the dependency
+        """
+        self._dependencies.add((dep, deptype))
+
+
+    def add_definition(self, dfn, dfntype):
+        """Adds a dependency to the current block
+        dfn         -- name of the definition
+        deptype -- type of the definition
+        """
+        self._definitions.add((dfn, dfntype))
+
+
+    def add_branch(self, condition, true, false):
+        """Adds a branch to the current block
+        condition -- Branching condition
+        true            -- True block of the branch
+        false         -- False block of the branch
+        """
+        # Make sure, all branches are proper objects
+        true = true or BranchBlock()
+        false = false or BranchBlock()
+
+        if self._hasbranch:
+            # We have a branch point already, add new branch to them
+            if self._condition == condition:
+                self._truechild.extendBlock(true)
+                self._falsechild.extendBlock(false)
+            else:
+                self._truechild.add_branch(condition, true, false)
+                self._falsechild.add_branch(condition, true, false)
+        else:
+            # No branch point yet: branch point added to the current block
+            self._hasbranch = True
+            self._condition = condition
+            self._truechild = copy.deepcopy(true)
+            self._falsechild = copy.deepcopy(false)
+
+
+    def extend_block(self, block):
+        """Extends a block with the content of an other one.
+        block -- Contains the information to add
+        """
+        self._dependencies.update(block._dependencies)
+        self._definitions.update(block._definitions)
+        if block._hasbranch:
+            self.add_branch(block._condition, block._truechild, 
+                            block._falsechild)
+
+
+    def hasbranch(self):
+        """Returns flag, if current block contains a branch or not"""
+        return self._hasbranch
+
+
+    def has_deps_or_defs(self):
+        """Flags, if current block contains any dependencies or definitions"""
+        return (len(self._dependencies) != 0 or len(self._definitions) != 0)
+
+
+    def write_tree(self, fp, fbase, fext, fsrc):
+        """Prints the dependency tree in the appropriate format
+        fp -- pointer to an open file
+        fbase -- base name of the processed file
+        fext -- extension of the processed file
+        fsrc -- flags if processed file was a fortran file or not
+        (A more elegant implementation would do this with a writer class...)
+        """
+        self._write_tree_recursive(fp, [], [], fbase, fext, fsrc)
+
+
+    def _write_tree_recursive(self, fp, deps, defs, fbase, fext, fsrc):
+        """Working horse for the write_tree routine
+        fp: file pointer
+        deps: Dependencies so far
+        defs: Definitions so far
+        fbase: base name of the processed file
+        fext: extension of the processed file
+        fsrc: flags if processed file was a fortran source file
+        """
+
+        newdeps = deps + list(self._dependencies)
+        newdefs = defs + list(self._definitions)
+
+        if self._hasbranch:
+            # We have a branch point, dive into the true and false branch
+            fp.write("#if{}\n".format(self._condition))
+            self._truechild._write_tree_recursive(fp, newdeps, newdefs, fbase,
+                                                  fext, fsrc)
+            fp.write("#else\n")
+            self._falsechild._write_tree_recursive(fp, newdeps, newdefs, fbase,
+                                                   fext, fsrc)
+            fp.write("#endif\n")
+        else:
+            # No further branch points: write all dependencies in order
+            filedeps = []
+            vardeps = []
+            for (depname, deptype) in newdeps:
+                if deptype == DEP_MODULE:
+                    filedeps.append("$$({0}{1})".format("_modobj_", depname))
+                    vardeps.append("$($({0}{1}))".format("_modobj_", depname))
+                else:
+                    filedeps.append(depname)
+                    vardeps.append("$({0})".format(depname))
+            if fsrc:
+                fp.write("{0}.o: ".format(fbase))
+                if filedeps:
+                    fp.write(" ".join(filedeps))
+                fp.write("\n")
+                fp.write("{0}.o = {0}.o ".format(fbase))
+                if vardeps:
+                    fp.write(" ".join(vardeps))
+                fp.write("\n")
+            else:
+                if filedeps:
+                    fp.write("{0}{1}: ".format(fbase, fext))
+                    fp.write(" ".join(filedeps) + "\n")
+                    fp.write("{0}{1} = ".format(fbase, fext))
+                if vardeps:
+                    fp.write(" ".join(vardeps))
+                fp.write("\n")
+
+            # Write definitions:
+            for (dfnname, dfntype) in newdefs:
+                if dfntype == DFN_MODULE:
+                    fp.write("{0}{1} = {2}.o\n".format("_modobj_", dfnname, 
+                                                       fbase))
+
+
+def build_dependency_tree(txt):
+    """Creates a dependency tree for the given text"""
+
+    end = len(txt)
+    matches = [ pat.search(txt) for pat in PATTERNS ]
+    starts = []
+    for match in matches:
+        if match:
+            starts.append(match.start())
+        else:
+            starts.append(end)
+    (itype, node) = build_dependency_recursive(txt, matches, starts)
+    return node
+
+
+
+def nextmatch(txt, matches, starts, itype):
+    # Helper function for build_dependency_recursive, updating matches and
+    # starts by replacing the entries for itype with the next occurance.
+
+    if matches[itype] == None:
+        raise MakedepException("Invalid nesting of blocks "
+                               "(probably unclosed #if* block)")
+    match = PATTERNS[itype].search(txt, matches[itype].end())
+    matches[itype] = match
+    if match:
+        starts[itype] = match.start()
+    else:
+        starts[itype] = len(txt)
+
+
+def build_dependency_recursive(txt, matches, starts):
+    """Working function for the build_dependency_tree routine.
+    txt -- text to parse
+    matches -- last match for each pattern in PATTERNS
+    starts -- starting position of the last matches (len(txt) if no match)
+    return -- (itype, node), where itype is the type of the closing block
+        and node is the tree built.
+    """
+
+    block = BranchBlock()
+    end = len(txt)
+    firstpos = min(starts)
+    itype = -1
+
+    # Loop as long we did not reach the end of the text
+    while firstpos < end:
+
+        # get entry type and match object for the first pttern match
+        itype = starts.index(firstpos)
+        match = matches[itype]
+
+        if itype == 0:
+            # Branch opening (#ifdef)
+            condition = match.group("cond")
+            nextmatch(txt, matches, starts, itype)
+            (itype, ifbranch) = build_dependency_recursive(txt, matches, starts)
+            if itype == 1:
+                # If branch ended with #else -> parse the else branch as well
+                nextmatch(txt, matches, starts, itype)
+                (itype, elsebranch) = build_dependency_recursive(txt, matches,
+                                                                 starts)
+            else:
+                elsebranch = None
+            # Sanity check: #if must be closed by #endif
+            if itype != 2:
+                raise MakedepException("ERROR, #else must be terminted by "
+                                       "#endif")
+            # if any of the two branches contains usefull info, add the branch
+            # to the current block
+            if ifbranch or elsebranch:
+                block.add_branch(condition, ifbranch, elsebranch)
+        elif itype == 1 or itype == 2:
+            # block closing #else or #endif found -> escape to higher level
+            break
+        elif itype == 3:
+            # #include found
+            groups = match.groups()
+            name = groups[0]
+            if not name:
+                name = groups[1]
+            block.add_dependency(name, DEP_INCLUDE)
+        elif itype == 4:
+            # module found
+            block.add_dependency(match.group("mod").lower(), DEP_MODULE)
+        elif itype == 5:
+            # module defintion found
+            block.add_definition(match.group("mod").lower(), DFN_MODULE)
+        elif itype == 6:
+            # include with ' or " or ()
+            block.add_dependency(match.group("name"), DEP_INCLUDE)
+        else:
+            raise MakedepException("Unknown itype: {:d}".format(itype))
+
+        # Get next occurance for processed entry
+        nextmatch(txt, matches, starts, itype)
+        firstpos = min(starts)
+
+    # Pass block back, if it contains usefull info
+    if block.has_deps_or_defs() or block.hasbranch():
+        return (itype, block)
+    else:
+        return (itype, None)
+
+
+def write_depfile(fp, sources):
+    """Writes dependency file.
+    fp -- File descriptor for file to write to.
+    sources -- Fortran source files to investigate
+    """
+
+    fp.write(".SECONDEXPANSION:\n\n")
+    for source in sources:
+        print("Processing: {}".format(source))
+        fpsource = open(source, "r")
+        txt = fpsource.read()
+        fpsource.close()
+        tree = build_dependency_tree(txt)
+        if tree:
+            fbase, fext = os.path.splitext(os.path.basename(source))
+            fextlow = fext.lower()
+            fsrc = fextlow in FORTRAN_EXTENSIONS
+            tree.write_tree(fp, fbase, fext, fsrc)
+            fp.write("\n")
+
+
+
+def main():
+    """Main procedure"""
+
+    parser = argparse.ArgumentParser(description=DESCRIPTION)
+    parser.add_argument(
+        'dirnames', metavar='DIR', nargs='*',  default=["."],
+        help="Directory in which dependency file should be created "
+        "(default: '.')")
+
+    args = parser.parse_args()
+
+    for dirname in args.dirnames:
+        outname = os.path.join(dirname, DEPFILE)
+        print("Creating:", outname)
+        fp = open(outname, "w")
+        fnames = [ os.path.join(dirname, fname)
+                   for fname in os.listdir(dirname)
+                   if PAT_FILE.search(fname) ]
+        write_depfile(fp, fnames)
+        fp.close()
+
+
+if __name__ == "__main__":
+    main()
+
+
+### Local Variables:
+### mode:python
+### End:
