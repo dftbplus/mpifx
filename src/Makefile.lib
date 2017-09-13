@@ -2,13 +2,14 @@
 #
 # Library makefile
 #
+# Compiles and links mpifx in the current directory.
+#
 # Needs following variables:
 #     FXX: Fortran 2003 compiler
 #     FXXOPT: Options for the Fortran 2003 compiler
 #     M4: M4 macro processor
-#     M4OPT: Options for the M4 macro processor. You should use the -I option
-#         with this directory, if you are invoking the makefile from somewhere
-#         else. You may also use the -D option to define macros (e.g. DEBUG)
+#     M4OPT: Options for the M4 macro processor.
+#     SRCDIR: Folder where source files can be found
 #
 ###############################################################################
 
@@ -17,16 +18,18 @@
 
 TARGETLIB = libmpifx.a
 
+vpath % $(SRCDIR)
+
 .PHONY: all
 all: $(TARGETLIB)
 
-include Makefile.dep
+include $(SRCDIR)/Makefile.dep
 
 $(TARGETLIB): $(libmpifx.o)
 	ar r $@ $^
 
 %.f90: %.F90
-	$(M4) $(M4OPT) $< > $@
+	$(M4) -I$(SRCDIR) $(M4OPT) $< > $@
 
 %.o: %.f90
 	$(FXX) $(FXXOPT) -c $<
@@ -39,7 +42,6 @@ clean:
 distclean: clean
 	rm -f *.mod
 	rm -f $(TARGETLIB)
-
 
 ### Local Variables:
 ### mode:makefile
