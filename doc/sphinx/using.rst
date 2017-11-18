@@ -1,7 +1,7 @@
 Using MPIFX
 ===========
 
-Before you can use the MPIFX routines, you need basically the following steps.
+Before you can use the MPIFX routines you need the following steps:
 
 #. Use the module `libmpifx_module` in your routines.
 

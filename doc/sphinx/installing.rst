@@ -9,14 +9,13 @@ In order to compile MPIFX, you need following prerequisites:
 
 * GNU Make.
 
-There are basically two different ways of invoking the library into your
-project:
+There are basically two different ways of using the library in your project:
 
 * `Precompiling the library`_ and linking it later to your project.
 
 * `Compiling the library during your build process`_.
 
-Both are described below in details.
+Both are described below.
 
 
 Precompiling the library
