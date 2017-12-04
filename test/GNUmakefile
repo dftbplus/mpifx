@@ -43,11 +43,11 @@ include Makefile.targets
 
 .PHONY: clean realclean
 clean:
-	$(MAKE) -C $(SRCDIR) -f Makefile.lib clean
+	$(MAKE) SRCDIR="$(SRCDIR)" -C $(SRCDIR) -f Makefile.lib clean
 	rm -f *.mod *.o _*
 
 distclean: clean
-	$(MAKE) -C $(SRCDIR) -f Makefile.lib distclean
+	$(MAKE) SRCDIR="$(SRCDIR)" -C $(SRCDIR) -f Makefile.lib distclean
 	rm -f $(TARGETS)
 
 
@@ -64,4 +64,4 @@ _FORCED_SUBMAKE_:
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
             M4="$(M4)" M4OPT="$(M4OPT)" \
-	    -C $(SRCDIR) -f Makefile.lib
+	    SRCDIR="$(SRCDIR)" -C $(SRCDIR) -f Makefile.lib
