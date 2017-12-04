@@ -5,7 +5,7 @@
 # Fortran 2003 compiler
 FXX = mpif90
 
-# Fortran compiler otions
+# Fortran compiler options
 FXXOPT = -assume realloc_lhs -stand f03 -warn
 
 # Linker
