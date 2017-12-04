@@ -4,12 +4,12 @@
 #
 # Compiles and links mpifx in the current directory.
 #
-# Needs following variables:
+# Needs the following variables:
 #     FXX: Fortran 2003 compiler
 #     FXXOPT: Options for the Fortran 2003 compiler
 #     M4: M4 macro processor
 #     M4OPT: Options for the M4 macro processor.
-#     SRCDIR: Folder where source files can be found
+#     SRCDIR: Folder where source files are located
 #
 ###############################################################################
 
