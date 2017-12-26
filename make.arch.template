@@ -6,7 +6,7 @@
 FXX = mpif90
 
 # Fortran compiler otions
-FXXOPT = -std=f2008
+FXXOPT = -std=f2008 -Wall -pedantic
 
 # Linker
 LN = $(FXX)

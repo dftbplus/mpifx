@@ -2,13 +2,16 @@
 #
 # Library makefile
 #
-# Needs following variables:
+# Compiles and links mpifx in the current directory.
+#
+# Needs the following variables:
 #     FXX: Fortran 2003 compiler
 #     FXXOPT: Options for the Fortran 2003 compiler
 #     FYPP: FYPP pre-processor
 #     FYPPOPT: Options for the FYPP pre-processor. You should use the -I option
 #         with this directory, if you are invoking the makefile from somewhere
 #         else. You may also use the -D option to define macros (e.g. DEBUG)
+#     SRCDIR: Folder where source files are located
 #
 ###############################################################################
 
@@ -17,20 +20,21 @@
 
 TARGETLIB = libmpifx.a
 
+vpath % $(SRCDIR)
+
 .PHONY: all
 all: $(TARGETLIB)
 
-include Makefile.dep
+include $(SRCDIR)/Makefile.dep
 
 $(TARGETLIB): $(module.o)
 	ar r $@ $^
 
 %.f90: %.fpp
-	$(FYPP) $(FYPPOPT) $< > $@
+	$(FYPP) -I$(SRCDIR) $(FYPPOPT) $< > $@
 
 %.o: %.f90
 	$(FXX) $(FXXOPT) -c $<
-
 
 .PHONY: clean realclean
 clean:
@@ -39,7 +43,6 @@ clean:
 distclean: clean
 	rm -f *.mod
 	rm -f $(TARGETLIB)
-
 
 ### Local Variables:
 ### mode:makefile

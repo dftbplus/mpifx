@@ -1,6 +1,7 @@
 program test_bcast
   use libmpifx_module
-
+  implicit none
+  
   integer, parameter :: dp = kind(1.0d0)
   integer, parameter :: sp = kind(1.0)
 

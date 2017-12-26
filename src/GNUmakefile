@@ -8,6 +8,8 @@
 
 ROOT = ..
 
+SRCDIR = $(ROOT)/src
+
 include ../make.arch
 
 .PHONY: _FORCED_SUBMAKE_
@@ -16,8 +18,8 @@ _FORCED_SUBMAKE_:
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
             FYPP="$(FYPP)" FYPPOPT="$(FYPPOPT)" \
-            -f Makefile.lib
+            SRCDIR="$(SRCDIR)" -f Makefile.lib
 
 .PHONY: clean distclean
 clean distclean:
-	$(MAKE) -f Makefile.lib $@
+	$(MAKE) SRCDIR="$(SRCDIR)" -f Makefile.lib $@
