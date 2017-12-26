@@ -7,6 +7,8 @@
 # Needs the following variables:
 #     FXX: Fortran 2003 compiler
 #     FXXOPT: Options for the Fortran 2003 compiler
+#     LN: Linker
+#     LNOPT: Linker options
 #     FYPP: FYPP pre-processor
 #     FYPPOPT: Options for the FYPP pre-processor. You should use the -I option
 #         with this directory, if you are invoking the makefile from somewhere
@@ -18,16 +20,16 @@
 .SUFFIXES:
 .SUFFIXES: .f90 .fpp .o
 
-TARGETLIB = libmpifx.a
+TARGET = libmpifx.a
 
 vpath % $(SRCDIR)
 
 .PHONY: all
-all: $(TARGETLIB)
+all: $(TARGET)
 
-include $(SRCDIR)/Makefile.dep
+include $(SRCDIR)/make.deps
 
-$(TARGETLIB): $(module.o)
+$(TARGET): $(module.o)
 	ar r $@ $^
 
 %.f90: %.fpp
@@ -36,13 +38,9 @@ $(TARGETLIB): $(module.o)
 %.o: %.f90
 	$(FXX) $(FXXOPT) -c $<
 
-.PHONY: clean realclean
+.PHONY: clean
 clean:
 	rm -f *.o
-
-distclean: clean
-	rm -f *.mod
-	rm -f $(TARGETLIB)
 
 ### Local Variables:
 ### mode:makefile

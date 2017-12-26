@@ -5,8 +5,8 @@
 # Fortran 2003 compiler
 FXX = mpif90
 
-# Fortran compiler otions
-FXXOPT = -std=f2008 -Wall -pedantic
+# Fortran compiler options
+FXXOPT = -std=f2003
 
 # Linker
 LN = $(FXX)
@@ -14,9 +14,14 @@ LN = $(FXX)
 # Linker options
 LNOPT = 
 
-# FYPP interpreter
-# (see https://github.com/aradi/fypp if not installed in your system yet)
-FYPP = fypp
+# FYPP interpreter (see https://github.com/aradi/fypp)
+FYPP = $(ROOT)/external/fypp/fypp
 
 # FYPP interpreter options (e.g. -DDEBUG for debug mode)
 FYPPOPT = ""
+
+# Directory where the build should happen
+BUILDDIR = $(ROOT)/_build
+
+# Where to copy files when installation is required
+INSTALLDIR = $(ROOT)/_install

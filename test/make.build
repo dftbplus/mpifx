@@ -1,0 +1,73 @@
+############################################################################
+#
+# Makefile for building some example programs
+#
+# Needs as variable:
+#     ROOT  Source root directory
+#     BUILDROOT  Build root directory
+#
+# The mpifx library must be already built in $(BUILDROOT)/lib
+#
+############################################################################
+
+
+############################################################################
+# Building some test/example programs.
+############################################################################
+
+.SUFFIXES:
+.SUFFIXES: .f90 .o
+
+TARGETS = test_bcast test_send_recv test_comm_split test_reduce \
+    test_allreduce test_gather test_allgather test_scatter
+
+all: $(TARGETS)
+
+MPIFX_LIBDIR = $(BUILDROOT)/lib
+MPIFX_INCDIR = $(BUILDROOT)/lib
+
+include $(ROOT)/make.arch
+
+# Directory where library source can be found
+SRCDIR = $(ROOT)/test
+
+vpath % $(SRCDIR)
+
+%.o: %.f90
+	$(FXX) $(FXXOPT) -I$(MPIFX_INCDIR) -c $<
+
+# Linking rules for targets
+define link-target
+$(LN) $(LNOPT) -o $@ $^ -L$(MPIFX_LIBDIR) -lmpifx
+endef
+
+.PHONY: clean
+clean:
+	rm -f *.mod *.o _*
+
+
+include $(SRCDIR)/make.deps
+
+test_bcast: $(test_bcast.o)
+	$(link-target)
+
+test_send_recv: $(test_send_recv.o)
+	$(link-target)
+
+test_comm_split: $(test_comm_split.o)
+	$(link-target)
+
+test_reduce: $(test_reduce.o)
+	$(link-target)
+
+test_allreduce: $(test_allreduce.o)
+	$(link-target)
+
+test_gather: $(test_gather.o)
+	$(link-target)
+
+test_allgather: $(test_allgather.o)
+	$(link-target)
+
+test_scatter: $(test_scatter.o)
+	$(link-target)
