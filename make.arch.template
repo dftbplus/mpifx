@@ -6,7 +6,7 @@
 FXX = mpif90
 
 # Fortran compiler otions
-FXXOPT = -assume realloc_lhs -stand f03 -warn
+FXXOPT = -std=f2008
 
 # Linker
 LN = $(FXX)
@@ -15,6 +15,7 @@ LN = $(FXX)
 LNOPT = 
 
 # FYPP interpreter
+# (see https://github.com/aradi/fypp if not installed in your system yet)
 FYPP = fypp
 
 # FYPP interpreter options (e.g. -DDEBUG for debug mode)

@@ -68,7 +68,7 @@ contains
   !!
   subroutine mpifx_send_${SUFFIX}$(mycomm, msg, dest, tag, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(in) :: msg${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: msg${RANKSUFFIX(RANK)}$
     integer, intent(in) :: dest
     integer, intent(in), optional :: tag
     integer, intent(out), optional :: error
@@ -78,7 +78,7 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(msg)'
     #:set COUNT = ('len(msg) * ' + SIZE if HASLENGTH else SIZE)
 
-    call getoptarg(DEFAULT_TAG, tag0, tag)
+    call getoptarg(default_tag, tag0, tag)
     call mpi_send(msg, ${COUNT}$, ${MPITYPE}$, dest, tag0, mycomm%id, error0)
     call handle_errorflag(error0, "MPI_SEND in mpifx_send_${SUFFIX}$", error)
 

@@ -1,7 +1,7 @@
 MPIFX - Modern Fortran Interface for MPI
 ========================================
 
-The open source library `MPIFX <https://www.bitbucket.org/aradi/mpifx>`_ is
+The open source library `MPIFX <https://github.com/dftbplus/dftbplus/>`_ is
 an effort to provide modern Fortran (Fortran 2003) wrappers around
 routines of the MPI library to make their use as simple as possible.
 

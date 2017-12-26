@@ -71,7 +71,7 @@ contains
   !!
   subroutine mpifx_recv_${SUFFIX}$(mycomm, msg, source, tag, status, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(out) :: msg${ranksuffix(RANK)}$
+    ${TYPE}$, intent(out) :: msg${RANKSUFFIX(RANK)}$
     integer, intent(in), optional :: source, tag
     integer, intent(out), optional :: status(MPI_STATUS_SIZE)
     integer, intent(out), optional :: error

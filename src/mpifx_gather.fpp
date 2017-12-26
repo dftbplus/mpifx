@@ -117,8 +117,8 @@ contains
   !!
   subroutine mpifx_gather_${SUFFIX}$(mycomm, send, recv, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(in) :: send${ranksuffix(RANK)}$
-    ${TYPE}$, intent(out) :: recv${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK)}$
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
 
@@ -127,8 +127,8 @@ contains
     #:set SIZE = 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ensure (.not. mycomm%master .or. size(recv) == size(send) * mycomm%size)
-    @:ensure (.not. mycomm%master .or.&
+    @:ASSERT(.not. mycomm%master .or. size(recv) == size(send) * mycomm%size)
+    @:ASSERT(.not. mycomm%master .or.&
         & size(recv, dim=${RANK}$) == size(send, dim=${RANK}$) * mycomm%size)
 
     call getoptarg(mycomm%masterrank, root0, root)
@@ -155,8 +155,8 @@ contains
   !!
   subroutine mpifx_gather_${SUFFIX}$(mycomm, send, recv, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(in) :: send${ranksuffix(RANK)}$
-    ${TYPE}$, intent(out) :: recv${ranksuffix(RANK + 1)}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK + 1)}$
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
 
@@ -165,8 +165,8 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ensure (.not. mycomm%master .or. size(recv) == ${SIZE}$ * mycomm%size)
-    @:ensure (.not. mycomm%master .or. size(recv, dim=${RANK + 1}$) == mycomm%size)
+    @:ASSERT(.not. mycomm%master .or. size(recv) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(.not. mycomm%master .or. size(recv, dim=${RANK + 1}$) == mycomm%size)
 
     call getoptarg(mycomm%masterrank, root0, root)
     call mpi_gather(send, ${SIZE}$, ${MPITYPE}$, recv, ${SIZE}$, ${MPITYPE}$, root0, mycomm%id,&

@@ -114,8 +114,8 @@ contains
   !!
   subroutine mpifx_reduce_${SUFFIX}$(mycomm, orig, reduced, reduceop, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(in) :: orig${ranksuffix(RANK)}$
-    ${TYPE}$, intent(inout) :: reduced${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: orig${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(inout) :: reduced${RANKSUFFIX(RANK)}$
     integer, intent(in) :: reduceop
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
@@ -149,7 +149,7 @@ contains
   !!
   subroutine mpifx_reduceip_${SUFFIX}$(mycomm, origred, reduceop, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(inout) :: origred${ranksuffix(RANK)}$
+    ${TYPE}$, intent(inout) :: origred${RANKSUFFIX(RANK)}$
     integer, intent(in) :: reduceop
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error

@@ -106,8 +106,8 @@ contains
   !!
   subroutine mpifx_scatter_${SUFFIX}$(mycomm, send, recv, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(in) :: send${ranksuffix(RANK)}$
-    ${TYPE}$, intent(out) :: recv${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK)}$
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
 
@@ -116,8 +116,8 @@ contains
     #:set SIZE = 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ensure (.not. mycomm%master .or. size(send) == size(recv) * mycomm%size)
-    @:ensure (.not. mycomm%master&
+    @:ASSERT(.not. mycomm%master .or. size(send) == size(recv) * mycomm%size)
+    @:ASSERT(.not. mycomm%master&
         & .or. size(send, dim=${RANK}$) == size(recv, dim=${RANK}$) * mycomm%size)
     
     call getoptarg(mycomm%masterrank, root0, root)
@@ -144,8 +144,8 @@ contains
   !!
   subroutine mpifx_scatter_${SUFFIX}$(mycomm, send, recv, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${TYPE}$, intent(in) :: send${ranksuffix(RANK)}$
-    ${TYPE}$, intent(out) :: recv${ranksuffix(RANK - 1)}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK - 1)}$
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
 
@@ -154,10 +154,10 @@ contains
     #:set SIZE = '1' if RANK == 1 else 'size(recv)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ensure (.not. mycomm%master .or. size(send) == ${SIZE}$ * mycomm%size)
-    @:ensure (.not. mycomm%master .or. size(send, dim=${RANK}$) == mycomm%size)
+    @:ASSERT(.not. mycomm%master .or. size(send) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(.not. mycomm%master .or. size(send, dim=${RANK}$) == mycomm%size)
     #:if HASLENGTH
-      @:ensure (.not. mycomm%master .or. len(send) == len(recv))
+      @:ASSERT(.not. mycomm%master .or. len(send) == len(recv))
     #:endif
 
     call getoptarg(mycomm%masterrank, root0, root)

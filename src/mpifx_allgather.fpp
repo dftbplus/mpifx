@@ -104,10 +104,10 @@ contains
     type(mpifx_comm), intent(in) :: mycomm
 
     !>  Quantity to be sent for gathering.
-    ${TYPE}$, intent(in) :: send${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
 
     !>  Received data.
-    ${TYPE}$, intent(out) :: recv${ranksuffix(RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK)}$
 
     !>  Error code on exit.
     integer, intent(out), optional :: error
@@ -117,8 +117,8 @@ contains
     #:set SIZE = 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ensure (size(recv) == ${SIZE}$ * mycomm%size)
-    @:ensure (size(recv, dim=${RANK}$) == size(send, dim=${RANK}$) * mycomm%size)
+    @:ASSERT(size(recv) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(size(recv, dim=${RANK}$) == size(send, dim=${RANK}$) * mycomm%size)
 
     call mpi_allgather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, mycomm%id,&
         & error0)
@@ -143,10 +143,10 @@ contains
     type(mpifx_comm), intent(in) :: mycomm
 
     !> Quantity to be sent for gathering.
-    ${TYPE}$, intent(in) :: send${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
 
     !>  Received data.
-    ${TYPE}$, intent(out) :: recv${ranksuffix(RANK + 1)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK + 1)}$
 
     !> Error code on exit.
     integer, intent(out), optional :: error
@@ -156,8 +156,8 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ensure (size(recv) == ${SIZE}$ * mycomm%size)
-    @:ensure (size(recv, dim=${RANK + 1}$) == mycomm%size)
+    @:ASSERT(size(recv) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(size(recv, dim=${RANK + 1}$) == mycomm%size)
 
     call mpi_allgather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$,&
         & mycomm%id, error0)

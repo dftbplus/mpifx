@@ -39,34 +39,34 @@
 #:set MAX_RANK = getvar('MAX_RANK', 6)
 
     
-#! Returns colons within paranthesis according to the rank or empty string
-#! if rank is zero.  
-#:def ranksuffix(rank)
-${'' if rank == 0 else '(' + ':' + ',:' * (rank - 1) +')'}$
-#:enddef ranksuffix
+#! Returns colons within paranthesis according to the RANK or empty string
+#! if RANK is zero.  
+#:def RANKSUFFIX(RANK)
+${'' if RANK == 0 else '(' + ':' + ',:' * (RANK - 1) +')'}$
+#:enddef RANKSUFFIX
 
 
 #! Indicates debug code.
 #!
 #! code: Code to insert, if DEBUG > 0
 #! 
-#:def debug_code(code)
+#:def DEBUG_CODE(code)
 #:if DEBUG > 0
 $:code
 #:endif
-#:enddef debug_code
+#:enddef DEBUG_CODE
 
 
 #! Asserts the validity of a condition.
 #!
 #! cond: Condition
 #!
-#:def ensure(cond)
-#:call debug_code
-if (.not. (${cond}$)) then
-  call ensure_failed("${_FILE_}$", ${_LINE_}$)
+#:def ASSERT(COND)
+#:call DEBUG_CODE
+if (.not. (${COND}$)) then
+  call assert_failed("${_FILE_}$", ${_LINE_}$)
 end if
 #:endcall
-#:enddef ensure
+#:enddef ASSERT
 
 #:endmute

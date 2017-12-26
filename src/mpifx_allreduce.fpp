@@ -113,10 +113,10 @@ contains
     type(mpifx_comm), intent(in) :: mycomm
 
     !> Quantity to be reduced.
-    ${TYPE}$, intent(in) :: orig${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: orig${RANKSUFFIX(RANK)}$
 
     !> Contains result on exit.
-    ${TYPE}$, intent(inout) :: reduced${ranksuffix(RANK)}$
+    ${TYPE}$, intent(inout) :: reduced${RANKSUFFIX(RANK)}$
 
     !>  Reduction operator
     integer, intent(in) :: reductionop
@@ -127,7 +127,7 @@ contains
     integer :: error0
 
     #:if RANK > 0
-      @:ensure (size(orig) == size(reduced))
+      @:ASSERT(size(orig) == size(reduced))
     #:endif
 
     #:set SIZE = '1' if RANK == 0 else 'size(orig)'
@@ -155,7 +155,7 @@ contains
     type(mpifx_comm), intent(in) :: mycomm
 
     !>  Quantity to be reduced on input, reduced on exit.
-    ${TYPE}$, intent(inout) :: origreduced${ranksuffix(RANK)}$
+    ${TYPE}$, intent(inout) :: origreduced${RANKSUFFIX(RANK)}$
 
     !> Reduction operator.
     integer, intent(in) :: reductionop

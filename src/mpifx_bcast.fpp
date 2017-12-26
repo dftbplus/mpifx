@@ -59,7 +59,7 @@ contains
     type(mpifx_comm), intent(in) :: mycomm
 
     !> Msg to be broadcasted on root and received on non-root nodes.
-    ${TYPE}$ :: msg${ranksuffix(RANK)}$
+    ${TYPE}$ :: msg${RANKSUFFIX(RANK)}$
 
     !> Root node for the broadcast (default: mycomm%masterrank).
     integer, intent(in), optional :: root

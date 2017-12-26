@@ -9,12 +9,12 @@ module mpifx_helper_module
   implicit none
   private
 
-  public :: DEFAULT_TAG, sp, dp
-  public :: handle_errorflag, ensure_failed
+  public :: default_tag, sp, dp
+  public :: handle_errorflag, assert_failed
   public :: getoptarg, setoptarg
 
   !> Default tag
-  integer, parameter :: DEFAULT_TAG = 0
+  integer, parameter :: default_tag = 0
 
   !> Single precision kind.
   integer, parameter :: sp = kind(1.0)
@@ -78,9 +78,9 @@ contains
   end subroutine handle_errorflag
 
 
-  !> Stops code signalizing a failed ensure condition
+  !> Stops code signalizing a failed assert condition
   !!
-  subroutine ensure_failed(file, line)
+  subroutine assert_failed(file, line)
     character(*), intent(in) :: file
     integer, intent(in) :: line
 
@@ -95,7 +95,7 @@ contains
         stop 1
     end if
     
-  end subroutine ensure_failed
+  end subroutine assert_failed
 
 
 #:def getoptarg_template(SUFFIX, TYPE, RANK)
@@ -103,9 +103,9 @@ contains
   #:assert RANK >= 0
 
   subroutine getoptarg_${SUFFIX}$(defarg, arg, optarg)
-    ${TYPE}$, intent(in) :: defarg${ranksuffix(RANK)}$
-    ${TYPE}$, intent(out) :: arg${ranksuffix(RANK)}$
-    ${TYPE}$, intent(in), optional :: optarg${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: defarg${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out) :: arg${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(in), optional :: optarg${RANKSUFFIX(RANK)}$
 
     if (present(optarg)) then
       arg = optarg
@@ -123,8 +123,8 @@ contains
   #:assert RANK >= 0
 
   subroutine setoptarg_${SUFFIX}$(curval, optval)
-    ${TYPE}$, intent(in) :: curval${ranksuffix(RANK)}$
-    ${TYPE}$, intent(out), optional :: optval${ranksuffix(RANK)}$
+    ${TYPE}$, intent(in) :: curval${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out), optional :: optval${RANKSUFFIX(RANK)}$
 
     if (present(optval)) then
       optval = curval
