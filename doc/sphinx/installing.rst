@@ -5,7 +5,7 @@ In order to compile MPIFX, you need following prerequisites:
 
 * Fortran 2003 compiler,
 
-* GNU M4 macro interpreter,
+* Python (2.6, 2.7 or any 3.x release)
 
 * GNU Make.
 
@@ -27,13 +27,10 @@ In order to create a precompiled library
    the source and customize the settings for the compilers and the linker
    according to your system.
 
-#. Change to the `src/` folder.
-
 #. Issue `make` to build the library.
 
-#. Copy *all* module files (usually ending on `.mod` and the library
-   `libmpifx.a` to a place, where your Fortran compiler and your linker can
-   recognize them.
+#. Issue `make install` to copy the library and the module files to the
+   installation destination.
 
 During the build process of your project, you may link the library with the
 `-lmpifx` option.  Eventually, you may need to specify options for your compiler
@@ -54,29 +51,29 @@ Compiling the library during your build process
 
 In order to build the library during the build process of your project:
 
-#. Copy the content of the `src/` folder into a *separate* folder within your
+#. Copy the content of the `lib/` folder into a *separate* folder within your
    project.
 
 #. During the make process of your project, invoke the library makefile
-   (`Makefile.lib`) to build the module files and the library in the folder
+   (`make.build`) to build the module files and the library in the folder
    where you've put the library sources.
 
    You must pass the compiler and linker options via variable defintions at the
    make command line. Assuming that the variables `$(FXX)`, `$(FXXOPT)`, `$(LN)`
-   and `$(LNOPT)`, `$(M4)` and `$(M4OPT)` contain the Fortran compiler, the
-   Fortran compiler options, the linker, the linker options, the M4 preprocessor
-   and its options, respectively, you would have something like::
+   and `$(LNOPT)`, `$(FYPP)` and `$(FYPPOPT)` contain the Fortran compiler, the
+   Fortran compiler options, the linker, the linker options, the Fypp
+   preprocessor and its options, respectively, you would have something like::
 
        libmpifx.a:
-               $(MAKE) -C $(MPIFX_SRCDIR) \
+               $(MAKE) -C $(MPIFX_BUILDDIR) \
                    FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
                    LN="$(LN)" LNOPT="$(LNOPT)" \
-                   M4="$(M4)" M4OPT="$(M4OPT)" \
-                   -f Makefile.lib
+                   FYPP="$(FYPP)" FYPPOPT="$(FYPPOPT)" \
+                   -f $(MPIFX_SRCDIR)/make.build
 
    in the makefile of your project with `$(MPIFX_SRCDIR)` being the directory
-   where you've put the source of MPIFX.
+   where you've put the source of MPIFX and `$(MPIFX_BUILDDIR)` where the build
+   of the library should be done.
 
-You should also have a look at the `GNUmakefile` in the `test/` folder of MPIFX,
-which uses exactly the same technique to compile the library during the build
-process for the tests.
+You should also have a look at the `Umakefile` in the root folder of MPIFX,
+which uses exactly the same technique to compile the library.

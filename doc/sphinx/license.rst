@@ -3,7 +3,7 @@ License
 
 MPIFX is licensed under the simplified BSD license::
 
-    Copyright (c) 2013, Bálint Aradi
+    Copyright (c) 2018, Bálint Aradi
 
     All rights reserved.
 

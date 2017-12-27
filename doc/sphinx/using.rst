@@ -6,7 +6,7 @@ Before you can use the MPIFX routines you need the following steps:
 #. Use the module `libmpifx_module` in your routines.
 
 #. Initialize the MPI framework via the `mpifx_init()` routine. (If you already
-   initialized it via the legacy `mpi_init()` call, you can omit this step.
+   initialized it via the legacy `mpi_init()` call, you should omit this step.
 
 #. Initialize a communicator of `type(mpifx_comm)`.
 

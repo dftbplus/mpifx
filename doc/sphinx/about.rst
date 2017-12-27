@@ -28,9 +28,9 @@ Using MPIFX the call above is as simple as::
     call mpifx_bcast(comm, myarray)
 
 No redundant arguments, sensible defaults. Nevertheless the full functionality
-still available via optional parameters if needed. E.g. if you wanted to handle
-the error flag yourself (making sure an error won't stop your code), you could
-call::
+is still available via optional parameters if needed. E.g. if you wanted to
+handle the error flag yourself (making sure an error won't stop your code), you
+could call::
 
     call mpifx_bcast(comm, myarray, error=ierr)
 
