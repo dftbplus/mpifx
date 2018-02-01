@@ -25,6 +25,7 @@ module libmpifx_module
   use mpifx_reduce_module
   use mpifx_allreduce_module
   use mpifx_gather_module
+  use mpifx_gatherv_module
   use mpifx_allgather_module
   use mpifx_scatter_module
   implicit none
