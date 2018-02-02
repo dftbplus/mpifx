@@ -18,8 +18,9 @@ module mpifx_gatherv_module
   !! type. The third argument must have the size of the second times the number
   !! of processes taking part in the gathering. The fourth argument must be
   !! an array of integers corresponding to the array sizes received from each
-  !! processor. The displacements at which to place the incoming data are 
-  !! computed from recvcounts, assuming ordering with processor rank.
+  !! processor. The displacements at which to place the incoming data can be
+  !! given as an optional argument. By default they are computed from recvcounts, 
+  !! assuming ordering with processor rank.
   !!
   !! \see MPI documentation (\c MPI_gatherv)
   !!
