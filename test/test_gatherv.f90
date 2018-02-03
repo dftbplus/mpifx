@@ -5,6 +5,7 @@ program test_gatherv
   type(mpifx_comm) :: mycomm
   real, allocatable :: send1(:), send2(:,:)
   real, allocatable :: recv1(:), recv2(:,:)
+  real :: send0
   integer, allocatable :: recvcounts(:)
   integer, allocatable :: displs(:)
   integer :: ii, nrecv  
@@ -31,7 +32,6 @@ program test_gatherv
     allocate(recv1(0))
     allocate(recvcounts(0))
   end if
-    
 
   write(*, *) 'id:',mycomm%rank, "Send1 buffer:", send1(:)
 
@@ -42,6 +42,7 @@ program test_gatherv
   if (mycomm%master) then
     write(*, *) 'id:',mycomm%rank, "Recv1 buffer:", recv1
     deallocate(recvcounts)
+    deallocate(recv1)
   end if
    
   call mpifx_barrier(mycomm)
@@ -73,8 +74,37 @@ program test_gatherv
 
   if (mycomm%master) then
     write(*, *) "id:",mycomm%rank, "Recv2 buffer:", recv2(:,:)
+    deallocate(recvcounts)
   end if
 
+  call mpifx_barrier(mycomm)
+
+  ! I0 -> I1
+  if (mycomm%master) write(*, *) 'Test gather scalar -> rank=1'
+
+  if (mycomm%master) then
+    nrecv = mycomm%size
+    allocate(recv1(nrecv))
+    allocate(recvcounts(mycomm%size))
+    recvcounts = 1
+    allocate(displs(mycomm%size))
+    ! set a non trivial displs vector
+    do ii = 1, mycomm%size 
+      displs(ii) = mycomm%size - ii 
+    end do
+  else
+    send0 = mycomm%rank + 1
+  end if    
+
+  write(*, *) 'id:',mycomm%rank, "Send scalar:", send0
+
+  call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
+  
+  call mpifx_barrier(mycomm)
+
+  if (mycomm%master) then
+    write(*, *) 'id:',mycomm%rank, "Recv1 buffer:", recv1
+  end if
 
   call mpifx_finalize()
   

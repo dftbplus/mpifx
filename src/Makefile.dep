@@ -33,7 +33,7 @@ mpifx_gather.o: $$(_modobj_mpifx_common_module) mpifx_gather.m4
 mpifx_gather.o = mpifx_gather.o $($(_modobj_mpifx_common_module)) $(mpifx_gather.m4)
 _modobj_mpifx_gather_module = mpifx_gather.o
 
-mpifx_gatherv.o: $$(_modobj_mpifx_common_module) mpifx_gather.m4
+mpifx_gatherv.o: $$(_modobj_mpifx_common_module) mpifx_gatherv.m4
 mpifx_gatherv.o = mpifx_gatherv.o $($(_modobj_mpifx_common_module)) $(mpifx_gatherv.m4)
 _modobj_mpifx_gatherv_module = mpifx_gatherv.o
 

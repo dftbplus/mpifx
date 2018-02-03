@@ -72,20 +72,32 @@ module mpifx_gatherv_module
         & mpifx_gatherv_i1i1, mpifx_gatherv_i2i2, mpifx_gatherv_i3i3, &
         & mpifx_gatherv_i4i4, mpifx_gatherv_i5i5, mpifx_gatherv_i6i6
     module procedure &
+        & mpifx_gatherv_i0i1
+    module procedure &
         & mpifx_gatherv_s1s1, mpifx_gatherv_s2s2, mpifx_gatherv_s3s3, &
         & mpifx_gatherv_s4s4, mpifx_gatherv_s5s5, mpifx_gatherv_s6s6
+    module procedure &
+        & mpifx_gatherv_s0s1
     module procedure &
         & mpifx_gatherv_d1d1, mpifx_gatherv_d2d2, mpifx_gatherv_d3d3, &
         & mpifx_gatherv_d4d4, mpifx_gatherv_d5d5, mpifx_gatherv_d6d6
     module procedure &
+        & mpifx_gatherv_d0d1
+    module procedure &
         & mpifx_gatherv_c1c1, mpifx_gatherv_c2c2, mpifx_gatherv_c3c3, &
         & mpifx_gatherv_c4c4, mpifx_gatherv_c5c5, mpifx_gatherv_c6c6
+    module procedure &
+        & mpifx_gatherv_c0c1
     module procedure &
         & mpifx_gatherv_z1z1, mpifx_gatherv_z2z2, mpifx_gatherv_z3z3, &
         & mpifx_gatherv_z4z4, mpifx_gatherv_z5z5, mpifx_gatherv_z6z6
     module procedure &
+        & mpifx_gatherv_z0z1
+    module procedure &
         & mpifx_gatherv_l1l1, mpifx_gatherv_l2l2, mpifx_gatherv_l3l3, &
         & mpifx_gatherv_l4l4, mpifx_gatherv_l5l5, mpifx_gatherv_l6l6
+    module procedure &
+        & mpifx_gatherv_l0l1
   end interface mpifx_gatherv
 
 
@@ -145,5 +157,11 @@ contains
   _subroutine_mpifx_gatherv_dr0(l5l5, logical, (:,:,:,:,:), 5, MPI_LOGICAL)
   _subroutine_mpifx_gatherv_dr0(l6l6, logical, (:,:,:,:,:,:), 6, MPI_LOGICAL)
 
+  _subroutine_mpifx_gatherv_dr1(i0i1, integer, , 1, (:), 1, MPI_INTEGER)
+  _subroutine_mpifx_gatherv_dr1(s0s1, real(sp), , 1, (:), 1, MPI_REAL)
+  _subroutine_mpifx_gatherv_dr1(d0d1, real(dp), , 1, (:), 1, MPI_DOUBLE_PRECISION)
+  _subroutine_mpifx_gatherv_dr1(c0c1, complex(sp), , 1, (:), 1, MPI_COMPLEX)
+  _subroutine_mpifx_gatherv_dr1(z0z1, complex(dp), , 1, (:), 1, MPI_DOUBLE_COMPLEX)
+  _subroutine_mpifx_gatherv_dr1(l0l1, logical, , 1, (:), 1, MPI_LOGICAL)
 
 end module mpifx_gatherv_module
