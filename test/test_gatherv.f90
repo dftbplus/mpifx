@@ -15,7 +15,7 @@ program test_gatherv
   call mpifx_init()
   call mycomm%init()
 
-  ! I1 -> I1
+  ! R1 -> R1
   if (mycomm%master) write(*, *) 'Test gather rank=1 -> rank=1'
 
   allocate(send1(mycomm%rank+1)) 
@@ -37,7 +37,6 @@ program test_gatherv
 
   call mpifx_gatherv(mycomm, send1, recv1, recvcounts)
   
-  call mpifx_barrier(mycomm)
 
   if (mycomm%master) then
     write(*, *) 'id:',mycomm%rank, "Recv1 buffer:", recv1
@@ -70,8 +69,6 @@ program test_gatherv
   
   call mpifx_gatherv(mycomm, send2, recv2, recvcounts)
   
-  call mpifx_barrier(mycomm)
-
   if (mycomm%master) then
     write(*, *) "id:",mycomm%rank, "Recv2 buffer:", recv2(:,:)
     deallocate(recvcounts)
@@ -79,9 +76,10 @@ program test_gatherv
 
   call mpifx_barrier(mycomm)
 
-  ! I0 -> I1
+  ! R0 -> R1
   if (mycomm%master) write(*, *) 'Test gather scalar -> rank=1'
 
+  send0 = mycomm%rank + 1
   if (mycomm%master) then
     nrecv = mycomm%size
     allocate(recv1(nrecv))
@@ -92,15 +90,11 @@ program test_gatherv
     do ii = 1, mycomm%size 
       displs(ii) = mycomm%size - ii 
     end do
-  else
-    send0 = mycomm%rank + 1
   end if    
 
   write(*, *) 'id:',mycomm%rank, "Send scalar:", send0
 
   call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
-  
-  call mpifx_barrier(mycomm)
 
   if (mycomm%master) then
     write(*, *) 'id:',mycomm%rank, "Recv1 buffer:", recv1
