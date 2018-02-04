@@ -22,8 +22,9 @@ SRCDIR = ../src
 .SUFFIXES:
 .SUFFIXES: .f90 .F90 .o .m4
 
-TARGETS = test_bcast test_send_recv test_comm_split test_reduce \
-    test_allreduce test_gather test_allgather test_gatherv test_scatter
+TARGETS = test_bcast test_send_recv test_comm_split test_reduce	\
+    test_allreduce test_gather test_gatherv test_allgather	\
+    test_allgatherv test_scatter
 
 all: $(TARGETS)
 

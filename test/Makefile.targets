@@ -16,10 +16,13 @@ test_allreduce: $(test_allreduce.o)
 test_gather: $(test_gather.o)
 	$(link-target)
 
+test_gatherv: $(test_gatherv.o)
+	$(link-target)
+
 test_allgather: $(test_allgather.o)
 	$(link-target)
 
-test_gatherv: $(test_gatherv.o)
+test_allgatherv: $(test_allgatherv.o)
 	$(link-target)
 
 test_scatter: $(test_scatter.o)

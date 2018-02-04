@@ -79,6 +79,10 @@ mpifx_allgather.o: mpifx_allgather.m4 $$(_modobj_mpifx_common_module)
 mpifx_allgather.o = mpifx_allgather.o $(mpifx_allgather.m4) $($(_modobj_mpifx_common_module))
 _modobj_mpifx_allgather_module = mpifx_allgather.o
 
+mpifx_allgatherv.o: mpifx_allgatherv.m4 $$(_modobj_mpifx_common_module)
+mpifx_allgatherv.o = mpifx_allgatherv.o $(mpifx_allgatherv.m4) $($(_modobj_mpifx_common_module))
+_modobj_mpifx_allgatherv_module = mpifx_allgatherv.o
+
 mpifx_init.o: mpifx_init.m4 $$(_modobj_mpifx_common_module)
 mpifx_init.o = mpifx_init.o $(mpifx_init.m4) $($(_modobj_mpifx_common_module))
 _modobj_mpifx_init_module = mpifx_init.o
@@ -103,8 +107,8 @@ mpifx_common.m4 = $(mpifx_helper.m4)
 mpifx_bcast.m4: mpifx_common.m4
 mpifx_bcast.m4 = $(mpifx_common.m4)
 
-libmpifx.o: $$(_modobj_mpifx_send_module) $$(_modobj_mpifx_scatter_module) $$(_modobj_mpifx_allgather_module) $$(_modobj_mpifx_finalize_module) $$(_modobj_mpifx_barrier_module) $$(_modobj_mpifx_get_processor_name_module) $$(_modobj_mpifx_abort_module) $$(_modobj_mpifx_init_module) $$(_modobj_mpifx_constants_module) $$(_modobj_mpifx_recv_module) $$(_modobj_mpifx_bcast_module) $$(_modobj_mpifx_gather_module) $$(_modobj_mpifx_gatherv_module) $$(_modobj_mpifx_allreduce_module) $$(_modobj_mpifx_reduce_module) $$(_modobj_mpifx_comm_module)
-libmpifx.o = libmpifx.o $($(_modobj_mpifx_send_module)) $($(_modobj_mpifx_scatter_module)) $($(_modobj_mpifx_allgather_module)) $($(_modobj_mpifx_finalize_module)) $($(_modobj_mpifx_barrier_module)) $($(_modobj_mpifx_get_processor_name_module)) $($(_modobj_mpifx_abort_module)) $($(_modobj_mpifx_init_module)) $($(_modobj_mpifx_constants_module)) $($(_modobj_mpifx_recv_module)) $($(_modobj_mpifx_bcast_module)) $($(_modobj_mpifx_gather_module)) $($(_modobj_mpifx_gatherv_module)) $($(_modobj_mpifx_allreduce_module)) $($(_modobj_mpifx_reduce_module)) $($(_modobj_mpifx_comm_module))
+libmpifx.o: $$(_modobj_mpifx_send_module) $$(_modobj_mpifx_scatter_module) $$(_modobj_mpifx_allgather_module) $$(_modobj_mpifx_allgatherv_module) $$(_modobj_mpifx_finalize_module) $$(_modobj_mpifx_barrier_module) $$(_modobj_mpifx_get_processor_name_module) $$(_modobj_mpifx_abort_module) $$(_modobj_mpifx_init_module) $$(_modobj_mpifx_constants_module) $$(_modobj_mpifx_recv_module) $$(_modobj_mpifx_bcast_module) $$(_modobj_mpifx_gather_module) $$(_modobj_mpifx_gatherv_module) $$(_modobj_mpifx_allreduce_module) $$(_modobj_mpifx_reduce_module) $$(_modobj_mpifx_comm_module)
+libmpifx.o = libmpifx.o $($(_modobj_mpifx_send_module)) $($(_modobj_mpifx_scatter_module)) $($(_modobj_mpifx_allgather_module)) $($(_modobj_mpifx_allgatherv_module)) $($(_modobj_mpifx_finalize_module)) $($(_modobj_mpifx_barrier_module)) $($(_modobj_mpifx_get_processor_name_module)) $($(_modobj_mpifx_abort_module)) $($(_modobj_mpifx_init_module)) $($(_modobj_mpifx_constants_module)) $($(_modobj_mpifx_recv_module)) $($(_modobj_mpifx_bcast_module)) $($(_modobj_mpifx_gather_module)) $($(_modobj_mpifx_gatherv_module)) $($(_modobj_mpifx_allreduce_module)) $($(_modobj_mpifx_reduce_module)) $($(_modobj_mpifx_comm_module))
 _modobj_libmpifx_module = libmpifx.o
 
 mpifx_allreduce.m4: mpifx_common.m4
@@ -124,3 +128,5 @@ mpifx_comm.m4 = $(mpifx_helper.m4)
 mpifx_allgather.m4: mpifx_common.m4
 mpifx_allgather.m4 = $(mpifx_common.m4)
 
+mpifx_allgatherv.m4: mpifx_common.m4
+mpifx_allgatherv.m4 = $(mpifx_common.m4)
