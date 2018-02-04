@@ -34,16 +34,16 @@ program test_gatherv
     allocate(recv1(0))
     allocate(recvcounts(0))
   end if
-  write(*, *) 'id:',mycomm%rank, "Send1 buffer:", send1(:)
   call mpifx_gatherv(mycomm, send1, recv1, recvcounts)
   if (mycomm%master) then
-    write(*, *) 'id:',mycomm%rank, "Recv1 buffer:", recv1
+    write(*, *) "Recv1 buffer:", recv1
     deallocate(recvcounts)
     deallocate(recv1)
   end if
 
   ! R2 -> R2
   if (mycomm%master) then
+    write(*, *)
     write(*, *) 'Test gather rank=2 -> rank=2'
   end if
   allocate(send2(10, mycomm%rank+1))
@@ -60,15 +60,15 @@ program test_gatherv
   else
     allocate(recv2(0,0))
   end if
-  write(*, *) "id:",mycomm%rank, "Send2 buffer:", send2(:,:)
   call mpifx_gatherv(mycomm, send2, recv2, recvcounts)
   if (mycomm%master) then
-    write(*, *) "id:",mycomm%rank, "Recv2 buffer:", recv2(:,:)
+    write(*, *) "Recv2 buffer:", recv2(:,:)
     deallocate(recvcounts)
   end if
 
   ! R0 -> R1 with specified receive pattern
   if (mycomm%master) then
+    write(*, *)
     write(*, *) 'Test gather scalar -> rank=1'
   end if
   send0 = real(mycomm%rank + 1, sp)
@@ -83,10 +83,9 @@ program test_gatherv
       displs(ii) = mycomm%size - ii
     end do
   end if
-  write(*, *) 'id:',mycomm%rank, "Send scalar:", send0
   call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
   if (mycomm%master) then
-    write(*, *) 'id:',mycomm%rank, "Recv1 buffer:", recv1
+    write(*, *) "Recv1 buffer:", recv1
   end if
 
   call mpifx_finalize()
