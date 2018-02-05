@@ -16,14 +16,8 @@ program test_allgatherv
   call mpifx_init()
   call mycomm%init()
 
-  if (mycomm%size < 2) then
-    if (mycomm%master) then
-      write(*, *) 'Too few processors'
-    end if
-  end if
-
   ! R1 -> R1
-  if (mycomm%master) then
+  if (mycomm%rank == mycomm%size - 1) then
     write(*, *) 'Test gather rank=1 -> rank=1'
   end if
   allocate(send1(mycomm%rank+1))
@@ -36,14 +30,14 @@ program test_allgatherv
     recvcounts(ii) = ii
   end do
   call mpifx_allgatherv(mycomm, send1, recv1, recvcounts)
-  if (mycomm%rank == 1) then
+  if (mycomm%rank == mycomm%size - 1) then
     write(*, *) "Recv1 buffer:", recv1
   end if
   deallocate(recvcounts)
   deallocate(recv1)
 
   ! R2 -> R2
-  if (mycomm%master) then
+  if (mycomm%rank == mycomm%size - 1) then
     write(*, *)
     write(*, *) 'Test gather rank=2 -> rank=2'
   end if
@@ -59,7 +53,7 @@ program test_allgatherv
     recvcounts(ii) = nCol*ii
   end do
   call mpifx_allgatherv(mycomm, send2, recv2, recvcounts)
-  if (mycomm%rank == 1) then
+  if (mycomm%rank == mycomm%size - 1) then
     write(*, *) "Recv2 buffer:", shape(recv2)
     do ii = 1, nrecv
       write(*,*)recv2(:,ii)
@@ -69,7 +63,7 @@ program test_allgatherv
 
 
   ! R0 -> R1 with specified receive pattern
-  if (mycomm%master) then
+  if (mycomm%rank == mycomm%size - 1) then
     write(*, *)
     write(*, *) 'Test gather scalar -> rank=1'
   end if
@@ -84,7 +78,7 @@ program test_allgatherv
     displs(ii) = mycomm%size - ii
   end do
   call mpifx_allgatherv(mycomm, send0, recv1, recvcounts, displs)
-  if (mycomm%rank == 1) then
+  if (mycomm%rank == mycomm%size - 1) then
     write(*, *) "Recv1 buffer:", recv1
   end if
 
