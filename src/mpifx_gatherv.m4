@@ -32,23 +32,40 @@ subroutine mpifx_gatherv_$1(mycomm, send, recv, recvcounts, displs, root, error)
   integer, intent(in), optional :: root
   integer, intent(out), optional :: error
 
-  integer :: root0, error0, ii
+  integer :: root0, error0, ii, locLast(1), aborterror
   integer, allocatable :: displs0(:)
-
+  logical, allocatable :: testBuffer(:)
 
   _handle_inoptflag(root0, root, mycomm%masterrank)
 
   if (mycomm%rank == root0) then
-    _assert(size(recv) == sum(recvcounts))
     allocate(displs0(mycomm%size))
     if (present(displs)) then
       _assert(size(displs) == mycomm%size)
       displs0 = displs
+      locLast = maxloc(displs0)
+      _assert(size(recv) >= displs0(locLast(1)) + recvcounts(locLast(1)))
+      ! test for overlapping regions being written to
+      allocate(testBuffer(size(recv)))
+      testBuffer = .false.
+      do ii = 1, mycomm%size
+        ! potentially in random order, so mark effected parts of the buffer
+        if (any(testBuffer(displs0(ii):displs0(ii)+recvcounts(ii)-1))) then
+          write(*, "(A)") "Overlapping regions in mpifx_gatherv!"
+          call mpi_abort(MPI_COMM_WORLD, -1, aborterror)
+          if (aborterror /= 0) then
+            write(*, "(A)") "Stopping code did not succeed, hope for the best."
+          end if
+        end if
+        testBuffer(displs0(ii):displs0(ii)+recvcounts(ii)-1) = .true.
+      end do
+      deallocate(testBuffer)
     else
       displs0(1) = 0
       do ii = 2, mycomm%size
         displs0(ii) = displs0(ii-1) + recvcounts(ii-1)
       end do
+      _assert(sum(recvcounts) == size(recv))
     end if
   end if
 

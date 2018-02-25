@@ -32,14 +32,13 @@ program test_gatherv
     end do
   else
     allocate(recv1(0))
-    allocate(recvcounts(0))
   end if
   call mpifx_gatherv(mycomm, send1, recv1, recvcounts)
   if (mycomm%master) then
     write(*, *) "Recv1 buffer:", recv1
     deallocate(recvcounts)
-    deallocate(recv1)
   end if
+  deallocate(recv1)
 
   ! R2 -> R2
   if (mycomm%master) then
@@ -65,6 +64,7 @@ program test_gatherv
     write(*, *) "Recv2 buffer:", recv2(:,:)
     deallocate(recvcounts)
   end if
+  deallocate(recv2)
 
   ! R0 -> R1 with specified receive pattern
   if (mycomm%master) then
@@ -82,11 +82,45 @@ program test_gatherv
     do ii = 1, mycomm%size
       displs(ii) = mycomm%size - ii
     end do
+  else
+    allocate(recv1(0))
   end if
   call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
   if (mycomm%master) then
     write(*, *) "Recv1 buffer:", recv1
+    deallocate(recvcounts)
+    deallocate(displs)
   end if
+  deallocate(recv1)
+
+  ! R0 -> R1 with specified receive pattern including gaps
+  if (mycomm%master) then
+    write(*, *)
+    write(*, *) 'Test gather scalar -> rank=1'
+  end if
+  send0 = real(mycomm%rank + 1, sp)
+  if (mycomm%master) then
+    nrecv = mycomm%size
+    allocate(recv1(2*nrecv))
+    allocate(recvcounts(mycomm%size))
+    recvcounts = 1
+    allocate(displs(mycomm%size))
+    ! set a non trivial displs vector
+    do ii = 1, mycomm%size
+      displs(ii) = 2*ii-1
+    end do
+    ! mark untouched elements
+    recv1 = -1
+  else
+    allocate(recv1(0))
+  end if
+  call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
+  if (mycomm%master) then
+    write(*, *) "Recv1 buffer:", recv1
+    deallocate(recvcounts)
+    deallocate(displs)
+  end if
+  deallocate(recv1)
 
   call mpifx_finalize()
 
