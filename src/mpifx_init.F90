@@ -3,6 +3,7 @@ include(mpifx_init.m4)
 !> Contains wrapper for \c MPI_INIT.
 module mpifx_init_module
   use mpifx_common_module
+  use mpifx_constants_module
   implicit none
   private
 
@@ -16,6 +17,9 @@ contains
   !!     been non-zero, routine aborts program execution.
   !!
   !! \see MPI documentation (\c MPI_INIT)
+  !!
+  !! \note If you want to initialise MPI with threading, you should call
+  !!     mpifx_init_thread() instead.
   !!
   !! Example:
   !!
@@ -82,7 +86,7 @@ contains
     elseif (providedThreading0 < requiredThreading) then
       write(*, "(A,I0,A,I0,A)") "Error: Provided threading model (", providedThreading0,&
           & ") is less than required threading model (", requiredThreading, ")"
-      call mpi_abort(MPI_COMM_WORLD, 2, error0)
+      call mpi_abort(MPI_COMM_WORLD, MPIFX_UNHANDLED_ERROR, error0)
     end if
     call handle_errorflag(error0, "Error: mpi_init_thread in mpifx_init_thread()", error)
     

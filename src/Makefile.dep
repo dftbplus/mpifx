@@ -58,8 +58,8 @@ mpifx_barrier.m4 = $(mpifx_common.m4)
 mpifx_recv.m4: mpifx_common.m4
 mpifx_recv.m4 = $(mpifx_common.m4)
 
-mpifx_helper.o: mpifx_helper.m4 $$(_modobj_mpi)
-mpifx_helper.o = mpifx_helper.o $(mpifx_helper.m4) $($(_modobj_mpi))
+mpifx_helper.o: mpifx_helper.m4 $$(_modobj_mpi) $$(_modobj_mpifx_constants_module)
+mpifx_helper.o = mpifx_helper.o $(mpifx_helper.m4) $($(_modobj_mpi)) $($(_modobj_mpifx_constants_module))
 _modobj_mpifx_helper_module = mpifx_helper.o
 
 mpifx_gather.m4: mpifx_common.m4
@@ -83,8 +83,8 @@ mpifx_allgatherv.o: mpifx_allgatherv.m4 $$(_modobj_mpifx_common_module)
 mpifx_allgatherv.o = mpifx_allgatherv.o $(mpifx_allgatherv.m4) $($(_modobj_mpifx_common_module))
 _modobj_mpifx_allgatherv_module = mpifx_allgatherv.o
 
-mpifx_init.o: mpifx_init.m4 $$(_modobj_mpifx_common_module)
-mpifx_init.o = mpifx_init.o $(mpifx_init.m4) $($(_modobj_mpifx_common_module))
+mpifx_init.o: mpifx_init.m4 $$(_modobj_mpifx_common_module) $$(_modobj_mpifx_constants_module)
+mpifx_init.o = mpifx_init.o $(mpifx_init.m4) $($(_modobj_mpifx_common_module)) $($(_modobj_mpifx_constants_module))
 _modobj_mpifx_init_module = mpifx_init.o
 
 mpifx_abort.m4: mpifx_common.m4
