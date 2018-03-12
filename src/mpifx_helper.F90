@@ -4,6 +4,7 @@ include(mpifx_helper.m4)
 !! \cond HIDDEN
 module mpifx_helper_module
   use mpi
+  use mpifx_constants_module
   implicit none
   private
 
@@ -42,7 +43,7 @@ contains
       write(*, "(A)") "Operation failed!"
       write(*, "(A)") msg
       write(*, "(A,I0)") "Error: ", error0
-      call mpi_abort(MPI_COMM_WORLD, -1, aborterror)
+      call mpi_abort(MPI_COMM_WORLD, MPIFX_UNHANDLED_ERROR, aborterror)
       if (aborterror /= 0) then
         write(*, "(A)") "Stopping code did not succeed, hope for the best."
       end if
@@ -61,7 +62,7 @@ contains
     write(*, "(A)") "Assertion failed"
     write(*, "(A,A)") "File:", file
     write(*, "(A,I0)") "Line:", line
-      call mpi_abort(MPI_COMM_WORLD, -1, aborterror)
+      call mpi_abort(MPI_COMM_WORLD, MPIFX_ASSERT_FAILED, aborterror)
       if (aborterror /= 0) then
         write(*, "(A)") "Stopping code did not succeed, hope for the best."
       end if
