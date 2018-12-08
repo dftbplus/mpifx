@@ -1,0 +1,15 @@
+set(TARGETS
+  test_allgather
+  test_allgatherv
+  test_allreduce
+  test_bcast
+  test_comm_split
+  test_gather
+  test_gatherv
+  test_reduce
+  test_scatter)
+
+foreach(target ${TARGETS})
+  add_executable(${target} ${target}.f90)
+  target_link_libraries(${target} mpifx ${MPI_Fortran_LIBRARIES})
+endforeach()
