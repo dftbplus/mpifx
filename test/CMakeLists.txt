@@ -9,7 +9,7 @@ set(targets
   test_reduce
   test_scatter)
 
-foreach(target ${targets})
+foreach(target IN LISTS targets)
   add_executable(${target} ${target}.f90)
   target_link_libraries(${target} mpifx ${MPI_Fortran_LIBRARIES})
 endforeach()

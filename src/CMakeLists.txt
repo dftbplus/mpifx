@@ -21,7 +21,8 @@ set(sources-fpp
   mpifx_send.F90)
 
 set(sources-f90-preproc)
-foreach(fppsrc ${sources-fpp})
+
+foreach(fppsrc IN LISTS sources-fpp)
   string(REGEX REPLACE "\\.F90" ".f90" f90src ${fppsrc})
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${f90src}
