@@ -81,8 +81,8 @@ module mpifx_scatter_module
   !!     end program test_scatter
   !!
   interface mpifx_scatter
-#:for TYPE in INT_TYPES + FLOAT_TYPES + LOGICAL_TYPES
-  #:for RANK in range(1, MAX_RANK + 1)
+#:for TYPE in TYPES
+  #:for RANK in RANKS
     #:set TYPEABBREV = TYPE_ABBREVS[TYPE]
     module procedure mpifx_scatter_${TYPEABBREV}$${RANK}$${TYPEABBREV}$${RANK}$
     module procedure mpifx_scatter_${TYPEABBREV}$${RANK}$${TYPEABBREV}$${RANK - 1}$
@@ -113,8 +113,8 @@ contains
 
     integer :: root0, error0
 
-    #:set SIZE = 'size(send)'
-    #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
+    #:set SIZE = 'size(recv)'
+    #:set COUNT = ('len(recv) * ' + SIZE if HASLENGTH else SIZE)
 
     @:ASSERT(.not. mycomm%master .or. size(send) == size(recv) * mycomm%size)
     @:ASSERT(.not. mycomm%master&
@@ -152,7 +152,7 @@ contains
     integer :: root0, error0
 
     #:set SIZE = '1' if RANK == 1 else 'size(recv)'
-    #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
+    #:set COUNT = ('len(recv) * ' + SIZE if HASLENGTH else SIZE)
 
     @:ASSERT(.not. mycomm%master .or. size(send) == ${SIZE}$ * mycomm%size)
     @:ASSERT(.not. mycomm%master .or. size(send, dim=${RANK}$) == mycomm%size)
