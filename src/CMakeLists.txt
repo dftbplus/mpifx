@@ -38,9 +38,8 @@ set(includedir ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 set_target_properties(mpifx_objlib PROPERTIES Fortran_MODULE_DIRECTORY ${includedir})
 
-target_include_directories(mpifx_objlib INTERFACE ${includedir})
-target_include_directories(mpifx INTERFACE
-  $<TARGET_PROPERTY:mpifx_objlib,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(mpifx_objlib PUBLIC ${includedir})
+target_include_directories(mpifx PUBLIC ${includedir})
 
 install(TARGETS mpifx
   ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
