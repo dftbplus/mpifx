@@ -31,6 +31,11 @@ foreach(fppsrc IN LISTS sources-fpp)
   list(APPEND sources-f90-preproc ${CMAKE_CURRENT_BINARY_DIR}/${f90src})
 endforeach()
 
+# NAG compiler won't compile this files without the '-mismatch' option
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "NAG")
+  set_source_files_properties(SOURCE ${sources-f90-preproc} PROPERTY COMPILE_FLAGS -mismatch)
+endif()
+
 add_library(mpifx_objlib OBJECT ${sources-f90-preproc})
 add_library(mpifx $<TARGET_OBJECTS:mpifx_objlib>)
 
