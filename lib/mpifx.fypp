@@ -1,5 +1,5 @@
 #:mute
-  
+
 #! Set DEBUG to 0 unless DEBUG level is specified explicitely
 #:set DEBUG = getvar('DEBUG', 0)
 
@@ -17,7 +17,7 @@
 #:set NUMERIC_TYPES = INT_TYPES + FLOAT_TYPES
 
 #:set ALL_TYPES = NUMERIC_TYPES + LOGICAL_TYPES + CHAR_TYPES
-  
+
 #:set TYPE_ABBREVS = {'int': 'i', 'real': 's', 'dreal': 'd', 'complex': 'c', 'dcomplex': 'z',&
     & 'logical': 'l', 'char': 'h'}
 
@@ -38,9 +38,9 @@
 #! Maximal rank covered in the wrappers
 #:set MAX_RANK = getvar('MAX_RANK', 6)
 
-    
+
 #! Returns colons within paranthesis according to the RANK or empty string
-#! if RANK is zero.  
+#! if RANK is zero.
 #:def RANKSUFFIX(RANK)
 ${'' if RANK == 0 else '(' + ':' + ',:' * (RANK - 1) +')'}$
 #:enddef RANKSUFFIX
@@ -49,7 +49,7 @@ ${'' if RANK == 0 else '(' + ':' + ',:' * (RANK - 1) +')'}$
 #! Indicates debug code.
 #!
 #! code: Code to insert, if DEBUG > 0
-#! 
+#!
 #:def DEBUG_CODE(code)
 #:if DEBUG > 0
 $:code
@@ -68,5 +68,44 @@ if (.not. (${COND}$)) then
 end if
 #:endcall
 #:enddef ASSERT
+
+
+#! Sets an optional output argument (aa) if present to a certain value (bb).
+#!
+#:def handle_outoptflag(aa, bb)
+  if (present(${aa}$)) then
+    ${aa}$ = ${bb}$
+  end if
+#:enddef
+
+
+#! Allocates an array (aa) to a minimal size (bb) with an actual size
+#! stored in (cc). If the optional allocatable argument (dd) is present
+#! and big enough, its allocation transfer will be transfered instead of
+#! a new allocation.
+#!
+#:def move_minoptalloc(aa, bb, cc, dd)
+  if (present(${dd}$)) then
+    if (size(${dd}$) >= ${bb}$) then
+      call move_alloc(${dd}$, ${aa}$)
+    else
+      deallocate(${dd}$)
+    end if
+  end if
+  if (.not. allocated(${aa}$)) then
+    allocate(${aa}$(${bb}$))
+  end if
+  ${cc}$ = size(${aa}$)
+#:enddef move_minoptalloc
+
+
+#! Sets an optional output argument (aa) if present to a certain value (bb).
+#!
+#:def handle_outoptflag(aa, bb)
+  if (present(${aa}$)) then
+    ${aa}$ = ${bb}$
+  end if
+#:enddef
+
 
 #:endmute

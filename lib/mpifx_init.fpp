@@ -87,4 +87,5 @@ contains
 
   end subroutine mpifx_init_thread
 
+
 end module mpifx_init_module

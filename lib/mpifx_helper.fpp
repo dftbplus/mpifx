@@ -4,8 +4,8 @@
 !> Exports constants and helper routine(s).
 !! \cond HIDDEN
 module mpifx_helper_module
-  use, intrinsic :: iso_fortran_env, only : stderr => error_unit
   use mpi
+  use mpifx_constants_module
   implicit none
   private
 
@@ -22,10 +22,10 @@ module mpifx_helper_module
   !> Double precision kind.
   integer, parameter :: dp = kind(1.0d0)
 
-  
+
   interface getoptarg
 #:for RANK in OPT_ARG_RANKS
-  #:for TYPE in ALL_TYPES  
+  #:for TYPE in ALL_TYPES
     module procedure getoptarg_${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
@@ -34,13 +34,13 @@ module mpifx_helper_module
 
   interface setoptarg
 #:for RANK in OPT_ARG_RANKS
-  #:for TYPE in ALL_TYPES  
+  #:for TYPE in ALL_TYPES
     module procedure setoptarg_${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
   end interface setoptarg
 
-  
+
 contains
 
   !> Handles optional error flag.
@@ -52,7 +52,7 @@ contains
 
     !>  Msg to print out, if program is stopped.
     character(*), intent(in) :: msg
-    
+
     !> Optional error flag.
     !!
     !! If present, error0 is passed to it, otherwise if error0 was not zero, the
@@ -61,14 +61,14 @@ contains
     integer, intent(out), optional :: error
 
     integer :: aborterror
-  
+
     if (present(error)) then
       error = error0
     elseif (error0 /= 0) then
       write(stderr, "(A)") "Operation failed!"
       write(stderr, "(A)") msg
       write(stderr, "(A,I0)") "Error: ", error0
-      call mpi_abort(MPI_COMM_WORLD, 1, aborterror)
+      call mpi_abort(MPI_COMM_WORLD, MPIFX_UNHANDLED_ERROR, aborterror)
       if (aborterror /= 0) then
         write(stderr, "(A)") "Stopping code with 'mpi_abort' did not succeed, trying 'stop' instead"
         stop 1
@@ -89,12 +89,12 @@ contains
     write(stderr, "(A)") "Assertion failed"
     write(stderr, "(A,A)") "File:", file
     write(stderr, "(A,I0)") "Line:", line
-    call mpi_abort(MPI_COMM_WORLD, 1, aborterror)
+    call mpi_abort(MPI_COMM_WORLD, MPIFX_ASSERT_FAILED, aborterror)
     if (aborterror /= 0) then
         write(stderr, "(A)") "Stopping code with 'mpi_abort' did not succeed, trying 'stop' instead"
         stop 1
     end if
-    
+
   end subroutine assert_failed
 
 
@@ -146,7 +146,7 @@ contains
 
   #:endfor
 #:endfor
-    
+
 end module mpifx_helper_module
 
 !> \endcond
