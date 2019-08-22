@@ -3,8 +3,14 @@
 test_allgather.o: $$(_modobj_libmpifx_module)
 test_allgather.o = test_allgather.o $($(_modobj_libmpifx_module))
 
+test_allgatherv.o: $$(_modobj_libmpifx_module)
+test_allgatherv.o = test_allgatherv.o $($(_modobj_libmpifx_module))
+
 test_gather.o: $$(_modobj_libmpifx_module)
 test_gather.o = test_gather.o $($(_modobj_libmpifx_module))
+
+test_gatherv.o: $$(_modobj_libmpifx_module)
+test_gatherv.o = test_gatherv.o $($(_modobj_libmpifx_module))
 
 test_send_recv.o: $$(_modobj_libmpifx_module)
 test_send_recv.o = test_send_recv.o $($(_modobj_libmpifx_module))
