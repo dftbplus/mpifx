@@ -99,6 +99,19 @@ end if
 #:enddef move_minoptalloc
 
 
+#! Sets a variable (aa) to the value of an optional argument (bb)
+#! if present or to a default value (cc) otherwise.
+#!
+#:def inoptflags(aa,bb,cc)
+  if (present(${bb}$)) then
+    ${aa}$ = ${bb}$
+  else
+    ${aa}$ = ${cc}$
+  end if
+#:enddef
+
+
+
 #! Sets an optional output argument (aa) if present to a certain value (bb).
 #!
 #:def handle_outoptflag(aa, bb)
