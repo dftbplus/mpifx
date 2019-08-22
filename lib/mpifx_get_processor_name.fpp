@@ -1,6 +1,7 @@
 !> Contains the extended MPI communicator.
 module mpifx_get_processor_name_module
-  use mpifx_common_module
+  use mpifx_helper_module
+  use mpi
   implicit none
   private
 
@@ -27,7 +28,7 @@ contains
     end if
     rankname = buffer(1:length)
 
-  end subroutine mpifx_get_processor_name 
+  end subroutine mpifx_get_processor_name
 
 
 end module mpifx_get_processor_name_module

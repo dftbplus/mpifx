@@ -1,4 +1,4 @@
-!> Contains wrapper for \c MPI_ABORT.  
+!> Contains wrapper for \c MPI_ABORT.
 module mpifx_abort_module
   use mpifx_common_module
   implicit none
@@ -36,20 +36,18 @@ contains
     type(mpifx_comm), intent(in) :: mycomm
     integer, intent(in), optional :: errorcode
     integer, intent(out), optional :: error
-    
+
     integer :: error0, errorcode0
 
     if (present(errorcode)) then
       errorcode0 = errorcode
     else
-      errorcode0 = 1
+      errorcode0 = -1
     end if
-    call mpi_abort(mycomm%id, errorcode0, error0)
-    if (present(error)) then
-      error = error0
-    end if
-    
-  end subroutine mpifx_abort
 
+    call mpi_abort(mycomm%id, errorcode0, error0)
+    call handle_errorflag(error0, "MPI_ABORT in mpifx_abort", error)
+
+  end subroutine mpifx_abort
 
 end module mpifx_abort_module
