@@ -17,6 +17,10 @@ set(INSTALL_MOD_DIR "${CMAKE_INSTALL_PREFIX}/include/dftd3" CACHE PATH
 set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake" CACHE PATH
   "Installation directory for CMake package export files")
 
+option(BUILD_SHARED_LIBS "Whether the library should be shared" FALSE)
+
+option(INSTALL_INCLUDE_FILES "Whether include and module files should be installed" TRUE)
+
 find_package(MPI REQUIRED)
 
 add_subdirectory(src)

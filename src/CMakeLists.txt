@@ -36,18 +36,18 @@ if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "NAG")
   set_source_files_properties(SOURCE ${sources-f90-preproc} PROPERTY COMPILE_FLAGS -mismatch)
 endif()
 
-add_library(mpifx_objlib OBJECT ${sources-f90-preproc})
-add_library(mpifx $<TARGET_OBJECTS:mpifx_objlib>)
+add_library(mpifx ${sources-f90-preproc})
 
 set(includedir ${CMAKE_CURRENT_BINARY_DIR}/include)
 
-set_target_properties(mpifx_objlib PROPERTIES Fortran_MODULE_DIRECTORY ${includedir})
+set_target_properties(mpifx PROPERTIES Fortran_MODULE_DIRECTORY ${includedir})
 
-target_include_directories(mpifx_objlib PUBLIC ${includedir})
 target_include_directories(mpifx PUBLIC ${includedir})
 
 install(TARGETS mpifx
   ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
   LIBRARY DESTINATION ${INSTALL_LIB_DIR})
 
-install(DIRECTORY ${includedir}/ DESTINATION ${INSTALL_MOD_DIR})
+if(INSTALL_INCLUDE_FILES)
+  install(DIRECTORY ${includedir}/ DESTINATION ${INSTALL_MOD_DIR})
+endif()
