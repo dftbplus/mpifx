@@ -5,13 +5,13 @@
 !! \cond HIDDEN
 module mpifx_helper_module
   use mpi
+  use, intrinsic :: iso_fortran_env, only : stderr => error_unit
   use mpifx_constants_module
   implicit none
   private
 
   public :: default_tag, sp, dp
   public :: handle_errorflag, assert_failed
-  public :: getoptarg, setoptarg
 
   !> Default tag
   integer, parameter :: default_tag = 0
