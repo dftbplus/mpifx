@@ -12,6 +12,7 @@ module mpifx_helper_module
 
   public :: default_tag, sp, dp
   public :: handle_errorflag, assert_failed
+  public :: getoptarg, setoptarg
 
   !> Default tag
   integer, parameter :: default_tag = 0
