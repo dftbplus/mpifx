@@ -14,8 +14,11 @@ _FORCED_SUBMAKE_:
             FXX="$(FXX)" FXXOPT="$(FXXOPT)" \
             LN="$(LN)" LNOPT="$(LNOPT)" \
             M4="$(M4)" M4OPT="$(M4OPT)" \
+	    SRCDIR="." \
             -f Makefile.lib
 
 .PHONY: clean distclean
 clean distclean:
-	$(MAKE) -f Makefile.lib $@
+	$(MAKE) \
+	    SRCDIR="." \
+            -f Makefile.lib $@
