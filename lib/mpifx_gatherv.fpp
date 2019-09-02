@@ -1,22 +1,15 @@
 #:include 'mpifx.fypp'
 #:set TYPES = ALL_TYPES
-
+#:set RANKS = range(1, MAX_RANK + 1)
 
 #! ************************************************************************
 #! *** mpifx_gatherv
 #! ************************************************************************
 
 
-#:def mpifx_gatherv_dr0_template(VAR1, VAR2, VAR3, VAR4, VAR5)
-#!
-  #!
-  #! ${VAR1}$: subroutine suffix
-  #! ${VAR2}$: send/recv buffer type
-  #! ${VAR3}$: send/recv buffer rank specifier ("", (:), (:,:), etc.)
-  #! ${VAR4}$: send/recv buffer rank (1, 2, etc.)
-  #! ${VAR5}$: corresponding MPI type
-  #!
-  !> Gathers results of variable length on one process (type ${VAR1}$).
+#:def mpifx_gatherv_dr0_template(SUFFIX, TYPE, RANK, MPI_TYPE)
+
+  !> Gathers results of variable length on one process (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for gathering.
@@ -27,10 +20,10 @@
   !! \param root  Root process for the result (default: mycomm%masterrank)
   !! \param error  Error code on exit.
   !!
-  subroutine mpifx_gatherv_${VAR1}$(mycomm, send, recv, recvcounts, displs, root, error)
+  subroutine mpifx_gatherv_${SUFFIX}$(mycomm, send, recv, recvcounts, displs, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${VAR2}$, intent(in) :: send${VAR3}$
-    ${VAR2}$, intent(out) :: recv${VAR3}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RANK)}$
     integer, intent(in) :: recvcounts(:)
     integer, intent(in), optional :: displs(:)
     integer, intent(in), optional :: root
@@ -73,29 +66,20 @@
       end if
     end if
 
-    call mpi_gatherv(send, size(send), ${VAR5}$, recv, recvcounts, displs0, &
-        & ${VAR5}$, root0, mycomm%id, error0)
+    call mpi_gatherv(send, size(send), ${MPI_TYPE}$, recv, recvcounts, displs0, &
+        & ${MPI_TYPE}$, root0, mycomm%id, error0)
 
-    call handle_errorflag(error0, "MPI_GATHERV in mpifx_gatherv_${VAR1}$", error)
+    call handle_errorflag(error0, "MPI_GATHERV in mpifx_gatherv_${SUFFIX}$", error)
 
-  end subroutine mpifx_gatherv_${VAR1}$
+  end subroutine mpifx_gatherv_${SUFFIX}$
 
 #:enddef
 
 
 
-#:def mpifx_gatherv_dr1_template(VAR1, VAR2, VAR3, VAR4, VAR5, VAR6, VAR7)
-#!
-  #!
-  #! ${VAR1}$: subroutine suffix
-  #! ${VAR2}$: send/recv buffer type
-  #! ${VAR3}$: send buffer rank specifier ("", (:), (:,:), etc.)
-  #! ${VAR4}$: send buffer size (1 or size(send))
-  #! ${VAR5}$: recv buffer rank specifier ((:), (:,:), etc.)
-  #! ${VAR6}$: recv buffers rank (1, 2, etc.)
-  #! ${VAR7}$: corresponding MPI type
-  #!
-  !> Gathers results on one process (type ${VAR1}$).
+#:def mpifx_gatherv_dr1_template(SUFFIX, TYPE, SEND_RANK, SEND_SIZE, RECV_RANK, MPI_TYPE)
+
+  !> Gathers results on one process (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for gathering.
@@ -106,10 +90,10 @@
   !! \param root  Root process for the result (default: mycomm%masterrank)
   !! \param error  Error code on exit.
   !!
-  subroutine mpifx_gatherv_${VAR1}$(mycomm, send, recv, recvcounts, displs, root, error)
+  subroutine mpifx_gatherv_${SUFFIX}$(mycomm, send, recv, recvcounts, displs, root, error)
     type(mpifx_comm), intent(in) :: mycomm
-    ${VAR2}$, intent(in) :: send${VAR3}$
-    ${VAR2}$, intent(out) :: recv${VAR5}$
+    ${TYPE}$, intent(in) :: send${RANKSUFFIX(SEND_RANK)}$
+    ${TYPE}$, intent(out) :: recv${RANKSUFFIX(RECV_RANK)}$
     integer, intent(in) :: recvcounts(:)
     integer, intent(in), optional :: displs(:)
     integer, intent(in), optional :: root
@@ -122,7 +106,7 @@
 
     if (mycomm%rank == root0) then
       @:ASSERT(size(recv) == sum(recvcounts))
-      @:ASSERT(size(recv, dim=${VAR6}$) == mycomm%size)
+      @:ASSERT(size(recv, dim=${RECV_RANK}$) == mycomm%size)
       allocate(displs0(mycomm%size))
       if (present(displs)) then
         @:ASSERT(size(displs) == mycomm%size)
@@ -135,12 +119,12 @@
       end if
     end if
 
-    call mpi_gatherv(send, ${VAR4}$, ${VAR7}$, recv, recvcounts, displs0, &
-         & ${VAR7}$,  root0, mycomm%id, error0)
+    call mpi_gatherv(send, ${SEND_SIZE}$, ${MPI_TYPE}$, recv, recvcounts, displs0, &
+         & ${MPI_TYPE}$,  root0, mycomm%id, error0)
 
-    call handle_errorflag(error0, "MPI_GATHERV in mpifx_gatherv_${VAR1}$", error)
+    call handle_errorflag(error0, "MPI_GATHERV in mpifx_gatherv_${SUFFIX}$", error)
 
-  end subroutine mpifx_gatherv_${VAR1}$
+  end subroutine mpifx_gatherv_${SUFFIX}$
 
 #:enddef
 
@@ -213,93 +197,31 @@ module mpifx_gatherv_module
   !!     end program test_gatherv
   !!
   interface mpifx_gatherv
-    module procedure &
-        & mpifx_gatherv_i1i1, mpifx_gatherv_i2i2, mpifx_gatherv_i3i3, &
-        & mpifx_gatherv_i4i4, mpifx_gatherv_i5i5, mpifx_gatherv_i6i6
-    module procedure &
-        & mpifx_gatherv_i0i1
-    module procedure &
-        & mpifx_gatherv_s1s1, mpifx_gatherv_s2s2, mpifx_gatherv_s3s3, &
-        & mpifx_gatherv_s4s4, mpifx_gatherv_s5s5, mpifx_gatherv_s6s6
-    module procedure &
-        & mpifx_gatherv_s0s1
-    module procedure &
-        & mpifx_gatherv_d1d1, mpifx_gatherv_d2d2, mpifx_gatherv_d3d3, &
-        & mpifx_gatherv_d4d4, mpifx_gatherv_d5d5, mpifx_gatherv_d6d6
-    module procedure &
-        & mpifx_gatherv_d0d1
-    module procedure &
-        & mpifx_gatherv_c1c1, mpifx_gatherv_c2c2, mpifx_gatherv_c3c3, &
-        & mpifx_gatherv_c4c4, mpifx_gatherv_c5c5, mpifx_gatherv_c6c6
-    module procedure &
-        & mpifx_gatherv_c0c1
-    module procedure &
-        & mpifx_gatherv_z1z1, mpifx_gatherv_z2z2, mpifx_gatherv_z3z3, &
-        & mpifx_gatherv_z4z4, mpifx_gatherv_z5z5, mpifx_gatherv_z6z6
-    module procedure &
-        & mpifx_gatherv_z0z1
-    module procedure &
-        & mpifx_gatherv_l1l1, mpifx_gatherv_l2l2, mpifx_gatherv_l3l3, &
-        & mpifx_gatherv_l4l4, mpifx_gatherv_l5l5, mpifx_gatherv_l6l6
-    module procedure &
-        & mpifx_gatherv_l0l1
+    #:for TYPE in TYPES
+      #:for RANK in RANKS
+        #:set TYPEABBREV = TYPE_ABBREVS[TYPE]
+        module procedure mpifx_gatherv_${TYPEABBREV}$${RANK}$${TYPEABBREV}$${RANK}$
+      #:endfor
+      module procedure mpifx_gatherv_${TYPEABBREV}$0${TYPEABBREV}$1
+    #:endfor
   end interface mpifx_gatherv
 
 
 contains
 
-  @:mpifx_gatherv_dr0_template(i1i1, integer, (:), 1, MPI_INTEGER)
-  @:mpifx_gatherv_dr0_template(i2i2, integer, (:,:), 2, MPI_INTEGER)
-  @:mpifx_gatherv_dr0_template(i3i3, integer, (:,:,:), 3, MPI_INTEGER)
-  @:mpifx_gatherv_dr0_template(i4i4, integer, (:,:,:,:), 4, MPI_INTEGER)
-  @:mpifx_gatherv_dr0_template(i5i5, integer, (:,:,:,:,:), 5, MPI_INTEGER)
-  @:mpifx_gatherv_dr0_template(i6i6, integer, (:,:,:,:,:,:), 6, MPI_INTEGER)
+  #:for TYPE in TYPES
 
+    #:set FTYPE = FORTRAN_TYPES[TYPE]
+    #:set MPITYPE = MPI_TYPES[TYPE]
 
-  @:mpifx_gatherv_dr0_template(s1s1, real(sp), (:), 1, MPI_REAL)
-  @:mpifx_gatherv_dr0_template(s2s2, real(sp), (:,:), 2, MPI_REAL)
-  @:mpifx_gatherv_dr0_template(s3s3, real(sp), (:,:,:), 3, MPI_REAL)
-  @:mpifx_gatherv_dr0_template(s4s4, real(sp), (:,:,:,:), 4, MPI_REAL)
-  @:mpifx_gatherv_dr0_template(s5s5, real(sp), (:,:,:,:,:), 5, MPI_REAL)
-  @:mpifx_gatherv_dr0_template(s6s6, real(sp), (:,:,:,:,:,:), 6, MPI_REAL)
+    #:for RANK in RANKS
+      #:set SUFFIX = TYPE_ABBREVS[TYPE] + str(RANK) + TYPE_ABBREVS[TYPE] + str(RANK)
+      $:mpifx_gatherv_dr0_template(SUFFIX, FTYPE, RANK, MPITYPE)
+    #:endfor
 
+    #:set SUFFIX = TYPE_ABBREVS[TYPE] + str(0) + TYPE_ABBREVS[TYPE] + str(1)
+    $:mpifx_gatherv_dr1_template(SUFFIX, FTYPE, 0, 1, 1, MPITYPE)
 
-  @:mpifx_gatherv_dr0_template(d1d1, real(dp), (:), 1, MPI_DOUBLE_PRECISION)
-  @:mpifx_gatherv_dr0_template(d2d2, real(dp), (:,:), 2, MPI_DOUBLE_PRECISION)
-  @:mpifx_gatherv_dr0_template(d3d3, real(dp), (:,:,:), 3, MPI_DOUBLE_PRECISION)
-  @:mpifx_gatherv_dr0_template(d4d4, real(dp), (:,:,:,:), 4, MPI_DOUBLE_PRECISION)
-  @:mpifx_gatherv_dr0_template(d5d5, real(dp), (:,:,:,:,:), 5, MPI_DOUBLE_PRECISION)
-  @:mpifx_gatherv_dr0_template(d6d6, real(dp), (:,:,:,:,:,:), 6, MPI_DOUBLE_PRECISION)
-
-
-  @:mpifx_gatherv_dr0_template(c1c1, complex(sp), (:), 1, MPI_COMPLEX)
-  @:mpifx_gatherv_dr0_template(c2c2, complex(sp), (:,:), 2, MPI_COMPLEX)
-  @:mpifx_gatherv_dr0_template(c3c3, complex(sp), (:,:,:), 3, MPI_COMPLEX)
-  @:mpifx_gatherv_dr0_template(c4c4, complex(sp), (:,:,:,:), 4, MPI_COMPLEX)
-  @:mpifx_gatherv_dr0_template(c5c5, complex(sp), (:,:,:,:,:), 5, MPI_COMPLEX)
-  @:mpifx_gatherv_dr0_template(c6c6, complex(sp), (:,:,:,:,:,:), 6, MPI_COMPLEX)
-
-
-  @:mpifx_gatherv_dr0_template(z1z1, complex(dp), (:), 1, MPI_DOUBLE_COMPLEX)
-  @:mpifx_gatherv_dr0_template(z2z2, complex(dp), (:,:), 2, MPI_DOUBLE_COMPLEX)
-  @:mpifx_gatherv_dr0_template(z3z3, complex(dp), (:,:,:), 3, MPI_DOUBLE_COMPLEX)
-  @:mpifx_gatherv_dr0_template(z4z4, complex(dp), (:,:,:,:), 4, MPI_DOUBLE_COMPLEX)
-  @:mpifx_gatherv_dr0_template(z5z5, complex(dp), (:,:,:,:,:), 5, MPI_DOUBLE_COMPLEX)
-  @:mpifx_gatherv_dr0_template(z6z6, complex(dp), (:,:,:,:,:,:), 6, MPI_DOUBLE_COMPLEX)
-
-
-  @:mpifx_gatherv_dr0_template(l1l1, logical, (:), 1, MPI_LOGICAL)
-  @:mpifx_gatherv_dr0_template(l2l2, logical, (:,:), 2, MPI_LOGICAL)
-  @:mpifx_gatherv_dr0_template(l3l3, logical, (:,:,:), 3, MPI_LOGICAL)
-  @:mpifx_gatherv_dr0_template(l4l4, logical, (:,:,:,:), 4, MPI_LOGICAL)
-  @:mpifx_gatherv_dr0_template(l5l5, logical, (:,:,:,:,:), 5, MPI_LOGICAL)
-  @:mpifx_gatherv_dr0_template(l6l6, logical, (:,:,:,:,:,:), 6, MPI_LOGICAL)
-
-  @:mpifx_gatherv_dr1_template(i0i1, integer, , 1, (:), 1, MPI_INTEGER)
-  @:mpifx_gatherv_dr1_template(s0s1, real(sp), , 1, (:), 1, MPI_REAL)
-  @:mpifx_gatherv_dr1_template(d0d1, real(dp), , 1, (:), 1, MPI_DOUBLE_PRECISION)
-  @:mpifx_gatherv_dr1_template(c0c1, complex(sp), , 1, (:), 1, MPI_COMPLEX)
-  @:mpifx_gatherv_dr1_template(z0z1, complex(dp), , 1, (:), 1, MPI_DOUBLE_COMPLEX)
-  @:mpifx_gatherv_dr1_template(l0l1, logical, , 1, (:), 1, MPI_LOGICAL)
+  #:endfor
 
 end module mpifx_gatherv_module
