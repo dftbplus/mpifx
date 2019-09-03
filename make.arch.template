@@ -5,8 +5,8 @@
 # Fortran 2003 compiler
 FXX = mpif90
 
-# Fortran compiler options
-FXXOPT = -std=f2003
+# Fortran compiler otions
+FXXOPT = 
 
 # Linker
 LN = $(FXX)
@@ -14,14 +14,11 @@ LN = $(FXX)
 # Linker options
 LNOPT = 
 
-# FYPP interpreter (see https://github.com/aradi/fypp)
-FYPP = $(ROOT)/external/fypp/fypp
+# M4 interpreter
+FYPP = fypp
 
-# FYPP interpreter options (e.g. -DDEBUG for debug mode)
+# M4 interpreter options
 FYPPOPT = ""
 
-# Directory where the build should happen
+# Where to build the library (ROOT = root of the source distribution)
 BUILDDIR = $(ROOT)/_build
-
-# Where to copy files when installation is required
-INSTALLDIR = $(ROOT)/_install
