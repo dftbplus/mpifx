@@ -38,13 +38,16 @@ endif()
 
 add_library(mpifx ${sources-f90-preproc})
 
-set(includedir ${CMAKE_CURRENT_BINARY_DIR}/include)
+set(BUILD_MOD_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 
-set_target_properties(mpifx PROPERTIES Fortran_MODULE_DIRECTORY ${includedir})
+set_target_properties(mpifx PROPERTIES Fortran_MODULE_DIRECTORY ${BUILD_MOD_DIR})
 
-target_include_directories(mpifx PUBLIC ${includedir})
+target_include_directories(mpifx PUBLIC
+  $<BUILD_INTERFACE:${BUILD_MOD_DIR}>
+  $<INSTALL_INTERFACE:${INSTALL_MOD_DIR}>)
 
 install(TARGETS mpifx
+  EXPORT ${INSTALL_EXPORT_NAME}
   ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
   LIBRARY DESTINATION ${INSTALL_LIB_DIR})
 
