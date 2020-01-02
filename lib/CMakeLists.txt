@@ -46,6 +46,9 @@ target_include_directories(mpifx PUBLIC
   $<BUILD_INTERFACE:${BUILD_MOD_DIR}>
   $<INSTALL_INTERFACE:${INSTALL_MOD_DIR}>)
 
+target_include_directories(mpifx PRIVATE ${MPI_Fortran_MODULE_DIR})
+target_link_libraries(mpifx PRIVATE ${MPI_Fortran_LIBRARIES})
+
 install(TARGETS mpifx
   EXPORT ${INSTALL_EXPORT_NAME}
   ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
