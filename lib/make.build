@@ -33,7 +33,7 @@ $(TARGET): $(module.o)
 	ar r $@ $^
 
 %.f90: %.fpp
-	$(FYPP) -I$(SRCDIR) $(FYPPOPT) $< > $@
+	$(FYPP) -I$(SRCDIR) $(FYPPOPT) $< $@
 
 %.o: %.f90
 	$(FXX) $(FXXOPT) -c $<
