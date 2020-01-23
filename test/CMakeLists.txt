@@ -7,7 +7,8 @@ set(targets
   test_gather
   test_gatherv
   test_reduce
-  test_scatter)
+  test_scatter
+  test_scatterv)
 
 foreach(target IN LISTS targets)
   add_executable(${target} ${target}.f90)

@@ -21,6 +21,9 @@ test_bcast.o = test_bcast.o $($(_modobj_libmpifx_module))
 test_scatter.o: $$(_modobj_libmpifx_module)
 test_scatter.o = test_scatter.o $($(_modobj_libmpifx_module))
 
+test_scatterv.o: $$(_modobj_libmpifx_module)
+test_scatterv.o = test_scatterv.o $($(_modobj_libmpifx_module))
+
 test_comm_split.o: $$(_modobj_libmpifx_module)
 test_comm_split.o = test_comm_split.o $($(_modobj_libmpifx_module))
 

@@ -18,6 +18,7 @@ set(sources-fpp
   mpifx_recv.fpp
   mpifx_reduce.fpp
   mpifx_scatter.fpp
+  mpifx_scatterv.fpp
   mpifx_send.fpp)
 
 set(sources-f90-preproc)
