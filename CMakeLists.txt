@@ -15,7 +15,7 @@ set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH
 set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH
   "Installation directory for libraries")
 
-set(INSTALL_MOD_DIR "${CMAKE_INSTALL_PREFIX}/include/dftd3" CACHE PATH
+set(INSTALL_MOD_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH
   "Installation directory for Fortran module files")
 
 set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake" CACHE PATH
