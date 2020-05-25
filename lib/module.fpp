@@ -29,6 +29,7 @@ module libmpifx_module
   use mpifx_allgather_module
   use mpifx_allgatherv_module
   use mpifx_scatter_module
+  use mpifx_scatterv_module
   implicit none
   public
 

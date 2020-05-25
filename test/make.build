@@ -19,7 +19,8 @@
 .SUFFIXES: .f90 .o
 
 TARGETS = test_bcast test_send_recv test_comm_split test_reduce \
-    test_allreduce test_gather test_allgather test_scatter
+    test_allreduce test_gather test_allgather test_scatter \
+    test_scatterv
 
 all: $(TARGETS)
 
@@ -70,4 +71,7 @@ test_allgather: $(test_allgather.o)
 	$(link-target)
 
 test_scatter: $(test_scatter.o)
+	$(link-target)
+
+test_scatterv: $(test_scatterv.o)
 	$(link-target)
