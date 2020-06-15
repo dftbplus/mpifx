@@ -17,7 +17,7 @@ program test_bcast
   call mycomm%init()
   buffer(:) = 0
   print "(A,I2.2,A,3I5)", "CHK01:", mycomm%rank, ":", buffer
-  if (mycomm%master) then
+  if (mycomm%lead) then
     buffer(:) = [ 1, 2, 3 ]
   end if
   print "(A,I2.2,A,3I5)", "CHK02:", mycomm%rank, ":", buffer
@@ -28,7 +28,7 @@ program test_bcast
   ! Logical vector
   lbuffer(:) = .false.
   print "(A,I2.2,A,3L5)", "CHK04:", mycomm%rank, ":", lbuffer
-  if (mycomm%master) then
+  if (mycomm%lead) then
     lbuffer(:) = [ .true., .false., .true. ]
   end if
   print "(A,I2.2,A,3L5)", "CHK05:", mycomm%rank, ":", lbuffer
@@ -39,7 +39,7 @@ program test_bcast
   ! Real rank 2 array
   rbuffer(:,:) = 0.0_dp
   print "(A,I2.2,A,4F10.6)", "CHK07:", mycomm%rank, ":", rbuffer
-  if (mycomm%master) then
+  if (mycomm%lead) then
     rbuffer(:,:) = reshape([ real(dp) :: 1, 2, 3, 4 ], [ 2, 2 ])
   end if
   print "(A,I2.2,A,4F10.6)", "CHK08:", mycomm%rank, ":", rbuffer
@@ -50,7 +50,7 @@ program test_bcast
   ! Complex scalar
   cbuffer = cmplx(0, 0, sp)
   print "(A,I2.2,A,2F10.6)", "CHK10:", mycomm%rank, ":", cbuffer
-  if (mycomm%master) then
+  if (mycomm%lead) then
     cbuffer = cmplx(-1, 1, sp)
   end if
   print "(A,I2.2,A,2F10.6)", "CHK11:", mycomm%rank, ":", cbuffer
@@ -60,7 +60,7 @@ program test_bcast
   ! Character
   text = "     "
   print "(A,I2.2,A,A6)", "CHK13:", mycomm%rank, ":", text
-  if (mycomm%master) then
+  if (mycomm%lead) then
     text = "hello"
   end if
   print "(A,I2.2,A,A6)", "CHK14:", mycomm%rank, ":", text

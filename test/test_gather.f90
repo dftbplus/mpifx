@@ -14,7 +14,7 @@ program test_gather
 
   ! I0 -> I1
   send0 = mycomm%rank * 2   ! Arbitrary number to send
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(recv1(1 * mycomm%size))
     recv1(:) = 0
   else
@@ -23,7 +23,7 @@ program test_gather
   write(*, label // ",A,1X,I0)") 1, mycomm%rank, &
       & "Send0 buffer:", send0
   call mpifx_gather(mycomm, send0, recv1)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(formstr, "(A,I0,A)") "A,", size(recv1), "(1X,I0))"
     write(*, label // formstr) 2, mycomm%rank, &
         & "Recv1 buffer:", recv1(:)
@@ -32,7 +32,7 @@ program test_gather
 
   ! I1 -> I1
   allocate(send1(2))
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(recv1(size(send1) * mycomm%size))
     recv1(:) = 0
   else
@@ -43,14 +43,14 @@ program test_gather
   write(*, label // formstr) 3, mycomm%rank, &
       & "Send1 buffer:", send1(:)
   call mpifx_gather(mycomm, send1, recv1)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(formstr, "(A,I0,A)") "A,", size(recv1), "(1X,I0))"
     write(*, label // formstr) 4, mycomm%rank, &
         & "Recv1 buffer:", recv1
   end if
   
   ! I1 -> I2
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(recv2(size(send1), mycomm%size))
     recv2(:,:) = 0
   else
@@ -61,7 +61,7 @@ program test_gather
   write(*, label // formstr) 5, mycomm%rank, &
       & "Send1 buffer:", send1(:)
   call mpifx_gather(mycomm, send1, recv2)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(formstr, "(A,I0,A)") "A,", size(recv2), "(1X,I0))"
     write(*, label // formstr) 6, mycomm%rank, &
         & "Recv2 buffer:", recv2

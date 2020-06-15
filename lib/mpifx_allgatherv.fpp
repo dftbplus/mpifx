@@ -159,7 +159,7 @@ module mpifx_allgatherv_module
   !!
   !!       write(*, *) mycomm%rank, "Send1 buffer:", send1(:)
   !!       call mpifx_allgatherv(mycomm, send1, recv1, recvcounts)
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv1 buffer:", recv1
   !!       end if
   !!

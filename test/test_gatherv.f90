@@ -17,12 +17,12 @@ program test_gatherv
   call mycomm%init()
 
   ! R1 -> R1
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *) 'Test gather rank=1 -> rank=1'
   end if
   allocate(send1(mycomm%rank+1))
   send1 = real(mycomm%rank+1, sp)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     ! recv1 size is 1+2+3+...+mycomm%size
     nrecv = mycomm%size*(mycomm%size+1)/2
     allocate(recv1(nrecv))
@@ -34,20 +34,20 @@ program test_gatherv
     allocate(recv1(0))
   end if
   call mpifx_gatherv(mycomm, send1, recv1, recvcounts)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *) "Recv1 buffer:", recv1
     deallocate(recvcounts)
   end if
   deallocate(recv1)
 
   ! R2 -> R2
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *)
     write(*, *) 'Test gather rank=2 -> rank=2'
   end if
   allocate(send2(10, mycomm%rank+1))
   send2 = real(mycomm%rank + 1, sp)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     ! recv1 size is 1+2+3+...+mycomm%size
     nrecv = mycomm%size*(mycomm%size+1)/2
     allocate(recv2(10, nrecv))
@@ -60,19 +60,19 @@ program test_gatherv
     allocate(recv2(0,0))
   end if
   call mpifx_gatherv(mycomm, send2, recv2, recvcounts)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *) "Recv2 buffer:", recv2(:,:)
     deallocate(recvcounts)
   end if
   deallocate(recv2)
 
   ! R0 -> R1 with specified receive pattern
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *)
     write(*, *) 'Test gather scalar -> rank=1'
   end if
   send0 = real(mycomm%rank + 1, sp)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     nrecv = mycomm%size
     allocate(recv1(nrecv))
     allocate(recvcounts(mycomm%size))
@@ -86,7 +86,7 @@ program test_gatherv
     allocate(recv1(0))
   end if
   call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *) "Recv1 buffer:", recv1
     deallocate(recvcounts)
     deallocate(displs)
@@ -94,12 +94,12 @@ program test_gatherv
   deallocate(recv1)
 
   ! R0 -> R1 with specified receive pattern including gaps
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *)
     write(*, *) 'Test gather scalar -> rank=1'
   end if
   send0 = real(mycomm%rank + 1, sp)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     nrecv = mycomm%size
     allocate(recv1(2*nrecv))
     allocate(recvcounts(mycomm%size))
@@ -115,7 +115,7 @@ program test_gatherv
     allocate(recv1(0))
   end if
   call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
-  if (mycomm%master) then
+  if (mycomm%lead) then
     write(*, *) "Recv1 buffer:", recv1
     deallocate(recvcounts)
     deallocate(displs)

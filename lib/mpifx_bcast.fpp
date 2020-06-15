@@ -28,7 +28,7 @@ module mpifx_bcast_module
   !!       integer :: buffer(3)
   !!
   !!       call mycomm%init()
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         buffer(:) = [ 1, 2, 3 ]
   !!       end if
   !!       call mpifx_bcast(mycomm, buffer)
@@ -61,7 +61,7 @@ contains
     !> Msg to be broadcasted on root and received on non-root nodes.
     ${TYPE}$ :: msg${RANKSUFFIX(RANK)}$
 
-    !> Root node for the broadcast (default: mycomm%masterrank).
+    !> Root node for the broadcast (default: mycomm%leadrank).
     integer, intent(in), optional :: root
 
     !> Optional error handling flag.
@@ -72,7 +72,7 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(msg)'
     #:set COUNT = ('len(msg) * ' + SIZE if HASLENGTH else SIZE)
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     call mpi_bcast(msg, ${COUNT}$, ${MPITYPE}$, root0, mycomm%id, error0)
     call handle_errorflag(error0, "MPI_BCAST in mpifx_bcast_${SUFFIX}$", error)
 

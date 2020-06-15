@@ -17,7 +17,7 @@ Additional to the object to be broadcasted and the communicator, you also
 
 - size of the array (which is redundant, as it is *known* at run-time)
 
-- root node of the broadcast (setting it to the master node as default would
+- root node of the broadcast (setting it to the lead node as default would
   be a definitely safe choice)
 
 - error flag (one could per default just omit it and rely on the program to stop

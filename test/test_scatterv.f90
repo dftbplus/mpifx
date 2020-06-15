@@ -14,7 +14,7 @@ program test_scatterv
   call mycomm%init()
 
   ! I1 -> I0
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(send1(mycomm%size))
     allocate(sendcount(mycomm%size))
     send1(:) = [ (ii, ii = 1, size(send1)) ]
@@ -31,7 +31,7 @@ program test_scatterv
   write(*, label // formstr) 2, mycomm%rank, "Recv0 buffer:", recv0
 
   ! I1 -> I1
-  if (mycomm%master) then
+  if (mycomm%lead) then
     deallocate(send1)
     allocate(send1(2 * mycomm%size))
     sendcount(:) = 2
@@ -46,7 +46,7 @@ program test_scatterv
   write(*, label // formstr) 4, mycomm%rank, "Recv1 buffer:", recv1
 
   ! I2 -> I1
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(send2(2, mycomm%size))
     sendcount(:) = 2
     send2(:,:) = reshape(send1,  [ 2, mycomm%size ])
@@ -63,7 +63,7 @@ program test_scatterv
       & "Recv1 buffer:", recv1
 
   ! I1 -> I1
-  if (mycomm%master) then
+  if (mycomm%lead) then
     deallocate(send1)
     allocate(send1(2 * mycomm%size))
     send1(:) = [ (ii, ii = 1, size(send1)) ]
