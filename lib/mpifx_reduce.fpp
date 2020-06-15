@@ -109,7 +109,7 @@ contains
   !! \param orig  Quantity to be reduced.
   !! \param reduced  Contains result on exit.
   !! \param reduceop  Reduction operator.
-  !! \param root  Root process for the reduced (default: mycomm%masterrank)
+  !! \param root  Root process for the reduced (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_reduce_${SUFFIX}$(mycomm, orig, reduced, reduceop, root, error)
@@ -122,7 +122,7 @@ contains
 
     integer :: root0, error0
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
 
     #:set SIZE = '1' if RANK == 0 else 'size(orig)'
     #:set COUNT = SIZE
@@ -144,7 +144,7 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param origred  Quantity to be reduced on input, result on exit
   !! \param reduceop  Reduction reduceop
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_reduceip_${SUFFIX}$(mycomm, origred, reduceop, root, error)
@@ -157,7 +157,7 @@ contains
     integer :: root0, error0
     ${TYPE}$ :: dummy
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
 
     #:set SIZE = '1' if RANK == 0 else 'size(origred)'
     #:set COUNT = SIZE

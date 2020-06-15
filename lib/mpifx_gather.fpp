@@ -43,7 +43,7 @@ module mpifx_gather_module
   !!     
   !!       ! I0 -> I1
   !!       send0 = mycomm%rank * 2    ! Arbitrary number to send
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         allocate(recv1(1 * mycomm%size))
   !!         recv1(:) = 0
   !!       else
@@ -51,7 +51,7 @@ module mpifx_gather_module
   !!       end if
   !!       write(*, *) mycomm%rank, "Send0 buffer:", send0
   !!       call mpifx_gather(mycomm, send0, recv1)
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv1 buffer:", recv1(:)
   !!       end if
   !!       deallocate(recv1)
@@ -59,7 +59,7 @@ module mpifx_gather_module
   !!       ! I1 -> I1
   !!       allocate(send1(2))
   !!       send1(:) = [ mycomm%rank, mycomm%rank + 1 ]  ! Arbitrary numbers
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         allocate(recv1(size(send1) * mycomm%size))
   !!         recv1(:) = 0
   !!       else
@@ -67,19 +67,19 @@ module mpifx_gather_module
   !!       end if
   !!       write(*, *) mycomm%rank, "Send1 buffer:", send1(:)
   !!       call mpifx_gather(mycomm, send1, recv1)
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv1 buffer:", recv1
   !!       end if
   !!     
   !!       ! I1 -> I2
   !!       send1(:) = [ mycomm%rank, mycomm%rank + 1 ]
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         allocate(recv2(size(send1), mycomm%size))
   !!         recv2(:,:) = 0
   !!       end if
   !!       write(*, *) mycomm%rank, "Send1 buffer:", send1(:)
   !!       call mpifx_gather(mycomm, send1, recv2)
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv2 buffer:", recv2
   !!       end if
   !!       
@@ -112,7 +112,7 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for gathering.
   !! \param recv  Received data on receive node (undefined on other nodes)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_gather_${SUFFIX}$(mycomm, send, recv, root, error)
@@ -127,11 +127,11 @@ contains
     #:set SIZE = 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ASSERT(.not. mycomm%master .or. size(recv) == size(send) * mycomm%size)
-    @:ASSERT(.not. mycomm%master .or.&
+    @:ASSERT(.not. mycomm%lead .or. size(recv) == size(send) * mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or.&
         & size(recv, dim=${RANK}$) == size(send, dim=${RANK}$) * mycomm%size)
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     call mpi_gather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
         & mycomm%id, error0)
     call handle_errorflag(error0, "MPI_GATHER in mpifx_gather_${SUFFIX}$", error)
@@ -150,7 +150,7 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for gathering.
   !! \param recv  Received data on receive node (indefined on other nodes)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_gather_${SUFFIX}$(mycomm, send, recv, root, error)
@@ -165,10 +165,10 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(send)'
     #:set COUNT = ('len(send) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ASSERT(.not. mycomm%master .or. size(recv) == ${SIZE}$ * mycomm%size)
-    @:ASSERT(.not. mycomm%master .or. size(recv, dim=${RANK + 1}$) == mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or. size(recv) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or. size(recv, dim=${RANK + 1}$) == mycomm%size)
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     call mpi_gather(send, ${SIZE}$, ${MPITYPE}$, recv, ${SIZE}$, ${MPITYPE}$, root0, mycomm%id,&
         & error0)
     call handle_errorflag(error0, "MPI_GATHER in mpifx_gather_${SUFFIX}$", error)

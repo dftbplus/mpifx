@@ -43,7 +43,7 @@ module mpifx_scatterv_module
   !!       ! I1 -> I1
   !!       allocate(recv1(mycomm%rank+1))
   !!       recv1 = 0
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         ! send1 size is 1+2+3+...+mycomm%size
   !!         nsend = mycomm%size*(mycomm%size+1)/2
   !!         allocate(send1(nsend))
@@ -58,7 +58,7 @@ module mpifx_scatterv_module
   !!         allocate(send1(0))
   !!       end if
   !!
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Send1 buffer:", send1(:)
   !!       end if
   !!       call mpifx_scatterv(mycomm, send1, sendcounts, recv1)
@@ -92,7 +92,7 @@ contains
   !! \param recv Received data on receive node (undefined on other nodes)
   !! \param displs Entry i specifies where to take data to send to rank i
   !!        (default: computed from sendcounts assuming order with rank)
-  !! \param root Root process for the result (default: mycomm%masterrank)
+  !! \param root Root process for the result (default: mycomm%leadrank)
   !! \param error Error code on exit.
   !!
   subroutine mpifx_scatterv_${SUFFIX}$(mycomm, send, sendcounts, recv, displs, root, error)
@@ -110,11 +110,11 @@ contains
     #:set SIZE = 'size(recv)'
     #:set COUNT = ('len(recv) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ASSERT(.not. mycomm%master .or. size(send) == size(recv) * mycomm%size)
-    @:ASSERT(.not. mycomm%master&
+    @:ASSERT(.not. mycomm%lead .or. size(send) == size(recv) * mycomm%size)
+    @:ASSERT(.not. mycomm%lead&
         & .or. size(send, dim=${RANK}$) == size(recv, dim=${RANK}$) * mycomm%size)
     
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     if (mycomm%rank == root0) then
       if (present(displs)) then
         @:ASSERT(size(displs) == mycomm%size)
@@ -150,7 +150,7 @@ contains
   !! \param recv  Received data on receive node (indefined on other nodes)
   !! \param displs Entry i specifies where to take data to send to rank i
   !!        (default: computed from sendcounts assuming order with rank)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_scatterv_${SUFFIX}$(mycomm, send, sendcounts, recv, displs, root, error)
@@ -168,13 +168,13 @@ contains
     #:set SIZE = '1' if RANK == 1 else 'size(recv)'
     #:set COUNT = ('len(recv) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ASSERT(.not. mycomm%master .or. size(send) == ${SIZE}$ * mycomm%size)
-    @:ASSERT(.not. mycomm%master .or. size(send, dim=${RANK}$) == mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or. size(send) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or. size(send, dim=${RANK}$) == mycomm%size)
     #:if HASLENGTH
-    @:ASSERT(.not. mycomm%master .or. len(send) == len(recv))
+    @:ASSERT(.not. mycomm%lead .or. len(send) == len(recv))
     #:endif
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     if (mycomm%rank == root0) then
       if (present(displs)) then
         @:ASSERT(size(displs) == mycomm%size)

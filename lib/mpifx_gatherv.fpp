@@ -17,7 +17,7 @@
   !! \param recvcounts Counts of received data from each process
   !! \param displs Entry i specifies where to place data from process rank i-1
   !!               (default: computed from recvcounts assuming order with rank)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_gatherv_${SUFFIX}$(mycomm, send, recv, recvcounts, displs, root, error)
@@ -33,7 +33,7 @@
     integer, allocatable :: displs0(:)
     logical, allocatable :: testBuffer(:)
 
-    @:inoptflags(root0, root, mycomm%masterrank)
+    @:inoptflags(root0, root, mycomm%leadrank)
 
     if (mycomm%rank == root0) then
       allocate(displs0(mycomm%size))
@@ -87,7 +87,7 @@
   !! \param recvcounts Counts of received data from each process
   !! \param displs Entry i specifies where to place data from process rank i-1
   !!               (default: computed from recvcounts assuming order with rank)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_gatherv_${SUFFIX}$(mycomm, send, recv, recvcounts, displs, root, error)
@@ -102,7 +102,7 @@
     integer :: ii, root0, error0
     integer, allocatable :: displs0(:)
 
-    @:inoptflags(root0, root, mycomm%masterrank)
+    @:inoptflags(root0, root, mycomm%leadrank)
 
     if (mycomm%rank == root0) then
       @:ASSERT(size(recv) == sum(recvcounts))
@@ -173,7 +173,7 @@ module mpifx_gatherv_module
   !!       ! I1 -> I1
   !!       allocate(send1(mycomm%rank+1))
   !!       send1 = 1.0*mycomm%rank
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         ! recv1 size is 1+2+3+...+mycomm%size
   !!         nrecv = mycomm%size*(mycomm%size+1)/2
   !!         allocate(recv1(nrecv))
@@ -188,7 +188,7 @@ module mpifx_gatherv_module
   !!
   !!       write(*, *) mycomm%rank, "Send1 buffer:", send1(:)
   !!       call mpifx_gatherv(mycomm, send1, recv1, recvcounts)
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv1 buffer:", recv1
   !!       end if
   !!

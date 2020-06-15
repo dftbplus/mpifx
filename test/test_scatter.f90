@@ -14,7 +14,7 @@ program test_scatter
   call mycomm%init()
 
   ! I1 -> I0
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(send1(mycomm%size))
     send1(:) = [ (ii, ii = 1, size(send1)) ]
     write(formstr, "(A,I0,A)") "A,", size(send1), "(1X,I0))"
@@ -30,7 +30,7 @@ program test_scatter
       & "Recv0 buffer:", recv0
 
   ! I1 -> I1
-  if (mycomm%master) then
+  if (mycomm%lead) then
     deallocate(send1)
     allocate(send1(2 * mycomm%size))
     send1(:) = [ (ii, ii = 1, size(send1)) ]
@@ -46,7 +46,7 @@ program test_scatter
       & "Recv1 buffer:", recv1
 
   ! I2 -> I1
-  if (mycomm%master) then
+  if (mycomm%lead) then
     allocate(send2(2, mycomm%size))
     send2(:,:) = reshape(send1,  [ 2, mycomm%size ])
     write(formstr, "(A,I0,A)") "A,", size(send2), "(1X,I0))"

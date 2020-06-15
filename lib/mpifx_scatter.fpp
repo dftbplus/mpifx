@@ -41,7 +41,7 @@ module mpifx_scatter_module
   !!       call mycomm%init()
   !!     
   !!       ! I1 -> I0
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         allocate(send1(mycomm%size))
   !!         send1(:) = [ (ii, ii = 1, size(send1)) ]
   !!         write(*, *) mycomm%rank, "Send1 buffer:", send1
@@ -53,7 +53,7 @@ module mpifx_scatter_module
   !!       write(*, *) mycomm%rank, "Recv0 buffer:", recv0
   !!     
   !!       ! I1 -> I1
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         deallocate(send1)
   !!         allocate(send1(2 * mycomm%size))
   !!         send1(:) = [ (ii, ii = 1, size(send1)) ]
@@ -65,7 +65,7 @@ module mpifx_scatter_module
   !!       write(*, *) mycomm%rank, "Recv1 buffer:", recv1
   !!     
   !!       ! I2 -> I1
-  !!       if (mycomm%master) then
+  !!       if (mycomm%lead) then
   !!         allocate(send2(2, mycomm%size))
   !!         send2(:,:) = reshape(send1,  [ 2, mycomm%size ])
   !!         write(*, *) mycomm%rank, "Send2 buffer:", send2
@@ -101,7 +101,7 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for scattering.
   !! \param recv  Received data on receive node (undefined on other nodes)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_scatter_${SUFFIX}$(mycomm, send, recv, root, error)
@@ -116,11 +116,11 @@ contains
     #:set SIZE = 'size(recv)'
     #:set COUNT = ('len(recv) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ASSERT(.not. mycomm%master .or. size(send) == size(recv) * mycomm%size)
-    @:ASSERT(.not. mycomm%master&
+    @:ASSERT(.not. mycomm%lead .or. size(send) == size(recv) * mycomm%size)
+    @:ASSERT(.not. mycomm%lead&
         & .or. size(send, dim=${RANK}$) == size(recv, dim=${RANK}$) * mycomm%size)
     
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
         & mycomm%id, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
@@ -139,7 +139,7 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for scattering.
   !! \param recv  Received data on receive node (indefined on other nodes)
-  !! \param root  Root process for the result (default: mycomm%masterrank)
+  !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
   subroutine mpifx_scatter_${SUFFIX}$(mycomm, send, recv, root, error)
@@ -154,13 +154,13 @@ contains
     #:set SIZE = '1' if RANK == 1 else 'size(recv)'
     #:set COUNT = ('len(recv) * ' + SIZE if HASLENGTH else SIZE)
 
-    @:ASSERT(.not. mycomm%master .or. size(send) == ${SIZE}$ * mycomm%size)
-    @:ASSERT(.not. mycomm%master .or. size(send, dim=${RANK}$) == mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or. size(send) == ${SIZE}$ * mycomm%size)
+    @:ASSERT(.not. mycomm%lead .or. size(send, dim=${RANK}$) == mycomm%size)
     #:if HASLENGTH
-      @:ASSERT(.not. mycomm%master .or. len(send) == len(recv))
+      @:ASSERT(.not. mycomm%lead .or. len(send) == len(recv))
     #:endif
 
-    call getoptarg(mycomm%masterrank, root0, root)
+    call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
         & mycomm%id, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
