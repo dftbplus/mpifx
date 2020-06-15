@@ -12,8 +12,8 @@ module mpifx_comm_module
     integer :: id         !< Communicator id.
     integer :: size       !< Nr. of processes (size).
     integer :: rank       !< Rank of the current process.
-    integer :: leadrank !< Index of the lead node.
-    logical :: lead     !< True if current process is the lead (rank == 0).
+    integer :: leadrank   !< Index of the lead node.
+    logical :: lead       !< True if current process is the lead (rank == 0).
   contains
     !> Initializes the MPI environment.
     procedure :: init => mpifx_comm_init

@@ -199,7 +199,7 @@ repository::
 
   git clone https://github.com/aradi/fypp.git
 
-and check out the default main branch.
+and check out the default branch.
 
 The command line tool is a single stand-alone script. You can run it directly
 from the source folder ::
