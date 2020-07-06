@@ -22,4 +22,4 @@ install:
  - pip install fypp
 
 script:
- - mkdir -p _build && pushd _build && cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .. && make -j
+ - mkdir -p _build && pushd _build && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PWD/install -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .. && make -j all install && popd
