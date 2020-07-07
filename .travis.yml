@@ -1,0 +1,25 @@
+os: linux
+dist: bionic
+
+language: python
+python: 3.7
+
+
+env:
+ - BUILD_SHARED_LIBS=false
+ - BUILD_SHARED_LIBS=true
+
+addons:
+   apt:
+      packages:
+      - cmake
+      - gfortran
+      - libblas-dev
+      - liblapack-dev
+      - libopenmpi-dev
+
+install:
+ - pip install fypp
+
+script:
+ - mkdir -p _build && pushd _build && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$PWD/install -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} .. && make -j all install && popd
