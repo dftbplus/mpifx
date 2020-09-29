@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+if(NOT TARGET MpiFx::MpiFx)
+  if(NOT TARGET MPI::MPI_Fortran)
+    find_dependency(MPI)
+  endif()
+  include(${CMAKE_CURRENT_LIST_DIR}/mpifx-targets.cmake)
+endif()

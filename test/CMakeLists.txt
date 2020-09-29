@@ -12,5 +12,5 @@ set(targets
 
 foreach(target IN LISTS targets)
   add_executable(${target} ${target}.f90)
-  target_link_libraries(${target} mpifx ${MPI_Fortran_LIBRARIES})
+  target_link_libraries(${target} MpiFx)
 endforeach()

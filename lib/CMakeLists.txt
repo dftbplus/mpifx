@@ -21,23 +21,16 @@ set(sources-fpp
   mpifx_scatterv.fpp
   mpifx_send.fpp)
 
-set(sources-f90-preproc)
+fypp_preprocess("${sources-fpp}" sources-f90)
 
-foreach(fppsrc IN LISTS sources-fpp)
-  string(REGEX REPLACE "\\.fpp" ".f90" f90src ${fppsrc})
-  add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${f90src}
-    COMMAND ${FYPP} -I${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${fppsrc} ${CMAKE_CURRENT_BINARY_DIR}/${f90src}
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${fppsrc})
-  list(APPEND sources-f90-preproc ${CMAKE_CURRENT_BINARY_DIR}/${f90src})
-endforeach()
-
-# NAG compiler won't compile this files without the '-mismatch' option
+# NAG compiler won't compile these files without the '-mismatch' option
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "NAG")
-  set_source_files_properties(SOURCE ${sources-f90-preproc} PROPERTY COMPILE_FLAGS -mismatch)
+  set_source_files_properties(SOURCE ${sources-f90} PROPERTY COMPILE_FLAGS -mismatch)
 endif()
 
-add_library(mpifx ${sources-f90-preproc})
+add_library(mpifx ${sources-f90})
+
+target_link_libraries(mpifx PRIVATE MPI::MPI_Fortran)
 
 set(BUILD_MOD_DIR ${CMAKE_CURRENT_BINARY_DIR}/include)
 
@@ -45,16 +38,13 @@ set_target_properties(mpifx PROPERTIES Fortran_MODULE_DIRECTORY ${BUILD_MOD_DIR}
 
 target_include_directories(mpifx PUBLIC
   $<BUILD_INTERFACE:${BUILD_MOD_DIR}>
-  $<INSTALL_INTERFACE:${INSTALL_MOD_DIR}>)
-
-target_include_directories(mpifx PRIVATE ${MPI_Fortran_MODULE_DIR})
-target_link_libraries(mpifx PRIVATE ${MPI_Fortran_LIBRARIES})
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_MODULEDIR}>)
 
 install(TARGETS mpifx
-  EXPORT ${INSTALL_EXPORT_NAME}
-  ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
-  LIBRARY DESTINATION ${INSTALL_LIB_DIR})
+  EXPORT mpifx-targets
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(INSTALL_INCLUDE_FILES)
-  install(DIRECTORY ${BUILD_MOD_DIR}/ DESTINATION ${INSTALL_MOD_DIR})
+  install(DIRECTORY ${BUILD_MOD_DIR}/ DESTINATION ${CMAKE_INSTALL_MODULEDIR})
 endif()
