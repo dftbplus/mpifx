@@ -23,7 +23,7 @@ Prerequisites
 
 * MPI-library and wrappers for your compiler
 
-* `Fypp preprocessor <https://github.com/aradi/fypp>`_.
+* `Fypp preprocessor <https://github.com/aradi/fypp>`_
 
 
 Building and installing the library
@@ -31,7 +31,7 @@ Building and installing the library
 
 The library can be built and installed with the usual CMake-workflow::
 
-  FC=gfortran cmake -B _build
+  FC=gfortran cmake -B _build -DCMAKE_INSTALL_PREFIX=$HOME/opt/mpifx
   cmake --build _build
   cmake --install _build
 

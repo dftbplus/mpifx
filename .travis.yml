@@ -22,13 +22,15 @@ install:
 
 script:
   - >
-    FC=gfortran cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -B _build .
+    FC=gfortran cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+    -DCMAKE_INSTALL_PREFIX=${PWD}/_install
+    -B _build .
     && cmake --build _build -- -j
     && cmake --install _build
   - >
-    CMAKE_PREFIX_PATH="${PWD}/_build/install:${CMAKE_PREFIX_PATH}"
+    CMAKE_PREFIX_PATH="${PWD}/_install:${CMAKE_PREFIX_PATH}"
     ./test/integration/cmake/runtest.sh _build_cmake
   - >
-    PKG_CONFIG_PATH="${PWD}/_build/install/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    PKG_CONFIG_PATH="${PWD}/_install/lib/pkgconfig:${PKG_CONFIG_PATH}"
     FC=mpifort
     ./test/integration/pkgconfig/runtest.sh _build_pkgconfig

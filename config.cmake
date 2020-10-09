@@ -25,10 +25,10 @@ option(BUILD_SHARED_LIBS "Whether the library should be a shared one" FALSE)
 
 option(INSTALL_INCLUDE_FILES "Whether include / module files should be installed" TRUE)
 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE STRING
+set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/_install" CACHE STRING
   "Directory to install the compiled code into")
 
-set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "Installation directory for libraries")
+#set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "Installation directory for libraries")
 
 set(CMAKE_INSTALL_INCLUDEDIR "include/mpifx" CACHE PATH
   "Installation directory for header and include files")

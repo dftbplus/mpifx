@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(CMakePackageConfigHelpers)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(MpiFxUtils)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake)
 
 project(MpiFx VERSION 0.1 LANGUAGES Fortran)
 
-include(MpiFxUtils)
 setup_build_type()
 
 #
@@ -20,6 +23,8 @@ endif()
 #
 # Build instructions
 #
+include(GNUInstallDirs)
+
 add_subdirectory(lib)
 if(NOT BUILD_EXPORTED_TARGETS_ONLY)
   add_subdirectory(test)
@@ -37,7 +42,6 @@ install(EXPORT mpifx-targets
   NAMESPACE MpiFx::
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mpifx")
 
-include(CMakePackageConfigHelpers)
 configure_package_config_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/utils/export/mpifx-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config.cmake
@@ -53,7 +57,6 @@ install(
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mpifx)
 
-include(GNUInstallDirs)
 GNUInstallDirs_get_absolute_install_dir(CMAKE_INSTALL_FULL_MODULEDIR CMAKE_INSTALL_MODULEDIR)
 
 get_pkgconfig_params(PKGCONFIG_REQUIRES PKGCONFIG_LIBS PKGCONFIG_LIBS_PRIVATE PKGCONFIG_C_FLAGS)
