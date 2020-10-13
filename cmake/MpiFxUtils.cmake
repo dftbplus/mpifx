@@ -38,7 +38,7 @@ function(get_pkgconfig_params pkgconfig_requires pkgconfig_libs pkgconfig_libs_p
   
   set(_pkgconfig_libs_private "${CMAKE_EXE_LINKER_FLAGS}")
   
-  set(_pkgconfig_c_flags "-I${CMAKE_INSTALL_FULL_MODULEDIR}")
+  set(_pkgconfig_c_flags "-I${CMAKE_INSTALL_FULL_INCLUDEDIR}/${INSTALL_MODULEDIR}")
 
   set(${pkgconfig_requires} "${_pkgconfig_requires}" PARENT_SCOPE)
   set(${pkgconfig_libs} "${_pkgconfig_libs}" PARENT_SCOPE)

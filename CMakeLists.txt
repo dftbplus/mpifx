@@ -57,8 +57,6 @@ install(
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mpifx)
 
-GNUInstallDirs_get_absolute_install_dir(CMAKE_INSTALL_FULL_MODULEDIR CMAKE_INSTALL_MODULEDIR)
-
 get_pkgconfig_params(PKGCONFIG_REQUIRES PKGCONFIG_LIBS PKGCONFIG_LIBS_PRIVATE PKGCONFIG_C_FLAGS)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/utils/export/mpifx.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/mpifx.pc @ONLY)

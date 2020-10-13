@@ -28,10 +28,8 @@ option(INSTALL_INCLUDE_FILES "Whether include / module files should be installed
 set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/_install" CACHE STRING
   "Directory to install the compiled code into")
 
-#set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "Installation directory for libraries")
+set(INSTALL_INCLUDEDIR "mpifx" CACHE PATH
+  "Installation directory for header and include files (within standard include folder)")
 
-set(CMAKE_INSTALL_INCLUDEDIR "include/mpifx" CACHE PATH
-  "Installation directory for header and include files")
-
-set(CMAKE_INSTALL_MODULEDIR "${CMAKE_INSTALL_INCLUDEDIR}/modfiles" CACHE PATH
-  "Installation directory for Fortran module files")
+set(INSTALL_MODULEDIR "${INSTALL_INCLUDEDIR}/modfiles" CACHE PATH
+  "Installation directory for Fortran module files (within standard include folder)")
