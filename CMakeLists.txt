@@ -1,39 +1,65 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
-project(mpifx VERSION 0.1 LANGUAGES Fortran)
+include(CMakePackageConfigHelpers)
 
-set(LIBRARY_ONLY FALSE CACHE BOOL "Whether only library should be compiled")
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(MpiFxUtils)
 
-option(BUILD_SHARED_LIBS "Whether the library should be a shared one" FALSE)
+include(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake)
 
-option(INSTALL_INCLUDE_FILES "Whether include / module files should be installed" TRUE)
+project(MpiFx VERSION 0.1 LANGUAGES Fortran)
 
-# Installation paths
-set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH
-  "Installation directory for executables")
+setup_build_type()
 
-set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH
-  "Installation directory for libraries")
-
-set(INSTALL_MOD_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH
-  "Installation directory for Fortran module files")
-
-set(INSTALL_CMAKE_DIR "${CMAKE_INSTALL_PREFIX}/lib/cmake" CACHE PATH
-  "Installation directory for CMake package export files")
-
-option(BUILD_SHARED_LIBS "Whether the library should be shared" FALSE)
-
-option(INSTALL_INCLUDE_FILES "Whether include and module files should be installed" TRUE)
-
+#
+# Prerequisites
+#
 find_package(MPI REQUIRED)
 find_program(FYPP fypp)
-if(FYPP)
-  message(STATUS "Preprocessor fypp: ${FYPP}")
-else()
-  message(FATAL_ERROR "Prepropcessor fypp not found")
+if(NOT FYPP)
+  message(FATAL_ERROR "Preprocessor fypp could not be found")
 endif()
 
+#
+# Build instructions
+#
+include(GNUInstallDirs)
+
 add_subdirectory(lib)
-if(NOT LIBRARY_ONLY)
+if(NOT BUILD_EXPORTED_TARGETS_ONLY)
   add_subdirectory(test)
 endif()
+
+#
+# Installation
+#
+add_library(MpiFx INTERFACE)
+target_link_libraries(MpiFx INTERFACE mpifx)
+install(TARGETS MpiFx EXPORT mpifx-targets)
+
+install(EXPORT mpifx-targets
+  FILE mpifx-targets.cmake
+  NAMESPACE MpiFx::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mpifx")
+
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/utils/export/mpifx-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mpifx)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config-version.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
+install(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake/mpifx-config-version.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mpifx)
+
+get_pkgconfig_params(PKGCONFIG_REQUIRES PKGCONFIG_LIBS PKGCONFIG_LIBS_PRIVATE PKGCONFIG_C_FLAGS)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/utils/export/mpifx.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/mpifx.pc @ONLY)
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/mpifx.pc"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")

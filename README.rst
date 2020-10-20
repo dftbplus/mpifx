@@ -1,55 +1,94 @@
 ****************************************
-MPIFX - Modern Fortran Interface for MPI
+MpiFx - Modern Fortran Interface for MPI
 ****************************************
 
-The open source library `MPIFX <https://github.com/dftbplus/mpifx>`_ is
-an effort to provide modern Fortran (Fortran 2003) wrappers around
-routines of the MPI library to make their use as simple as possible. The
-documentation is included inside the repository, but is also available at
+The open source library `MpiFx <https://github.com/dftbplus/mpifx>`_ provides
+modern Fortran (Fortran 2003) wrappers around routines of the MPI library to
+make their use as simple as possible. Currently several data distribution
+routines are covered.
+
+The documentation is included inside the repository, but is also available at
 `dftbplus.github.io <https://dftbplus.github.io/>`_.
 
-It currently contains only a few routines so far, but if those happen to be the
-ones you need, feel free to use this project. MPIFX is licensed under the
-**simplified BSD license**.
 
-If your desired MPI routine is not yet wrapped up, feel free to contribute to
-the project to include the target functionality.
+Installation
+============
+
+Prerequisites
+-------------
+
+* CMake (version >= 3.16)
+
+* Fortran 2003 compatible Fortran compiler
+
+* MPI-library and wrappers for your compiler
+
+* `Fypp preprocessor <https://github.com/aradi/fypp>`_
 
 
-INSTALL
+Building and installing the library
+-----------------------------------
+
+The library can be built and installed with the usual CMake-workflow::
+
+  FC=gfortran cmake -B _build -DCMAKE_INSTALL_PREFIX=$HOME/opt/mpifx
+  cmake --build _build
+  cmake --install _build
+
+You can influence the configuration via CMake-variables, which are listed in
+`config.cmake <config.cmake>`_. You can either modify the values directly there
+or pass them as command line options at the configuration phase, e.g.::
+
+  FC=ifort cmake -B _build -DBUILD_LIBRARY_ONLY=True
+  
+
+Testing
+-------
+
+A few tests / usage examples can be found in the `test/` subdirectory. The
+compiled test programs will be in the `test/` subfolder of your build directory.
+
+
+Using the library
+=================
+
+CMake build
+-----------
+
+* Make sure to add the root folder of the installed library to the
+  ``CMAKE_PREFIX_PATH`` environment variable.
+
+* Use ``find_package()`` in `CMakeLists.txt` to locate the library and link 
+  ``MpiFx::MpiFx`` to every target which relies directly on the library ::
+
+    cmake_minimum_required(VERSION 3.16)
+   
+    project(TestMpiFx LANGUAGES Fortran)
+    
+    find_package(MpiFx REQUIRED)
+    
+    add_executable(test_mpifx test_mpifx.f90)
+    target_link_libraries(test_mpifx MpiFx::MpiFx)
+
+
+Pkg-config build
+----------------
+
+* Make sure to add the `lib/pkgconfig` folder of the installed library to the
+  ``PKG_CONFIG_PATH`` environment variable.
+
+* Query the include and library options needed for the build with the usual
+  ``pkg-config`` commands::
+
+    mpifort $(pkg-config --cflags mpifx) test_mpifx.f90 $(pkg-config --libs mpifx)
+
+  Note, that neither ``-cflags`` or ``--libs`` return any options related to
+  your MPI-framework nor is the MPI-framework specified as dependency in the
+  pkg-config file. Use the MPI-wrapper of your compiler to compile and link your
+  executable or pass the additional include and library options by hand.
+
+
+License
 =======
 
-Stand-alone building
---------------------
-
-#. Make a copy of the file `make.arch.template` as `make.arch`::
-
-       cp make.arch.template make.arch
-
-#. Configure any settings in `make.arch` in order to adapt it to your
-   environment.
-
-#. Issue ::
-
-       make
-
-   in order to build and library and ::
-
-       make install
-
-   in order to install it.
-
-#. You may build the examples in the `test/` subfolder with ::
-
-       make test
-
-
- 
-Build the library as part of a build process
---------------------------------------------
-
-You may build the library on-the-fly during the build of your program. Invoke
-the library makefile `lib/make.build` during your build process from the folder
-where you wish to build the library. Make sure to pass the necessary
-make-variables (as documented in the library makfile). See the `makefile` in
-this folder for an example how to invoke the library makefile.
+MpiFx is licensed under the `2-Clause BSD License <LICENSE>`_.
