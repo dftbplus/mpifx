@@ -1,0 +1,124 @@
+#:mute
+
+#! Set DEBUG to 0 unless DEBUG level is specified explicitely
+#:set DEBUG = getvar('DEBUG', 0)
+
+#! Build normal library unless stub library is explicitly requested
+#!#:set STUB_LIBRARY = defined('STUB_LIBRARY')
+
+#:set INT_TYPES = ['int']
+
+#:set FLOAT_TYPES = ['real', 'dreal', 'complex', 'dcomplex']
+
+#:set LOGICAL_TYPES = ['logical']
+
+#:set CHAR_TYPES = ['char']
+
+#:set NUMERIC_TYPES = INT_TYPES + FLOAT_TYPES
+
+#:set ALL_TYPES = NUMERIC_TYPES + LOGICAL_TYPES + CHAR_TYPES
+
+#:set TYPE_ABBREVS = {'int': 'i', 'real': 's', 'dreal': 'd', 'complex': 'c', 'dcomplex': 'z',&
+    & 'logical': 'l', 'char': 'h'}
+
+#! Fortran types
+#:set FORTRAN_TYPES = {'int': 'integer', 'real': 'real(sp)', 'dreal': 'real(dp)',&
+    & 'complex': 'complex(sp)', 'dcomplex': 'complex(dp)',  'logical': 'logical',&
+    & 'char': 'character(len=*)'}
+
+#! Corresponding MPI types
+#:set MPI_TYPES = {'int': 'MPI_INTEGER', 'real': 'MPI_REAL', 'dreal': 'MPI_DOUBLE_PRECISION',&
+    & 'complex': 'MPI_COMPLEX', 'dcomplex': 'MPI_DOUBLE_COMPLEX', 'logical': 'MPI_LOGICAL', &
+    & 'char': 'MPI_CHARACTER'}
+
+#! Whether length must be taken into account, if count is calculated
+#:set HAS_LENGTH = {'int': False, 'real': False, 'dreal': False, 'complex': False,&
+    &'dcomplex': False, 'logical': False, 'char': True}
+
+#! Maximal rank covered in the wrappers
+#:set MAX_RANK = getvar('MAX_RANK', 6)
+
+
+#! Returns colons within paranthesis according to the RANK or empty string
+#! if RANK is zero.
+#:def RANKSUFFIX(RANK)
+${'' if RANK == 0 else '(' + ':' + ',:' * (RANK - 1) +')'}$
+#:enddef RANKSUFFIX
+
+
+#! Indicates debug code.
+#!
+#! code: Code to insert, if DEBUG > 0
+#!
+#:def DEBUG_CODE(code)
+#:if DEBUG > 0
+$:code
+#:endif
+#:enddef DEBUG_CODE
+
+
+#! Asserts the validity of a condition.
+#!
+#! cond: Condition
+#!
+#:def ASSERT(COND)
+#:call DEBUG_CODE
+if (.not. (${COND}$)) then
+  call assert_failed("${_FILE_}$", ${_LINE_}$)
+end if
+#:endcall
+#:enddef ASSERT
+
+
+#! Sets an optional output argument (aa) if present to a certain value (bb).
+#!
+#:def handle_outoptflag(aa, bb)
+  if (present(${aa}$)) then
+    ${aa}$ = ${bb}$
+  end if
+#:enddef
+
+
+#! Allocates an array (aa) to a minimal size (bb) with an actual size
+#! stored in (cc). If the optional allocatable argument (dd) is present
+#! and big enough, its allocation transfer will be transfered instead of
+#! a new allocation.
+#!
+#:def move_minoptalloc(aa, bb, cc, dd)
+  if (present(${dd}$)) then
+    if (size(${dd}$) >= ${bb}$) then
+      call move_alloc(${dd}$, ${aa}$)
+    else
+      deallocate(${dd}$)
+    end if
+  end if
+  if (.not. allocated(${aa}$)) then
+    allocate(${aa}$(${bb}$))
+  end if
+  ${cc}$ = size(${aa}$)
+#:enddef move_minoptalloc
+
+
+#! Sets a variable (aa) to the value of an optional argument (bb)
+#! if present or to a default value (cc) otherwise.
+#!
+#:def inoptflags(aa,bb,cc)
+  if (present(${bb}$)) then
+    ${aa}$ = ${bb}$
+  else
+    ${aa}$ = ${cc}$
+  end if
+#:enddef
+
+
+
+#! Sets an optional output argument (aa) if present to a certain value (bb).
+#!
+#:def handle_outoptflag(aa, bb)
+  if (present(${aa}$)) then
+    ${aa}$ = ${bb}$
+  end if
+#:enddef
+
+
+#:endmute

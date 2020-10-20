@@ -1,0 +1,36 @@
+os: linux
+dist: focal
+
+language: python
+python: 3.7
+
+env:
+  - BUILD_SHARED_LIBS=False
+  - BUILD_SHARED_LIBS=True
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - gfortran
+      - libblas-dev
+      - liblapack-dev
+      - libopenmpi-dev
+
+install:
+  - pip install fypp
+
+script:
+  - >
+    FC=gfortran cmake -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
+    -DCMAKE_INSTALL_PREFIX=${PWD}/_install
+    -B _build .
+    && cmake --build _build -- -j
+    && cmake --install _build
+  - >
+    CMAKE_PREFIX_PATH="${PWD}/_install:${CMAKE_PREFIX_PATH}"
+    ./test/integration/cmake/runtest.sh _build_cmake
+  - >
+    PKG_CONFIG_PATH="${PWD}/_install/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    FC=mpifort
+    ./test/integration/pkgconfig/runtest.sh _build_pkgconfig

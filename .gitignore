@@ -3,4 +3,6 @@
 *.a
 *.mod
 make.arch
-
+doc/doxygen/_build
+_build
+_install

@@ -1,0 +1,9 @@
+Name: mpifx
+Description: Modern Fortran wrappers for MPI
+Version: @PROJECT_VERSION@
+URL: https://github.com/dftbplus/mpifx
+
+Requires: @PKGCONFIG_REQUIRES@
+Libs: @PKGCONFIG_LIBS@
+Libs.private: @PKGCONFIG_LIBS_PRIVATE@
+Cflags: @PKGCONFIG_C_FLAGS@
