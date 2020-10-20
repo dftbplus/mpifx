@@ -5,6 +5,10 @@ Change Log
 Notable project changes in various releases.
 
 
+Unreleased
+==========
+
+
 1.0
 ===
 
