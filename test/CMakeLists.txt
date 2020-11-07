@@ -35,9 +35,11 @@ foreach(target IN LISTS tested)
     ${MPIEXEC_POSTFLAGS}
     )
   set_tests_properties(${target} PROPERTIES
+    # test cases generate this on stdOut
     PASS_REGULAR_EXPRESSION "TestPASSED"
     )
   set_tests_properties(${target} PROPERTIES
+    # test cases generate this on stdOut
     FAIL_REGULAR_EXPRESSION "TestFAILED"
     )
 endforeach()

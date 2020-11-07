@@ -37,15 +37,14 @@ program test_allgatherv
   if (mycomm%rank == mycomm%size - 1) then
     write(*, *) "Recv1 buffer:", recv1
   end if
-  iCount = 0
-  do ii = 1, mycomm%size
-    iCount = iCount + ii**2
-  end do
+  ! test what has been gathered
+  iCount = (2*mycomm%size**3+3*mycomm%size**2+mycomm%size)/6
   if (nint(sum(recv1)) /= iCount) then
     tPassed = .false.
   else
     tPassed = .true.
   end if
+  tPassed = tPassed .and. (abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp))
   call testReturn(mycomm, tPassed)
   deallocate(recvcounts)
   deallocate(recv1)
@@ -73,6 +72,14 @@ program test_allgatherv
       write(*,*)recv2(:,ii)
     end do
   end if
+  iCount = 5*mycomm%size*(mycomm%size+1)*(2*mycomm%size+1)/6
+  if (nint(sum(recv2)) /= iCount) then
+    tPassed = .false.
+  else
+    tPassed = .true.
+  end if
+  tPassed = tPassed .and. (abs(sum(recv2)-nint(sum(recv2))) < epsilon(1.0_sp))
+  call testReturn(mycomm, tPassed)
   deallocate(recvcounts)
 
 
@@ -95,6 +102,14 @@ program test_allgatherv
   if (mycomm%rank == mycomm%size - 1) then
     write(*, *) "Recv1 buffer:", recv1
   end if
+  ! test what has been gathered
+  if (nint(sum(recv1)) /= (mycomm%size*(mycomm%size+1))/2) then
+    tPassed = .false.
+  else
+    tPassed = .true.
+  end if
+  tPassed = tPassed .and. (abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp))
+  call testReturn(mycomm, tPassed)
 
   call mpifx_finalize()
 
