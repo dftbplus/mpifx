@@ -1,5 +1,7 @@
+!> Test various patterns of allgatherv
 program test_allgatherv
   use libmpifx_module
+  use testhelper
   implicit none
 
   type(mpifx_comm) :: mycomm
@@ -12,6 +14,8 @@ program test_allgatherv
   integer :: ii, nrecv, nCol
   character(100) :: formstr
   character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
+  logical :: tPassed
+  integer :: iCount
 
   call mpifx_init()
   call mycomm%init()
@@ -33,6 +37,16 @@ program test_allgatherv
   if (mycomm%rank == mycomm%size - 1) then
     write(*, *) "Recv1 buffer:", recv1
   end if
+  iCount = 0
+  do ii = 1, mycomm%size
+    iCount = iCount + ii**2
+  end do
+  if (nint(sum(recv1)) /= iCount) then
+    tPassed = .false.
+  else
+    tPassed = .true.
+  end if
+  call testReturn(mycomm, tPassed)
   deallocate(recvcounts)
   deallocate(recv1)
 
