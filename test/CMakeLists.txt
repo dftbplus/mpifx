@@ -14,9 +14,15 @@ set(targets
   )
 list(APPEND targets ${tested})
 
+set(sources-helper
+  testhelper.f90
+  )
+add_library(mpifxtesthelp ${sources-helper})
+target_link_libraries(mpifxtesthelp PRIVATE MPI::MPI_Fortran MpiFx)
+
 foreach(target IN LISTS targets)
-  add_executable(${target} ${target}.f90 testhelper.f90)
-  target_link_libraries(${target} MpiFx)
+  add_executable(${target} ${target}.f90)
+  target_link_libraries(${target} MpiFx mpifxtesthelp)
 endforeach()
 
 foreach(target IN LISTS tested)
