@@ -1,6 +1,6 @@
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
-  use mpi
+  use mpi, only : MPI_COMM_WORLD, mpi_comm_size, mpi_comm_rank, mpi_comm_split, mpi_comm_free
   use mpifx_helper_module
   implicit none
   private
@@ -20,6 +20,9 @@ module mpifx_comm_module
 
     !> Creates a new communicator by splitting the old one.
     procedure :: split => mpifx_comm_split
+
+    !> Frees the communicator. The communicator should not be used after this.
+    procedure :: free => mpifx_comm_free
 
   end type mpifx_comm
 
@@ -52,7 +55,7 @@ contains
     end if
     self%leadrank = 0
     self%lead = (self%rank == self%leadrank)
-    
+
   end subroutine mpifx_comm_init
 
 
@@ -73,10 +76,10 @@ contains
   !!     program test_split
   !!       use libmpifx_module
   !!       implicit none
-  !!     
+  !!
   !!       type(mpifx_comm) :: allproc, groupproc
   !!       integer :: groupsize, mygroup
-  !!     
+  !!
   !!       call mpifx_init()
   !!       call allproc%init()
   !!       groupsize = allproc%size / 2
@@ -85,9 +88,9 @@ contains
   !!       write(*, "(3(A,1X,I0,1X))") "ID:", allproc%rank, "SUBGROUP", &
   !!           & mygroup, "SUBGROUP ID", groupproc%rank
   !!       call mpifx_finalize()
-  !!       
+  !!
   !!     end program test_split
-  !!       
+  !!
   !! \see MPI documentation (\c MPI_COMM_SPLIT)
   !!
   subroutine mpifx_comm_split(self, splitkey, rankkey, newcomm, error)
@@ -97,7 +100,7 @@ contains
     integer, intent(out), optional :: error
 
     integer :: error0, newcommid
-    
+
     call mpi_comm_split(self%id, splitkey, rankkey, newcommid, error0)
     call handle_errorflag(error0, "mpi_comm_split() in mpifx_comm_split()", error)
     if (error0 /= 0) then
@@ -106,6 +109,22 @@ contains
     call newcomm%init(newcommid, error)
 
   end subroutine mpifx_comm_split
-    
-  
+
+
+  !> Frees the MPI communicator.
+  !>
+  !> After this call, the communicator should not be used any more.
+  !>
+  !> \param self  Communicator instance.
+  !>
+  subroutine mpifx_comm_free(self)
+    class(mpifx_comm), intent(inout) :: self
+
+    integer :: error
+
+    call mpi_comm_free(self%id, error)
+
+  end subroutine mpifx_comm_free
+
+
 end module mpifx_comm_module
