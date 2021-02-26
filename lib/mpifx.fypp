@@ -39,7 +39,7 @@
 #:set MAX_RANK = getvar('MAX_RANK', 6)
 
 
-#! Returns colons within paranthesis according to the RANK or empty string
+#! Returns colons within parenthesis according to the RANK or empty string
 #! if RANK is zero.
 #:def RANKSUFFIX(RANK)
 ${'' if RANK == 0 else '(' + ':' + ',:' * (RANK - 1) +')'}$
