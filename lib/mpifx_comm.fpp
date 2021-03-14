@@ -113,7 +113,7 @@ contains
 
   !> Frees the MPI communicator.
   !>
-  !> After this call, the communicator should not be used any more.
+  !> After this call, the passed communicator should not be used any more.
   !>
   !> \param self  Communicator instance.
   !>
