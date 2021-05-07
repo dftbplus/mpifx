@@ -11,7 +11,7 @@ Notable project changes in various releases.
 Added
 -----
 
-* Method 'free' implemented for the MPI-communicator
+* Method 'free' implemented to release the MPI-communicator
 
 
 1.0
