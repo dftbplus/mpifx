@@ -1,6 +1,6 @@
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
-  use mpi, only : MPI_COMM_WORLD, mpi_comm_size, mpi_comm_rank, mpi_comm_split, mpi_comm_free
+  use mpi
   use mpifx_helper_module
   implicit none
   private
