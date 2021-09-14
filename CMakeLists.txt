@@ -7,7 +7,7 @@ include(MpiFxUtils)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake)
 
-project(MpiFx VERSION 1.0 LANGUAGES Fortran)
+project(MpiFx VERSION 1.1 LANGUAGES Fortran)
 
 setup_build_type()
 

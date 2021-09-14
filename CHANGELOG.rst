@@ -5,8 +5,13 @@ Change Log
 Notable project changes in various releases.
 
 
-Unreleased
-==========
+1.1
+===
+
+Added
+-----
+
+* Method 'free' implemented to release the MPI-communicator
 
 
 1.0
