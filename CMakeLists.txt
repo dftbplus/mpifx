@@ -7,7 +7,14 @@ include(MpiFxUtils)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/config.cmake)
 
-project(MpiFx VERSION 1.1 LANGUAGES Fortran)
+project(MpiFx LANGUAGES Fortran)
+
+# Get version number from file
+file (STRINGS "${PROJECT_SOURCE_DIR}/VERSION" PROJECT_VERSION)
+string(REPLACE "." ";" VERSION_LIST ${PROJECT_VERSION})
+list(GET VERSION_LIST 0 PROJECT_VERSION_MAJOR)
+list(GET VERSION_LIST 1 PROJECT_VERSION_MINOR)
+list(GET VERSION_LIST 2 PROJECT_VERSION_PATCH)
 
 setup_build_type()
 
