@@ -27,6 +27,12 @@ fypp_preprocess("${sources-fpp}" sources-f90)
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "NAG")
   set_source_files_properties(SOURCE ${sources-f90} PROPERTY COMPILE_FLAGS -mismatch)
 endif()
+# GNU 11 compiler won't compile these files without the '-fallow-argument-mismatch' option
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  if("${CMAKE_Fortran_COMPILER_VERSION}" VERSION_GREATER_EQUAL "11")
+    set_source_files_properties(SOURCE ${sources-f90} PROPERTY COMPILE_FLAGS -fallow-argument-mismatch)
+  endif()
+endif()
 
 add_library(mpifx ${sources-f90})
 
