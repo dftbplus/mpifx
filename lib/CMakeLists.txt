@@ -23,9 +23,21 @@ set(sources-fpp
 
 fypp_preprocess("${sources-fpp}" sources-f90)
 
-# NAG compiler won't compile these files without the '-mismatch' option
+# Some MPI frameworks (e.g. MPICH) do not provide all possible argument
+# combinations explicitely in their mpi module. Consequently, compilers
+# checking for different signatures for calls of the same subroutine
+# may refuse to compile the libray.
+
+# Allow argument mismatch for the NAG compiler
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "NAG")
   set_source_files_properties(SOURCE ${sources-f90} PROPERTY COMPILE_FLAGS -mismatch)
+endif()
+
+# Allow argument mismatch for recent GNU compilers
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  if("${CMAKE_Fortran_COMPILER_VERSION}" VERSION_GREATER_EQUAL "11")
+    set_source_files_properties(SOURCE ${sources-f90} PROPERTY COMPILE_FLAGS -fallow-argument-mismatch)
+  endif()
 endif()
 
 add_library(mpifx ${sources-f90})
