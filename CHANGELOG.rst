@@ -5,6 +5,17 @@ Change Log
 Notable project changes in various releases.
 
 
+1.2
+===
+
+Added
+-----
+
+* Support for building with meson
+
+* Support to build with GNU Fortran >= 11
+
+
 1.1
 ===
 
@@ -30,5 +41,5 @@ Changed
 
 * The Fypp-preprocessor is not shipped with MpiFx but is an external
   requirement.
-  
+
 * Name convention for processes (master -> lead).
