@@ -4,6 +4,7 @@ set(targets
   test_allreduce
   test_bcast
   test_comm_split
+  test_comm_split_type
   test_gather
   test_gatherv
   test_reduce

@@ -6,6 +6,7 @@ tests = [
   'allreduce',
   'bcast',
   'comm_split',
+  'comm_split_type',
   'gather',
   'gatherv',
   'reduce',
