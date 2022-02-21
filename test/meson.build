@@ -12,6 +12,7 @@ tests = [
   'reduce',
   'scatter',
   'scatterv',
+  'shared_memory',
 ]
 
 foreach t : tests
