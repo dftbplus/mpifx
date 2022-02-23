@@ -65,7 +65,7 @@ contains
     integer(MPI_ADDRESS_KIND) :: local_length
     type(c_ptr) :: baseptr
 
-    disp_unit = kind(shared_data)
+    disp_unit = storage_size(shared_data) / 8
 
     local_length = 0
     if (mycomm%lead) then
