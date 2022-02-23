@@ -10,7 +10,7 @@ set(targets
   test_reduce
   test_scatter
   test_scatterv
-  test_shared_memory)
+  test_win_shared_mem)
 
 foreach(target IN LISTS targets)
   add_executable(${target} ${target}.f90)

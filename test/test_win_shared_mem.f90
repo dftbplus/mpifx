@@ -1,10 +1,10 @@
-program test_shared_memory
+program test_win_shared_mem
   use libmpifx_module
   implicit none
 
   type(mpifx_comm) :: globalcomm, nodecomm
+  type(mpifx_win) :: win
   integer, parameter :: length = 7
-  integer :: win
   integer, pointer :: data_pointer(:)
 
   call mpifx_init()
@@ -13,22 +13,22 @@ program test_shared_memory
   ! Create a new communicator for all ranks on a node first
   call globalcomm%split_type(MPI_COMM_TYPE_SHARED, globalcomm%rank, nodecomm)
 
-  call mpifx_allocate_shared(nodecomm, length, win, data_pointer)
+  call win%allocate_shared(nodecomm, length, data_pointer)
 
-  call mpifx_lock_shared(win)
+  call win%lock()
 
   ! Only rank 0 writes data into the array
   if (nodecomm%lead) then
     data_pointer(:) = 42
   end if
 
-  call mpifx_sync_shared(nodecomm, win)
-  call mpifx_unlock_shared(win)
+  call win%sync()
+  call win%unlock()
 
   ! All ranks on the node will read the same value
   write(*, "(2(A,1X,I0,1X))") "ID:", nodecomm%rank, "VALUE:", data_pointer(1)
 
-  call mpifx_free_shared(win)
+  call win%free()
   call mpifx_finalize()
 
-end program test_shared_memory
+end program test_win_shared_mem

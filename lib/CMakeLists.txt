@@ -20,7 +20,7 @@ set(sources-fpp
   mpifx_scatter.fpp
   mpifx_scatterv.fpp
   mpifx_send.fpp
-  mpifx_shared_memory.fpp)
+  mpifx_win.fpp)
 
 fypp_preprocess("${sources-fpp}" sources-f90)
 
