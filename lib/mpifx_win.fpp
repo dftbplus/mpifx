@@ -69,7 +69,7 @@ contains
 
     local_length = 0
     if (mycomm%lead) then
-      local_length = length * disp_unit
+      local_length = int(length, kind=MPI_ADDRESS_KIND) * disp_unit
     end if
 
     call mpi_win_allocate_shared(local_length, disp_unit, MPI_INFO_NULL, mycomm%id, baseptr, self%id, error0)
