@@ -12,15 +12,14 @@ module mpifx_win_module
 
   !> MPI shared memory window with some additional information.
   type mpifx_win
-    integer :: id       !< Window id.
+    private
+    integer, public :: id       !< Window id.
     integer :: comm_id  !< Communicator id.
   contains
     !> Initializes an MPI shared memory window.
-    generic :: allocate_shared => &
-#:for TYPE in TYPES[:-1]
-    & mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$,&
+#:for TYPE in TYPES
+    generic :: allocate_shared => mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
 #:endfor
-    & mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPES[-1]]}$
 
 #:for TYPE in TYPES
     procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
