@@ -9,7 +9,8 @@ set(targets
   test_gatherv
   test_reduce
   test_scatter
-  test_scatterv)
+  test_scatterv
+  test_win_shared_mem)
 
 foreach(target IN LISTS targets)
   add_executable(${target} ${target}.f90)
