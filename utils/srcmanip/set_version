@@ -15,6 +15,10 @@ _VERSION_PATTERN = r'\d+\.\d+(?:\.\d+)?(?:-\w+)?'
 
 _FILES_AND_PATTERNS = [
     #
+    ('VERSION',
+     r'{}'.format(_VERSION_PATTERN),
+     r'{version}'),
+    #
     ('doc/doxygen/Doxyfile',
      r'^PROJECT_NUMBER\s*=\s*([\'"]){}\1\s*$'.format(_VERSION_PATTERN),
      'PROJECT_NUMBER = "{version}"\n'),
