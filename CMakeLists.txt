@@ -34,6 +34,7 @@ include(GNUInstallDirs)
 
 add_subdirectory(lib)
 if(NOT BUILD_EXPORTED_TARGETS_ONLY)
+  enable_testing()
   add_subdirectory(test)
 endif()
 
