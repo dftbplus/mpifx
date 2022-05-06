@@ -5,6 +5,19 @@ Change Log
 Notable project changes in various releases.
 
 
+1.3
+===
+
+Added
+------
+
+* Grid splitting based on type (e.g. MPI_COMM_TYPE_SHARED)
+
+* Wrappers for accessing MPI shared memory window
+
+* Some tests accessible via ctest
+
+
 1.2
 ===
 

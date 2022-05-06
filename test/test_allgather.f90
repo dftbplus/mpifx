@@ -10,7 +10,7 @@ program test_allgather
   integer, allocatable :: recv1(:), recv2(:,:)
   character(100) :: formstr
   character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
-  logical :: tPassed
+  logical :: isPassed
 
   call mpifx_init()
   call mycomm%init()
