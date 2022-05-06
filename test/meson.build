@@ -6,11 +6,13 @@ tests = [
   'allreduce',
   'bcast',
   'comm_split',
+  'comm_split_type',
   'gather',
   'gatherv',
   'reduce',
   'scatter',
   'scatterv',
+  'win_shared_mem',
 ]
 
 foreach t : tests

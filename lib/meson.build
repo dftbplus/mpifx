@@ -22,6 +22,7 @@ sources_fpp = files(
   'mpifx_scatter.fpp',
   'mpifx_scatterv.fpp',
   'mpifx_send.fpp',
+  'mpifx_win.fpp',
 )
 sources_f90 = []
 foreach src : sources_fpp

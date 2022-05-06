@@ -19,7 +19,8 @@ set(sources-fpp
   mpifx_reduce.fpp
   mpifx_scatter.fpp
   mpifx_scatterv.fpp
-  mpifx_send.fpp)
+  mpifx_send.fpp
+  mpifx_win.fpp)
 
 fypp_preprocess("${sources-fpp}" sources-f90)
 
