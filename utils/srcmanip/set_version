@@ -15,10 +15,6 @@ _VERSION_PATTERN = r'\d+\.\d+(?:\.\d+)?(?:-\w+)?'
 
 _FILES_AND_PATTERNS = [
     #
-    ('CMakeLists.txt',
-     r'project\(\s*MpiFx\s+VERSION\s+{}(\s+|\))'.format(_VERSION_PATTERN),
-     r'project(MpiFx VERSION {version}\1'),
-    #
     ('doc/doxygen/Doxyfile',
      r'^PROJECT_NUMBER\s*=\s*([\'"]){}\1\s*$'.format(_VERSION_PATTERN),
      'PROJECT_NUMBER = "{version}"\n'),
@@ -30,6 +26,7 @@ _FILES_AND_PATTERNS = [
     ('doc/sphinx/conf.py',
      r'release\s*=\s*([\'"]){}\1'.format(_VERSION_PATTERN),
      "release = '{version}'"),
+    ('VERSION', _VERSION_PATTERN, '{version}')
 ]
 
 
