@@ -24,11 +24,11 @@ program test_allgather
   write(formstr, "(A,I0,A)") "A,", size(recv1), "(1X,I0))"
   write(*, label // formstr) 2, mycomm%rank, "Recv1 buffer:", recv1(:)
   if (sum(recv1) /= mycomm%size * (mycomm%size-1)) then
-    tPassed = .false.
+    isPassed = .false.
   else
-    tPassed = .true.
+    isPassed = .true.
   end if
-  call testReturn(mycomm, tPassed)
+  call testReturn(mycomm, isPassed)
   deallocate(recv1)
 
   ! I1 -> I1
@@ -42,11 +42,11 @@ program test_allgather
   write(formstr, "(A,I0,A)") "A,", size(recv1), "(1X,I0))"
   write(*, label // formstr) 4, mycomm%rank, "Recv1 buffer:", recv1
   if (sum(recv1) /= mycomm%size**2) then
-    tPassed = .false.
+    isPassed = .false.
   else
-    tPassed = .true.
+    isPassed = .true.
   end if
-  call testReturn(mycomm, tPassed)
+  call testReturn(mycomm, isPassed)
 
   ! I1 -> I2
   allocate(recv2(size(send1), mycomm%size))
@@ -58,11 +58,11 @@ program test_allgather
   write(formstr, "(A,I0,A)") "A,", size(recv2), "(1X,I0))"
   write(*, label // formstr) 6, mycomm%rank, "Recv2 buffer:", recv2
   if (sum(recv1) /= mycomm%size**2) then
-    tPassed = .false.
+    isPassed = .false.
   else
-    tPassed = .true.
+    isPassed = .true.
   end if
-  call testReturn(mycomm, tPassed)
+  call testReturn(mycomm, isPassed)
 
   call mpifx_finalize()
 
