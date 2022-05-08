@@ -4,6 +4,16 @@ Change Log
 
 Notable project changes in various releases.
 
+1.3.1
+=====
+
+Fixed
+-----
+
+* Compilation error in unit tests
+
+* Standard CMake option ``BUILD_TESTING`` to disable building unit tests
+
 
 1.3
 ===
