@@ -33,7 +33,7 @@ endif()
 include(GNUInstallDirs)
 
 add_subdirectory(lib)
-if(NOT BUILD_EXPORTED_TARGETS_ONLY)
+if(NOT BUILD_EXPORTED_TARGETS_ONLY AND BUILD_TESTING)
   enable_testing()
   add_subdirectory(test)
 endif()

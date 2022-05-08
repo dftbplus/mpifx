@@ -45,8 +45,11 @@ or pass them as command line options at the configuration phase, e.g.::
 Testing
 -------
 
-A few tests / usage examples can be found in the `test/` subdirectory. The
-compiled test programs will be in the `test/` subfolder of your build directory.
+A few tests / usage examples can be found in the `test/` subdirectory,
+a sub-set of which can be checked with ctest. The compiled test
+programs will be in the `test/` subfolder of your build directory.
+
+To enable building, include the cmake option -DBUILD_TESTING=ON
 
 
 Using the library
