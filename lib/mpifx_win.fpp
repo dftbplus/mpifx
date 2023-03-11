@@ -25,14 +25,17 @@ module mpifx_win_module
     procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
 #:endfor
 
-    !> Locks a shared memory segment.
+    !> Locks a shared memory segment for remote access.
     procedure :: lock => mpifx_win_lock
 
     !> Unlocks a shared memory segment.
     procedure :: unlock => mpifx_win_unlock
 
-    !> Synchronizes shared memory across MPI ranks.
+    !> Synchronizes shared memory across MPI ranks after remote access.
     procedure :: sync => mpifx_win_sync
+
+    !> Ensures consistency of stores between fence calls.
+    procedure :: fence => mpifx_win_fence
 
     !> Deallocates memory associated with a shared memory segment.
     procedure :: free => mpifx_win_free
@@ -47,44 +50,58 @@ contains
   !!
   !! \param self  Handle of the shared memory window on return.
   !! \param mycomm  MPI communicator.
-  !! \param length  Number of elements of type ${TYPE}$ in the shared memory window.
-  !! \param shared_data  Pointer to the shared data array of length 'length' on return.
+  !! \param global_length  Number of elements of type ${TYPE}$ in the entire shared memory window.
+  !! \param global_pointer  Pointer to the shared data array of length 'global_length' on return.
+  !! \param local_length  Number of elements of type ${TYPE}$ occupied by the current rank.
+  !! \param local_pointer  Pointer to the local chunk of the data array of length 'local_length' on return.
   !! \param error  Optional error code on return.
   !!
   !! \see MPI documentation (\c MPI_WIN_ALLOCATE_SHARED)
   !!
-  subroutine mpifx_win_allocate_shared_${SUFFIX}$(self, mycomm, length, shared_data, error)
+  subroutine mpifx_win_allocate_shared_${SUFFIX}$(self, mycomm, global_length, global_pointer,&
+      & local_length, local_pointer, error)
     class(mpifx_win), intent(out) :: self
     class(mpifx_comm), intent(in) :: mycomm
-    integer, intent(in) :: length
-    ${TYPE}$, pointer, intent(out) :: shared_data(:)
+    integer, intent(in) :: global_length
+    ${TYPE}$, pointer, intent(out) :: global_pointer(:)
+    integer, intent(in), optional :: local_length
+    ${TYPE}$, pointer, intent(out), optional :: local_pointer(:)
     integer, intent(out), optional :: error
 
     integer :: disp_unit, error0, error1
-    integer(MPI_ADDRESS_KIND) :: local_length
-    type(c_ptr) :: baseptr
+    integer(MPI_ADDRESS_KIND) :: global_mem_size, local_mem_size
+    type(c_ptr) :: global_baseptr, local_baseptr
 
-    disp_unit = storage_size(shared_data) / 8
+    disp_unit = storage_size(global_pointer) / 8
 
-    local_length = 0
-    if (mycomm%lead) then
-      local_length = int(length, kind=MPI_ADDRESS_KIND) * disp_unit
+    local_mem_size = 0
+    if (present(local_length)) then
+      local_mem_size = int(local_length, kind=MPI_ADDRESS_KIND) * disp_unit
+    else if (mycomm%lead) then
+      local_mem_size = int(global_length, kind=MPI_ADDRESS_KIND) * disp_unit
     end if
 
-    call mpi_win_allocate_shared(local_length, disp_unit, MPI_INFO_NULL, mycomm%id, baseptr, self%id, error0)
-    call handle_errorflag(error0, "MPI_WIN_ALLOCATE_SHARED in mpifx_win_allocate_shared_${SUFFIX}$", error)
+    call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, mycomm%id, local_baseptr,&
+        & self%id, error0)
+    call handle_errorflag(error0, "MPI_WIN_ALLOCATE_SHARED in mpifx_win_allocate_shared_${SUFFIX}$",&
+        & error)
 
-    call mpi_win_shared_query(self%id, 0, local_length, disp_unit, baseptr, error1)
-    call handle_errorflag(error1, "MPI_WIN_SHARED_QUERY in mpifx_win_allocate_shared_${SUFFIX}$", error)
+    call mpi_win_shared_query(self%id, mycomm%leadrank, global_mem_size, disp_unit, global_baseptr,&
+        & error1)
+    call handle_errorflag(error1, "MPI_WIN_SHARED_QUERY in mpifx_win_allocate_shared_${SUFFIX}$",&
+        & error)
 
     self%comm_id = mycomm%id
-    call c_f_pointer(baseptr, shared_data, [length])
+    call c_f_pointer(global_baseptr, global_pointer, [global_length])
+    if (present(local_pointer)) then
+      call c_f_pointer(local_baseptr, local_pointer, [local_length])
+    end if
 
   end subroutine mpifx_win_allocate_shared_${SUFFIX}$
 
 #:enddef mpifx_win_allocate_shared_template
 
-  !> Locks a shared memory segment.
+  !> Locks a shared memory segment for remote access. Starts a remote access epoch.
   !!
   !! \param self  Handle of the shared memory window.
   !! \param error  Optional error code on return.
@@ -102,7 +119,7 @@ contains
 
   end subroutine mpifx_win_lock
 
-  !> Unlocks a shared memory segment.
+  !> Unlocks a shared memory segment. Finishes a remote access epoch.
   !!
   !! \param self  Handle of the shared memory window.
   !! \param error  Optional error code on return.
@@ -120,7 +137,8 @@ contains
 
   end subroutine mpifx_win_unlock
 
-  !> Synchronizes shared memory across MPI ranks.
+  !> Synchronizes shared memory across MPI ranks after remote access.
+  !> Completes all memory stores in a remote access epoch.
   !!
   !! \param self  Handle of the shared memory window.
   !! \param error  Optional error code on return.
@@ -140,6 +158,31 @@ contains
     call handle_errorflag(error1, "MPI_BARRIER in mpifx_win_sync", error)
 
   end subroutine mpifx_win_sync
+
+  !> Ensure consistency of stores between fence calls
+  !!
+  !! \param self  Handle of the shared memory window.
+  !! \param assert  Hint to the MPI library to assume certain condition (e.g., MPI_MODE_NOSTORE).
+  !! \param error  Optional error code on return.
+  !!
+  !! \see MPI documentation (\c MPI_WIN_FENCE)
+  !!
+  subroutine mpifx_win_fence(self, assert, error)
+    class(mpifx_win), intent(inout) :: self
+    integer, intent(in), optional :: assert
+    integer, intent(out), optional :: error
+
+    integer :: error0, assert_
+
+    assert_ = 0
+    if (present(assert)) then
+      assert_ = assert
+    end if
+
+    call mpi_win_fence(assert_, self%id, error0)
+    call handle_errorflag(error0, "MPI_WIN_FENCE in mpifx_win_fence", error)
+
+  end subroutine mpifx_win_fence
 
   !> Deallocates memory associated with a shared memory segment.
   !!
