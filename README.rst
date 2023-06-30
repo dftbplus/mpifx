@@ -39,14 +39,17 @@ You can influence the configuration via CMake-variables, which are listed in
 `config.cmake <config.cmake>`_. You can either modify the values directly there
 or pass them as command line options at the configuration phase, e.g.::
 
-  FC=ifort cmake -B _build -DBUILD_LIBRARY_ONLY=True
+  FC=ifort cmake -B _build -DBUILD_TESTING=NO .
   
 
 Testing
 -------
 
-A few tests / usage examples can be found in the `test/` subdirectory. The
-compiled test programs will be in the `test/` subfolder of your build directory.
+A few tests / usage examples can be found in the `test/` subdirectory,
+a sub-set of which can be checked with ctest. The compiled test
+programs will be in the `test/` subfolder of your build directory.
+
+To disable building tests, include the cmake option -DBUILD_TESTING=OFF
 
 
 Using the library
