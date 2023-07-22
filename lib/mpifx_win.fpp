@@ -1,7 +1,7 @@
 #:include 'mpifx.fypp'
 #:set TYPES = NUMERIC_TYPES
 
-!> Contains routined for MPI shared memory.
+!> Contains routined for MPI shared memory windows.
 module mpifx_win_module
   use mpifx_common_module
   use iso_c_binding, only : c_ptr, c_f_pointer
@@ -13,17 +13,17 @@ module mpifx_win_module
   !> MPI shared memory window with some additional information.
   type mpifx_win
     private
-    integer, public :: id       !< Window id.
-    integer :: comm_id  !< Communicator id.
+    integer, public :: id  !< Window id.
+    integer :: comm_id     !< Communicator id.
   contains
     !> Initializes an MPI shared memory window.
-#:for TYPE in TYPES
+  #:for TYPE in TYPES
     generic :: allocate_shared => mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
-#:endfor
+  #:endfor
 
-#:for TYPE in TYPES
+  #:for TYPE in TYPES
     procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
-#:endfor
+  #:endfor
 
     !> Locks a shared memory segment for remote access.
     procedure :: lock => mpifx_win_lock
@@ -46,14 +46,16 @@ contains
 
 #:def mpifx_win_allocate_shared_template(SUFFIX, TYPE)
 
-  !> Initialized a window handle and returns a pointer to the address associated with a shared memory segment.
+  !> Initialized a window handle and returns a pointer to the address associated with a shared
+  !> memory segment.
   !!
   !! \param self  Handle of the shared memory window on return.
   !! \param mycomm  MPI communicator.
   !! \param global_length  Number of elements of type ${TYPE}$ in the entire shared memory window.
   !! \param global_pointer  Pointer to the shared data array of length 'global_length' on return.
   !! \param local_length  Number of elements of type ${TYPE}$ occupied by the current rank.
-  !! \param local_pointer  Pointer to the local chunk of the data array of length 'local_length' on return.
+  !! \param local_pointer Pointer to the local chunk of the data array of length 'local_length' on
+  !! return.
   !! \param error  Optional error code on return.
   !!
   !! \see MPI documentation (\c MPI_WIN_ALLOCATE_SHARED)
@@ -81,10 +83,10 @@ contains
       local_mem_size = int(global_length, kind=MPI_ADDRESS_KIND) * disp_unit
     end if
 
-    call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, mycomm%id, local_baseptr,&
-        & self%id, error0)
-    call handle_errorflag(error0, "MPI_WIN_ALLOCATE_SHARED in mpifx_win_allocate_shared_${SUFFIX}$",&
-        & error)
+    call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, mycomm%id,&
+        & local_baseptr, self%id, error0)
+    call handle_errorflag(error0,&
+        & "MPI_WIN_ALLOCATE_SHARED in mpifx_win_allocate_shared_${SUFFIX}$", error)
 
     call mpi_win_shared_query(self%id, mycomm%leadrank, global_mem_size, disp_unit, global_baseptr,&
         & error1)
@@ -119,6 +121,7 @@ contains
 
   end subroutine mpifx_win_lock
 
+
   !> Unlocks a shared memory segment. Finishes a remote access epoch.
   !!
   !! \param self  Handle of the shared memory window.
@@ -136,6 +139,7 @@ contains
     call handle_errorflag(error0, "MPI_WIN_UNLOCK_ALL in mpifx_win_unlock", error)
 
   end subroutine mpifx_win_unlock
+
 
   !> Synchronizes shared memory across MPI ranks after remote access.
   !> Completes all memory stores in a remote access epoch.
@@ -158,6 +162,7 @@ contains
     call handle_errorflag(error1, "MPI_BARRIER in mpifx_win_sync", error)
 
   end subroutine mpifx_win_sync
+
 
   !> Ensure consistency of stores between fence calls
   !!
@@ -183,6 +188,7 @@ contains
     call handle_errorflag(error0, "MPI_WIN_FENCE in mpifx_win_fence", error)
 
   end subroutine mpifx_win_fence
+
 
   !> Deallocates memory associated with a shared memory segment.
   !!
