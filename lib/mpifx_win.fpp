@@ -1,9 +1,11 @@
 #:include 'mpifx.fypp'
 #:set TYPES = NUMERIC_TYPES
+#:set INT_TYPES = ['int32', 'int64']
 
 !> Contains routined for MPI shared memory windows.
 module mpifx_win_module
   use mpifx_common_module
+  use mpifx_constants_module, only : MPIFX_SIZE_T
   use iso_c_binding, only : c_ptr, c_f_pointer
   implicit none
   private
@@ -18,11 +20,15 @@ module mpifx_win_module
   contains
     !> Initializes an MPI shared memory window.
   #:for TYPE in TYPES
-    generic :: allocate_shared => mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
+    #:for INT_TYPE in INT_TYPES
+      generic :: allocate_shared => mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$_${INT_TYPE}$
+    #:endfor
   #:endfor
 
   #:for TYPE in TYPES
-    procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$
+    #:for INT_TYPE in INT_TYPES
+      procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$_${INT_TYPE}$
+    #:endfor
   #:endfor
 
     !> Locks a shared memory segment for remote access.
@@ -44,7 +50,7 @@ module mpifx_win_module
 
 contains
 
-#:def mpifx_win_allocate_shared_template(SUFFIX, TYPE)
+#:def mpifx_win_allocate_shared_template(SUFFIX, TYPE, ADDRESS_KIND)
 
   !> Initialized a window handle and returns a pointer to the address associated with a shared
   !> memory segment.
@@ -64,9 +70,9 @@ contains
       & local_length, local_pointer, error)
     class(mpifx_win), intent(out) :: self
     class(mpifx_comm), intent(in) :: mycomm
-    integer, intent(in) :: global_length
+    integer${ADDRESS_KIND}$, intent(in) :: global_length
     ${TYPE}$, pointer, intent(out) :: global_pointer(:)
-    integer, intent(in), optional :: local_length
+    integer${ADDRESS_KIND}$, intent(in), optional :: local_length
     ${TYPE}$, pointer, intent(out), optional :: local_pointer(:)
     integer, intent(out), optional :: error
 
@@ -211,9 +217,11 @@ contains
 
 #:for TYPE in TYPES
   #:set FTYPE = FORTRAN_TYPES[TYPE]
-  #:set SUFFIX = TYPE_ABBREVS[TYPE]
 
-  $:mpifx_win_allocate_shared_template(SUFFIX, FTYPE)
+  #:for ADDRESS_KIND, INT_TYPE in zip(['', '(MPIFX_SIZE_T)'], INT_TYPES)
+    #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + INT_TYPE
+    $:mpifx_win_allocate_shared_template(SUFFIX, FTYPE, ADDRESS_KIND)
+  #:endfor
 
 #:endfor
 
