@@ -1,6 +1,6 @@
 #:include 'mpifx.fypp'
-#:set TYPES = NUMERIC_TYPES
-#:set INT_TYPES = ['int32', 'int64']
+#:set WIN_DATA_TYPES = NUMERIC_TYPES
+#:set ADDRESS_KINDS_SUFFIXES = [('int32', 'i4'), ('int64', 'i8')]
 
 !> Contains routined for MPI shared memory windows.
 module mpifx_win_module
@@ -9,6 +9,7 @@ module mpifx_win_module
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_constants_module, only : MPIFX_SIZE_T
   use iso_c_binding, only : c_ptr, c_f_pointer
+  use iso_fortran_env, only : int32, int64
   implicit none
   private
 
@@ -20,16 +21,12 @@ module mpifx_win_module
     type(mpi_win) :: win  !< MPI window handle.
     type(mpi_comm) :: comm  !< MPI communicator handle.
   contains
-    !> Initializes an MPI shared memory window.
-  #:for TYPE in TYPES
-    #:for INT_TYPE in INT_TYPES
-      generic :: allocate_shared => mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$_${INT_TYPE}$
-    #:endfor
-  #:endfor
 
-  #:for TYPE in TYPES
-    #:for INT_TYPE in INT_TYPES
-      procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$_${INT_TYPE}$
+  #:for TYPE in WIN_DATA_TYPES
+    #:for _, ADDRESS_SUFFIX in ADDRESS_KINDS_SUFFIXES
+      #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + ADDRESS_SUFFIX
+      procedure, private :: mpifx_win_allocate_shared_${SUFFIX}$
+      generic :: allocate_shared => mpifx_win_allocate_shared_${SUFFIX}$
     #:endfor
   #:endfor
 
@@ -72,9 +69,9 @@ contains
       & local_length, local_pointer, error)
     class(mpifx_win), intent(out) :: self
     class(mpifx_comm), intent(in) :: mycomm
-    integer${ADDRESS_KIND}$, intent(in) :: global_length
+    integer(${ADDRESS_KIND}$), intent(in) :: global_length
     ${TYPE}$, pointer, intent(out) :: global_pointer(:)
-    integer${ADDRESS_KIND}$, intent(in), optional :: local_length
+    integer(${ADDRESS_KIND}$), intent(in), optional :: local_length
     ${TYPE}$, pointer, intent(out), optional :: local_pointer(:)
     integer, intent(out), optional :: error
 
@@ -217,11 +214,10 @@ contains
   end subroutine mpifx_win_free
 
 
-#:for TYPE in TYPES
+#:for TYPE in WIN_DATA_TYPES
   #:set FTYPE = FORTRAN_TYPES[TYPE]
-
-  #:for ADDRESS_KIND, INT_TYPE in zip(['', '(MPIFX_SIZE_T)'], INT_TYPES)
-    #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + INT_TYPE
+  #:for ADDRESS_KIND, ADDRESS_SUFFIX in ADDRESS_KINDS_SUFFIXES
+    #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + ADDRESS_SUFFIX
     $:mpifx_win_allocate_shared_template(SUFFIX, FTYPE, ADDRESS_KIND)
   #:endfor
 
