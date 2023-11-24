@@ -1,12 +1,15 @@
 #:include 'mpifx.fypp'
-#:set TYPES = NUMERIC_TYPES
-#:set INT_TYPES = ['int32', 'int64']
+#:set WIN_DATA_TYPES = NUMERIC_TYPES
+#:set ADDRESS_KINDS_SUFFIXES = [('int32', 'i4'), ('int64', 'i8')]
 
 !> Contains routined for MPI shared memory windows.
 module mpifx_win_module
-  use mpifx_common_module
+  use mpi_f08
+  use mpifx_helper_module, only : handle_errorflag, sp, dp
+  use mpifx_comm_module, only : mpifx_comm
   use mpifx_constants_module, only : MPIFX_SIZE_T
   use iso_c_binding, only : c_ptr, c_f_pointer
+  use iso_fortran_env, only : int32, int64
   implicit none
   private
 
@@ -15,19 +18,15 @@ module mpifx_win_module
   !> MPI shared memory window with some additional information.
   type mpifx_win
     private
-    integer, public :: id  !< Window id.
-    integer :: comm_id     !< Communicator id.
+    type(mpi_win) :: win  !< MPI window handle.
+    type(mpi_comm) :: comm  !< MPI communicator handle.
   contains
-    !> Initializes an MPI shared memory window.
-  #:for TYPE in TYPES
-    #:for INT_TYPE in INT_TYPES
-      generic :: allocate_shared => mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$_${INT_TYPE}$
-    #:endfor
-  #:endfor
 
-  #:for TYPE in TYPES
-    #:for INT_TYPE in INT_TYPES
-      procedure, private :: mpifx_win_allocate_shared_${TYPE_ABBREVS[TYPE]}$_${INT_TYPE}$
+  #:for TYPE in WIN_DATA_TYPES
+    #:for _, ADDRESS_SUFFIX in ADDRESS_KINDS_SUFFIXES
+      #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + ADDRESS_SUFFIX
+      procedure, private :: mpifx_win_allocate_shared_${SUFFIX}$
+      generic :: allocate_shared => mpifx_win_allocate_shared_${SUFFIX}$
     #:endfor
   #:endfor
 
@@ -70,9 +69,9 @@ contains
       & local_length, local_pointer, error)
     class(mpifx_win), intent(out) :: self
     class(mpifx_comm), intent(in) :: mycomm
-    integer${ADDRESS_KIND}$, intent(in) :: global_length
+    integer(${ADDRESS_KIND}$), intent(in) :: global_length
     ${TYPE}$, pointer, intent(out) :: global_pointer(:)
-    integer${ADDRESS_KIND}$, intent(in), optional :: local_length
+    integer(${ADDRESS_KIND}$), intent(in), optional :: local_length
     ${TYPE}$, pointer, intent(out), optional :: local_pointer(:)
     integer, intent(out), optional :: error
 
@@ -89,17 +88,17 @@ contains
       local_mem_size = int(global_length, kind=MPI_ADDRESS_KIND) * disp_unit
     end if
 
-    call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, mycomm%id,&
-        & local_baseptr, self%id, error0)
+    self%comm%mpi_val = mycomm%id
+    call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, self%comm,&
+        & local_baseptr, self%win, error0)
     call handle_errorflag(error0,&
         & "MPI_WIN_ALLOCATE_SHARED in mpifx_win_allocate_shared_${SUFFIX}$", error)
 
-    call mpi_win_shared_query(self%id, mycomm%leadrank, global_mem_size, disp_unit, global_baseptr,&
-        & error1)
+    call mpi_win_shared_query(self%win, mycomm%leadrank, global_mem_size, disp_unit,&
+        & global_baseptr, error1)
     call handle_errorflag(error1, "MPI_WIN_SHARED_QUERY in mpifx_win_allocate_shared_${SUFFIX}$",&
         & error)
 
-    self%comm_id = mycomm%id
     call c_f_pointer(global_baseptr, global_pointer, [global_length])
     if (present(local_pointer)) then
       call c_f_pointer(local_baseptr, local_pointer, [local_length])
@@ -122,7 +121,7 @@ contains
 
     integer :: error0
 
-    call mpi_win_lock_all(MPI_MODE_NOCHECK, self%id, error0)
+    call mpi_win_lock_all(MPI_MODE_NOCHECK, self%win, error0)
     call handle_errorflag(error0, "MPI_WIN_LOCK_ALL in mpifx_win_lock", error)
 
   end subroutine mpifx_win_lock
@@ -141,7 +140,7 @@ contains
 
     integer :: error0
 
-    call mpi_win_unlock_all(self%id, error0)
+    call mpi_win_unlock_all(self%win, error0)
     call handle_errorflag(error0, "MPI_WIN_UNLOCK_ALL in mpifx_win_unlock", error)
 
   end subroutine mpifx_win_unlock
@@ -161,10 +160,10 @@ contains
 
     integer :: error0, error1
 
-    call mpi_win_sync(self%id, error0)
+    call mpi_win_sync(self%win, error0)
     call handle_errorflag(error0, "MPI_WIN_SYNC in mpifx_win_sync", error)
 
-    call mpi_barrier(self%comm_id, error1)
+    call mpi_barrier(self%comm, error1)
     call handle_errorflag(error1, "MPI_BARRIER in mpifx_win_sync", error)
 
   end subroutine mpifx_win_sync
@@ -190,7 +189,7 @@ contains
       assert_ = assert
     end if
 
-    call mpi_win_fence(assert_, self%id, error0)
+    call mpi_win_fence(assert_, self%win, error0)
     call handle_errorflag(error0, "MPI_WIN_FENCE in mpifx_win_fence", error)
 
   end subroutine mpifx_win_fence
@@ -209,17 +208,16 @@ contains
 
     integer :: error0
 
-    call mpi_win_free(self%id, error0)
+    call mpi_win_free(self%win, error0)
     call handle_errorflag(error0, "MPI_WIN_FREE in mpifx_win_free", error)
 
   end subroutine mpifx_win_free
 
 
-#:for TYPE in TYPES
+#:for TYPE in WIN_DATA_TYPES
   #:set FTYPE = FORTRAN_TYPES[TYPE]
-
-  #:for ADDRESS_KIND, INT_TYPE in zip(['', '(MPIFX_SIZE_T)'], INT_TYPES)
-    #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + INT_TYPE
+  #:for ADDRESS_KIND, ADDRESS_SUFFIX in ADDRESS_KINDS_SUFFIXES
+    #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + ADDRESS_SUFFIX
     $:mpifx_win_allocate_shared_template(SUFFIX, FTYPE, ADDRESS_KIND)
   #:endfor
 
