@@ -1,8 +1,10 @@
 #:include 'mpifx.fypp'
 
-!> Contains wrapper for \c MPI_BARRIER.  
+!> Contains wrapper for \c MPI_BARRIER.
 module mpifx_barrier_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : handle_errorflag
   implicit none
   private
 
@@ -35,12 +37,12 @@ contains
   subroutine mpifx_barrier(mycomm, error)
     type(mpifx_comm), intent(in) :: mycomm
     integer, intent(out), optional :: error
-    
+
     integer :: error0
-    
+
     call mpi_barrier(mycomm%id, error0)
     call handle_errorflag(error0, "MPI_BARRIER in mpifx_barrier", error)
-    
+
   end subroutine mpifx_barrier
 
 
