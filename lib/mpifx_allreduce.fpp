@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_ALLREDUCE.
 module mpifx_allreduce_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, handle_errorflag, sp
   implicit none
   private
 
@@ -86,7 +88,7 @@ module mpifx_allreduce_module
   !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%rank, &
   !!           & "Obtained result (prod):", resvalr(:)
   !!       call mpifx_finalize()
-  !!       
+  !!
   !!     end program test_allreduceip
   !!
   interface mpifx_allreduceip

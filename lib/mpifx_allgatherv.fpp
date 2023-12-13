@@ -106,7 +106,9 @@
 
 !> Contains wrapper for \c MPI_allgatherv
 module mpifx_allgatherv_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, handle_errorflag, sp
   implicit none
   private
 

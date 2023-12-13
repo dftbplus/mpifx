@@ -81,5 +81,5 @@ program test_scatterv
   write(*, label // formstr) 8, mycomm%rank, "Recv1 buffer:", recv1
 
   call mpifx_finalize()
-  
+
 end program test_scatterv

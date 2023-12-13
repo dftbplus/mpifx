@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_BCAST.
 module mpifx_bcast_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
   private
 
@@ -80,7 +82,7 @@ contains
 
 #:enddef mpifx_bcast_template
 
-  
+
 #:for TYPE in TYPES
   #:for RANK in RANKS
 

@@ -1,7 +1,7 @@
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
   use mpi
-  use mpifx_helper_module
+  use mpifx_helper_module, only : getoptarg, handle_errorflag
   implicit none
   private
 

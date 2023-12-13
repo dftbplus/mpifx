@@ -6,7 +6,7 @@
 module mpifx_helper_module
   use mpi
   use, intrinsic :: iso_fortran_env, only : stderr => error_unit
-  use mpifx_constants_module
+  use mpifx_constants_module, only : MPIFX_ASSERT_FAILED, MPIFX_UNHANDLED_ERROR
   implicit none
   private
 

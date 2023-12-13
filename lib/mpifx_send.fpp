@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_SEND
 module mpifx_send_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : default_tag, dp, sp
   implicit none
   private
 
@@ -15,7 +17,7 @@ module mpifx_send_module
   !!
   !! \details All functions have the same argument list only differing in the
   !! type and rank of the second argument. The second argument can be of
-  !! type integer (i), real (s), double precision (d), complex (c), 
+  !! type integer (i), real (s), double precision (d), complex (c),
   !! double complex (z), logical (b) and character (h). Its rank can vary from
   !! zero (scalar) up to the maximum rank.
   !!

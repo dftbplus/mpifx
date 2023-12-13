@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_SCATTER
 module mpifx_scatter_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
   private
 
@@ -30,16 +32,16 @@ module mpifx_scatter_module
   !!     program test_scatter
   !!       use libmpifx_module
   !!       implicit none
-  !!     
+  !!
   !!       type(mpifx_comm) :: mycomm
   !!       integer, allocatable :: send1(:), send2(:,:)
   !!       integer :: recv0
   !!       integer, allocatable :: recv1(:)
   !!       integer :: ii
-  !!     
+  !!
   !!       call mpifx_init()
   !!       call mycomm%init()
-  !!     
+  !!
   !!       ! I1 -> I0
   !!       if (mycomm%lead) then
   !!         allocate(send1(mycomm%size))
@@ -51,7 +53,7 @@ module mpifx_scatter_module
   !!       recv0 = 0
   !!       call mpifx_scatter(mycomm, send1, recv0)
   !!       write(*, *) mycomm%rank, "Recv0 buffer:", recv0
-  !!     
+  !!
   !!       ! I1 -> I1
   !!       if (mycomm%lead) then
   !!         deallocate(send1)
@@ -63,7 +65,7 @@ module mpifx_scatter_module
   !!       recv1(:) = 0
   !!       call mpifx_scatter(mycomm, send1, recv1)
   !!       write(*, *) mycomm%rank, "Recv1 buffer:", recv1
-  !!     
+  !!
   !!       ! I2 -> I1
   !!       if (mycomm%lead) then
   !!         allocate(send2(2, mycomm%size))
@@ -75,9 +77,9 @@ module mpifx_scatter_module
   !!       recv1(:) = 0
   !!       call mpifx_scatter(mycomm, send2, recv1)
   !!       write(*, *) mycomm%rank, "Recv1 buffer:", recv1
-  !!       
+  !!
   !!       call mpifx_finalize()
-  !!       
+  !!
   !!     end program test_scatter
   !!
   interface mpifx_scatter
@@ -119,12 +121,12 @@ contains
     @:ASSERT(.not. mycomm%lead .or. size(send) == size(recv) * mycomm%size)
     @:ASSERT(.not. mycomm%lead&
         & .or. size(send, dim=${RANK}$) == size(recv, dim=${RANK}$) * mycomm%size)
-    
+
     call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
         & mycomm%id, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
-      
+
   end subroutine mpifx_scatter_${SUFFIX}$
 
 #:enddef mpifx_scatter_dr0_template
@@ -133,7 +135,7 @@ contains
 #:def mpifx_scatter_dr1_template(SUFFIX, TYPE, MPITYPE, RANK, HASLENGTH)
 
   #:assert RANK > 0
-  
+
   !> Scatters results on one process (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.
