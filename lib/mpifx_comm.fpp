@@ -18,10 +18,10 @@ module mpifx_comm_module
   contains
 
     !> Initializes the MPI environment.
-    procedure, private :: mpifx_comm_from_id
-    procedure, private :: mpifx_comm_from_type
+    procedure, private :: mpifx_comm_init_int
+    procedure, private :: mpifx_comm_init_comm
 
-    generic :: init => mpifx_comm_from_id, mpifx_comm_from_type
+    generic :: init => mpifx_comm_init_int, mpifx_comm_init_comm
 
     !> Creates a new communicator by splitting the old one.
     procedure :: split => mpifx_comm_split
@@ -43,7 +43,7 @@ contains
   !! \param error  Error flag on return containing the first error occurring
   !!     during the calls mpi_comm_size and mpi_comm_rank.
   !!
-  subroutine mpifx_comm_from_type(self, comm, error)
+  subroutine mpifx_comm_init_comm(self, comm, error)
     class(mpifx_comm), intent(out) :: self
     type(mpi_comm), intent(in), optional :: comm
     integer, intent(out), optional :: error
@@ -69,17 +69,17 @@ contains
     self%leadrank = 0
     self%lead = (self%rank == self%leadrank)
 
-  end subroutine mpifx_comm_from_type
+  end subroutine mpifx_comm_init_comm
 
 
-  !> Initializes a communicator from a numerical id.
+  !> Initializes a communicator from a integer id.
   !!
   !! \param self  Initialized instance on exit.
   !! \param commid  Numerical MPI Communicator ID
   !! \param error  Error flag on return containing the first error occurring
   !!     during the calls mpi_comm_size and mpi_comm_rank.
   !!
-  subroutine mpifx_comm_from_id(self, commid, error)
+  subroutine mpifx_comm_init_int(self, commid, error)
     class(mpifx_comm), intent(out) :: self
     integer, intent(in) :: commid
     integer, intent(out), optional :: error
@@ -87,9 +87,9 @@ contains
     type(mpi_comm) :: newcomm
 
     newcomm%mpi_val = commid
-    call self%mpifx_comm_from_type(newcomm, error)
+    call self%mpifx_comm_init_comm(newcomm, error)
 
-  end subroutine mpifx_comm_from_id
+  end subroutine mpifx_comm_init_int
 
 
   !> Creates a new communicators by splitting the old one.
