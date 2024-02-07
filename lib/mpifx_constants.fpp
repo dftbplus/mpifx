@@ -19,6 +19,7 @@ module mpifx_constants_module
   !> Exit code for failed assertions
   integer, parameter :: MPIFX_ASSERT_FAILED = 2
 
+  !> Native integer for MPI addresses
   integer, parameter :: MPIFX_SIZE_T = MPI_ADDRESS_KIND
 
 end module mpifx_constants_module
