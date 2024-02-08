@@ -9,7 +9,6 @@ sources_fpp = files(
   'mpifx_barrier.fpp',
   'mpifx_bcast.fpp',
   'mpifx_comm.fpp',
-  'mpifx_common.fpp',
   'mpifx_constants.fpp',
   'mpifx_finalize.fpp',
   'mpifx_gather.fpp',

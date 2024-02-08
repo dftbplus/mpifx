@@ -10,7 +10,7 @@ module mpifx_constants_module
   public :: MPI_MODE_NOSTORE, MPI_MODE_NOPUT, MPI_MODE_NOPRECEDE, MPI_MODE_NOSUCCEED
   public :: MPI_THREAD_SINGLE, MPI_THREAD_FUNNELED, MPI_THREAD_SERIALIZED, MPI_THREAD_MULTIPLE
   public :: MPI_COMM_TYPE_SHARED
-  public :: MPIFX_UNHANDLED_ERROR, MPIFX_ASSERT_FAILED
+  public :: MPIFX_UNHANDLED_ERROR, MPIFX_ASSERT_FAILED, MPIFX_SIZE_T
 
 
   !> Exit code for errors which were not caught due to missing optional arguments
@@ -18,6 +18,9 @@ module mpifx_constants_module
 
   !> Exit code for failed assertions
   integer, parameter :: MPIFX_ASSERT_FAILED = 2
+
+  !> Native integer for MPI addresses
+  integer, parameter :: MPIFX_SIZE_T = MPI_ADDRESS_KIND
 
 end module mpifx_constants_module
 

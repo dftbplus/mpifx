@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_SCATTER
 module mpifx_scatterv_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
   private
 
@@ -113,7 +115,7 @@ contains
     @:ASSERT(.not. mycomm%lead .or. size(send) == size(recv) * mycomm%size)
     @:ASSERT(.not. mycomm%lead&
         & .or. size(send, dim=${RANK}$) == size(recv, dim=${RANK}$) * mycomm%size)
-    
+
     call getoptarg(mycomm%leadrank, root0, root)
     if (mycomm%rank == root0) then
       if (present(displs)) then
@@ -132,7 +134,7 @@ contains
         & mycomm%id, error0)
 
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatterv_${SUFFIX}$", error)
-      
+
   end subroutine mpifx_scatterv_${SUFFIX}$
 
 #:enddef mpifx_scatterv_dr0_template
@@ -141,7 +143,7 @@ contains
 #:def mpifx_scatterv_dr1_template(SUFFIX, TYPE, MPITYPE, RANK, HASLENGTH)
 
   #:assert RANK > 0
-  
+
   !> Scatter results from one process (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.

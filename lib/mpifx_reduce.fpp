@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_REDUCE.
 module mpifx_reduce_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
   private
 
@@ -13,8 +15,8 @@ module mpifx_reduce_module
   !> Reduces a scalar/array on a given node.
   !!
   !! \details All functions have the same argument list only differing in the
-  !! type and rank of the second and third arguments. The second and third 
-  !! arguments can be of type integer (i), real (s), double precision (d), 
+  !! type and rank of the second and third arguments. The second and third
+  !! arguments can be of type integer (i), real (s), double precision (d),
   !! complex (c), double complex (z) or logical (l). Their rank can vary from
   !! zero (scalars) up to the maximum rank. Both arguments must be of same
   !! type and rank.
@@ -42,7 +44,7 @@ module mpifx_reduce_module
   !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%rank, &
   !!           & "Obtained result (prod):", resvalr(:)
   !!       call mpifx_finalize()
-  !!       
+  !!
   !!     end program test_reduce
   !!
   interface mpifx_reduce
@@ -86,9 +88,9 @@ module mpifx_reduce_module
   !!       write(*, "(I2.2,'-',I3.3,'|',1X,A,3F8.2)") 4, mycomm%rank, &
   !!           & "Obtained result (prod):", resvalr(:)
   !!       call mpifx_finalize()
-  !!       
+  !!
   !!     end program test_reduceip
-  !!  
+  !!
   interface mpifx_reduceip
 #:for TYPE in TYPES
   #:for RANK in RANKS
@@ -129,16 +131,16 @@ contains
 
     call mpi_reduce(orig, reduced, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%id, error0)
     call handle_errorflag(error0, "MPI_REDUCE in mpifx_reduce_${SUFFIX}$", error)
-      
+
   end subroutine mpifx_reduce_${SUFFIX}$
 
 #:enddef mpifx_reduce_template
 
-  
+
 #:def mpifx_reduceip_template(SUFFIX, TYPE, MPITYPE, RANK)
 
   #:assert RANK >= 0
-  
+
   !> Reduces results on one process (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.
@@ -170,12 +172,12 @@ contains
           & error0)
     end if
     call handle_errorflag(error0, "MPI_REDUCE in mpifx_reduce_${SUFFIX}$", error)
-      
+
   end subroutine mpifx_reduceip_${SUFFIX}$
 
 #:enddef mpifx_reduceip_template
 
-  
+
 #:for TYPE in TYPES
   #:for RANK in RANKS
 

@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_RECV
 module mpifx_recv_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, sp, getoptarg, handle_errorflag, setoptarg
   implicit none
   private
 
@@ -15,7 +17,7 @@ module mpifx_recv_module
   !!
   !! \details All functions have the same argument list only differing in the
   !! type and rank of the second argument. The second argument can be of
-  !! type integer (i), real (s), double precision (d), complex (c), 
+  !! type integer (i), real (s), double precision (d), complex (c),
   !! double complex (z), logical (b) and character (h). Its rank can vary from
   !! zero (scalar) up to the maximum rank.
   !!
@@ -60,7 +62,7 @@ contains
 #:def mpifx_recv_template(SUFFIX, TYPE, MPITYPE, RANK, HASLENGTH)
 
   #:assert RANK >= 0
-  
+
   !> Receives a message from a given process.
   !! \param mycomm  MPI descriptor.
   !! \param msg  Msg to be received.
@@ -105,6 +107,6 @@ contains
     $:mpifx_recv_template(SUFFIX, FTYPE, MPITYPE, RANK, HASLENGTH)
 
   #:endfor
-#:endfor  
-  
+#:endfor
+
 end module mpifx_recv_module

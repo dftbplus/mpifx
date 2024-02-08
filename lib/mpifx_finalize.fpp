@@ -1,6 +1,8 @@
-!> Contains wrapper for \c MPI_FINALIZE.  
+!> Contains wrapper for \c MPI_FINALIZE.
 module mpifx_finalize_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : handle_errorflag
   implicit none
   private
 
@@ -39,5 +41,5 @@ contains
     call handle_errorflag(error0, "Error: mpi_finalize() in mpifx_finalize()", error)
 
   end subroutine mpifx_finalize
-      
+
 end module mpifx_finalize_module

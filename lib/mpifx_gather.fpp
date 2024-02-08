@@ -4,7 +4,9 @@
 
 !> Contains wrapper for \c MPI_GATHER
 module mpifx_gather_module
-  use mpifx_common_module
+  use mpi
+  use mpifx_comm_module, only : mpifx_comm
+  use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
   private
 
@@ -30,17 +32,17 @@ module mpifx_gather_module
   !!     program test_gather
   !!       use libmpifx_module
   !!       implicit none
-  !!     
+  !!
   !!       type(mpifx_comm) :: mycomm
   !!       integer :: send0
   !!       integer, allocatable :: send1(:)
   !!       integer, allocatable :: recv1(:), recv2(:,:)
   !!       character(100) :: formstr
   !!       character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
-  !!     
+  !!
   !!       call mpifx_init()
   !!       call mycomm%init()
-  !!     
+  !!
   !!       ! I0 -> I1
   !!       send0 = mycomm%rank * 2    ! Arbitrary number to send
   !!       if (mycomm%lead) then
@@ -55,7 +57,7 @@ module mpifx_gather_module
   !!         write(*, *) mycomm%rank, "Recv1 buffer:", recv1(:)
   !!       end if
   !!       deallocate(recv1)
-  !!     
+  !!
   !!       ! I1 -> I1
   !!       allocate(send1(2))
   !!       send1(:) = [ mycomm%rank, mycomm%rank + 1 ]  ! Arbitrary numbers
@@ -70,7 +72,7 @@ module mpifx_gather_module
   !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv1 buffer:", recv1
   !!       end if
-  !!     
+  !!
   !!       ! I1 -> I2
   !!       send1(:) = [ mycomm%rank, mycomm%rank + 1 ]
   !!       if (mycomm%lead) then
@@ -82,9 +84,9 @@ module mpifx_gather_module
   !!       if (mycomm%lead) then
   !!         write(*, *) mycomm%rank, "Recv2 buffer:", recv2
   !!       end if
-  !!       
+  !!
   !!       call mpifx_finalize()
-  !!       
+  !!
   !!     end program test_gather
   !!
   interface mpifx_gather
@@ -100,7 +102,7 @@ module mpifx_gather_module
   #:endfor
 #:endfor
   end interface mpifx_gather
-  
+
 contains
 
 #:def mpifx_gather_dr0_template(SUFFIX, TYPE, MPITYPE, RANK, HASLENGTH)
@@ -135,7 +137,7 @@ contains
     call mpi_gather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
         & mycomm%id, error0)
     call handle_errorflag(error0, "MPI_GATHER in mpifx_gather_${SUFFIX}$", error)
-    
+
   end subroutine mpifx_gather_${SUFFIX}$
 
 #:enddef mpifx_gather_dr0_template

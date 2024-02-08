@@ -5,7 +5,9 @@ program test_win_shared_mem
   type(mpifx_comm) :: globalcomm, nodecomm
   type(mpifx_win) :: win
   integer, parameter :: sample_value = 42, size_rank_0 = 7, size_rank_other = 4
-  integer :: global_length, local_length, rank, ii
+  integer(MPIFX_SIZE_T) :: global_length, local_length
+  integer :: global_length_int32, local_length_int32
+  integer :: rank, ii
   integer, pointer :: global_pointer(:), local_pointer(:)
 
   call mpifx_init()
@@ -76,6 +78,13 @@ program test_win_shared_mem
       call mpifx_abort(globalcomm)
     end if
   end do
+
+  call win%free()
+
+  ! Initialize again with int32 sizes
+  global_length_int32 = global_length
+  local_length_int32 = local_length
+  call win%allocate_shared(nodecomm, global_length_int32, global_pointer, local_length_int32, local_pointer)
 
   call win%free()
   call mpifx_finalize()

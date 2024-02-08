@@ -4,6 +4,22 @@ Change Log
 
 Notable project changes in various releases.
 
+
+1.5
+===
+
+Added
+-----
+
+* mpifx_win allows allocations with 64 bit allocation size parameter
+
+
+Changed
+-------
+
+* mpifx_win is fully standard conforming now (using the F08 MPI-interface)
+
+
 1.4
 ===
 
