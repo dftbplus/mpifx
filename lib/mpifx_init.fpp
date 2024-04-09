@@ -1,6 +1,6 @@
 !> Contains wrapper for \c MPI_INIT.
 module mpifx_init_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_constants_module, only : MPIFX_UNHANDLED_ERROR
   use mpifx_helper_module, only : handle_errorflag

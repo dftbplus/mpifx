@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_SCATTER
 module mpifx_scatter_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
@@ -124,7 +124,7 @@ contains
 
     call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
 
   end subroutine mpifx_scatter_${SUFFIX}$
@@ -164,7 +164,7 @@ contains
 
     call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
 
   end subroutine mpifx_scatter_${SUFFIX}$

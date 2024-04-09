@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_GATHER
 module mpifx_gather_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
@@ -135,7 +135,7 @@ contains
 
     call getoptarg(mycomm%leadrank, root0, root)
     call mpi_gather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_GATHER in mpifx_gather_${SUFFIX}$", error)
 
   end subroutine mpifx_gather_${SUFFIX}$
@@ -171,7 +171,7 @@ contains
     @:ASSERT(.not. mycomm%lead .or. size(recv, dim=${RANK + 1}$) == mycomm%size)
 
     call getoptarg(mycomm%leadrank, root0, root)
-    call mpi_gather(send, ${SIZE}$, ${MPITYPE}$, recv, ${SIZE}$, ${MPITYPE}$, root0, mycomm%id,&
+    call mpi_gather(send, ${SIZE}$, ${MPITYPE}$, recv, ${SIZE}$, ${MPITYPE}$, root0, mycomm%comm,&
         & error0)
     call handle_errorflag(error0, "MPI_GATHER in mpifx_gather_${SUFFIX}$", error)
 

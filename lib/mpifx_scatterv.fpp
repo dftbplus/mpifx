@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_SCATTER
 module mpifx_scatterv_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
@@ -131,7 +131,7 @@ contains
       end if
     end if
     call mpi_scatterv(send, sendcounts, displs0, ${MPITYPE}$, recv, ${SIZE}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatterv_${SUFFIX}$", error)
 
@@ -192,7 +192,7 @@ contains
     end if
 
     call mpi_scatterv(send, sendcounts, displs0, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatterv_${SUFFIX}$", error)
 
   end subroutine mpifx_scatterv_${SUFFIX}$
