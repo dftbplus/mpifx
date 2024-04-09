@@ -67,7 +67,7 @@
     end if
 
     call mpi_gatherv(send, size(send), ${MPI_TYPE}$, recv, recvcounts, displs0, &
-        & ${MPI_TYPE}$, root0, mycomm%id, error0)
+        & ${MPI_TYPE}$, root0, mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_GATHERV in mpifx_gatherv_${SUFFIX}$", error)
 
@@ -120,7 +120,7 @@
     end if
 
     call mpi_gatherv(send, ${SEND_SIZE}$, ${MPI_TYPE}$, recv, recvcounts, displs0, &
-         & ${MPI_TYPE}$,  root0, mycomm%id, error0)
+         & ${MPI_TYPE}$,  root0, mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_GATHERV in mpifx_gatherv_${SUFFIX}$", error)
 
@@ -131,7 +131,7 @@
 
 !> Contains wrapper for \c MPI_gatherv
 module mpifx_gatherv_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
   implicit none

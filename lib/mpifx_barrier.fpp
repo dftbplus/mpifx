@@ -2,7 +2,7 @@
 
 !> Contains wrapper for \c MPI_BARRIER.
 module mpifx_barrier_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : handle_errorflag
   implicit none
@@ -40,7 +40,7 @@ contains
 
     integer :: error0
 
-    call mpi_barrier(mycomm%id, error0)
+    call mpi_barrier(mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_BARRIER in mpifx_barrier", error)
 
   end subroutine mpifx_barrier

@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_REDUCE.
 module mpifx_reduce_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
@@ -50,7 +50,8 @@ module mpifx_reduce_module
   interface mpifx_reduce
 #:for TYPE in TYPES
   #:for RANK in RANKS
-    module procedure mpifx_reduce_${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_reduce_with_type${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_reduce_with_id${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
   end interface mpifx_reduce
@@ -94,7 +95,8 @@ module mpifx_reduce_module
   interface mpifx_reduceip
 #:for TYPE in TYPES
   #:for RANK in RANKS
-    module procedure mpifx_reduceip_${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_reduceip_with_type${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_reduceip_with_id${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
   end interface mpifx_reduceip
@@ -110,15 +112,15 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param orig  Quantity to be reduced.
   !! \param reduced  Contains result on exit.
-  !! \param reduceop  Reduction operator.
+  !! \param reduceop  Reduction operator of type(mpi_op).
   !! \param root  Root process for the reduced (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
-  subroutine mpifx_reduce_${SUFFIX}$(mycomm, orig, reduced, reduceop, root, error)
+  subroutine mpifx_reduce_with_type${SUFFIX}$(mycomm, orig, reduced, reduceop, root, error)
     type(mpifx_comm), intent(in) :: mycomm
     ${TYPE}$, intent(in) :: orig${RANKSUFFIX(RANK)}$
     ${TYPE}$, intent(inout) :: reduced${RANKSUFFIX(RANK)}$
-    integer, intent(in) :: reduceop
+    type(mpi_op), intent(in) :: reduceop
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
 
@@ -129,10 +131,35 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(orig)'
     #:set COUNT = SIZE
 
-    call mpi_reduce(orig, reduced, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%id, error0)
+    call mpi_reduce(orig, reduced, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_REDUCE in mpifx_reduce_${SUFFIX}$", error)
 
-  end subroutine mpifx_reduce_${SUFFIX}$
+  end subroutine mpifx_reduce_with_type${SUFFIX}$
+
+  !> Reduces on one process (type ${SUFFIX}$).
+  !!
+  !! \param mycomm  MPI communicator.
+  !! \param orig  Quantity to be reduced.
+  !! \param reduced  Contains result on exit.
+  !! \param reduceop  Reduction operator as integer.
+  !! \param root  Root process for the reduced (default: mycomm%leadrank)
+  !! \param error  Error code on exit.
+  !!
+  subroutine mpifx_reduce_with_id${SUFFIX}$(mycomm, orig, reduced, reduceop, root, error)
+    type(mpifx_comm), intent(in) :: mycomm
+    ${TYPE}$, intent(in) :: orig${RANKSUFFIX(RANK)}$
+    ${TYPE}$, intent(inout) :: reduced${RANKSUFFIX(RANK)}$
+    integer, intent(in) :: reduceop
+    integer, intent(in), optional :: root
+    integer, intent(out), optional :: error
+
+    type(mpi_op) :: newop
+
+    newop%mpi_val = reduceop
+
+    call mpifx_reduce(mycomm, orig, reduced, newop, root, error)
+
+  end subroutine mpifx_reduce_with_id${SUFFIX}$
 
 #:enddef mpifx_reduce_template
 
@@ -145,14 +172,14 @@ contains
   !!
   !! \param mycomm  MPI communicator.
   !! \param origred  Quantity to be reduced on input, result on exit
-  !! \param reduceop  Reduction reduceop
+  !! \param reduceop  Reduction reduceop of type(mpi_op).
   !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
-  subroutine mpifx_reduceip_${SUFFIX}$(mycomm, origred, reduceop, root, error)
+  subroutine mpifx_reduceip_with_type${SUFFIX}$(mycomm, origred, reduceop, root, error)
     type(mpifx_comm), intent(in) :: mycomm
     ${TYPE}$, intent(inout) :: origred${RANKSUFFIX(RANK)}$
-    integer, intent(in) :: reduceop
+    type(mpi_op), intent(in) :: reduceop
     integer, intent(in), optional :: root
     integer, intent(out), optional :: error
 
@@ -165,15 +192,39 @@ contains
     #:set COUNT = SIZE
 
     if (mycomm%rank == root0) then
-      call mpi_reduce(MPI_IN_PLACE, origred, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%id,&
+      call mpi_reduce(MPI_IN_PLACE, origred, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%comm,&
           & error0)
     else
-      call mpi_reduce(origred, dummy, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%id, &
+      call mpi_reduce(origred, dummy, ${COUNT}$, ${MPITYPE}$, reduceop, root0, mycomm%comm, &
           & error0)
     end if
     call handle_errorflag(error0, "MPI_REDUCE in mpifx_reduce_${SUFFIX}$", error)
 
-  end subroutine mpifx_reduceip_${SUFFIX}$
+  end subroutine mpifx_reduceip_with_type${SUFFIX}$
+
+  !> Reduces results on one process (type ${SUFFIX}$).
+  !!
+  !! \param mycomm  MPI communicator.
+  !! \param origred  Quantity to be reduced on input, result on exit
+  !! \param reduceop  Reduction reduceop as integer.
+  !! \param root  Root process for the result (default: mycomm%leadrank)
+  !! \param error  Error code on exit.
+  !!
+  subroutine mpifx_reduceip_with_id${SUFFIX}$(mycomm, origred, reduceop, root, error)
+    type(mpifx_comm), intent(in) :: mycomm
+    ${TYPE}$, intent(inout) :: origred${RANKSUFFIX(RANK)}$
+    integer, intent(in) :: reduceop
+    integer, intent(in), optional :: root
+    integer, intent(out), optional :: error
+
+    type(mpi_op) :: newop
+
+    newop%mpi_val = reduceop
+
+    call mpifx_reduceip(mycomm, origred, newop, root, error)
+
+
+  end subroutine mpifx_reduceip_with_id${SUFFIX}$
 
 #:enddef mpifx_reduceip_template
 

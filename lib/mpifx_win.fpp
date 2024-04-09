@@ -88,7 +88,7 @@ contains
       local_mem_size = int(global_length, kind=MPI_ADDRESS_KIND) * disp_unit
     end if
 
-    self%comm%mpi_val = mycomm%id
+    self%comm = mycomm%comm
     call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, self%comm,&
         & local_baseptr, self%win, error0)
     call handle_errorflag(error0,&

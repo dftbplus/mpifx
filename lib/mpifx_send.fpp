@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_SEND
 module mpifx_send_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : default_tag, dp, sp
   implicit none
@@ -81,7 +81,7 @@ contains
     #:set COUNT = ('len(msg) * ' + SIZE if HASLENGTH else SIZE)
 
     call getoptarg(default_tag, tag0, tag)
-    call mpi_send(msg, ${COUNT}$, ${MPITYPE}$, dest, tag0, mycomm%id, error0)
+    call mpi_send(msg, ${COUNT}$, ${MPITYPE}$, dest, tag0, mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SEND in mpifx_send_${SUFFIX}$", error)
 
   end subroutine mpifx_send_${SUFFIX}$

@@ -45,7 +45,7 @@
     end if
 
     call mpi_allgatherv(send, size(send), ${MPI_TYPE}$, recv, recvcounts, displs0, &
-        & ${MPI_TYPE}$, mycomm%id, error0)
+        & ${MPI_TYPE}$, mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_ALLGATHERV in mpifx_allgatherv_${SUFFIX}$", error)
 
@@ -96,7 +96,7 @@
     end if
 
     call mpi_allgatherv(send, ${SEND_BUFFER_SIZE}$, ${MPI_TYPE}$, recv, recvcounts, displs0, &
-         & ${MPI_TYPE}$,  mycomm%id, error0)
+         & ${MPI_TYPE}$,  mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_ALLGATHERV in mpifx_allgatherv_${SUFFIX}$", error)
 
@@ -106,7 +106,7 @@
 
 !> Contains wrapper for \c MPI_allgatherv
 module mpifx_allgatherv_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
   implicit none

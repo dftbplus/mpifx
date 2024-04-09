@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_ALLREDUCE.
 module mpifx_allreduce_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
   implicit none
@@ -50,7 +50,8 @@ module mpifx_allreduce_module
   interface mpifx_allreduce
 #:for TYPE in TYPES
   #:for RANK in RANKS
-    module procedure mpifx_allreduce_${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_allreduce_with_type${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_allreduce_with_id${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
   end interface mpifx_allreduce
@@ -94,7 +95,8 @@ module mpifx_allreduce_module
   interface mpifx_allreduceip
 #:for TYPE in TYPES
   #:for RANK in RANKS
-    module procedure mpifx_allreduceip_${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_allreduceip_with_type${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_allreduceip_with_id${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
   end interface mpifx_allreduceip
@@ -109,7 +111,39 @@ contains
   !!
   !! See MPI documentation (mpi_allreduce()) for further details.
   !!
-  subroutine mpifx_allreduce_${SUFFIX}$(mycomm, orig, reduced, reductionop, error)
+  subroutine mpifx_allreduce_with_type${SUFFIX}$(mycomm, orig, reduced, reductionop, error)
+
+    !> MPI communicator.
+    type(mpifx_comm), intent(in) :: mycomm
+
+    !> Quantity to be reduced.
+    ${TYPE}$, intent(in) :: orig${RANKSUFFIX(RANK)}$
+
+    !> Contains result on exit.
+    ${TYPE}$, intent(inout) :: reduced${RANKSUFFIX(RANK)}$
+
+    !>  Reduction operator
+    type(mpi_op), intent(in) :: reductionop
+
+    !>  Error code on exit.
+    integer, intent(out), optional :: error
+
+    integer :: error0
+
+    #:if RANK > 0
+      @:ASSERT(size(orig) == size(reduced))
+    #:endif
+
+    #:set SIZE = '1' if RANK == 0 else 'size(orig)'
+    #:set COUNT = SIZE
+
+    call mpi_allreduce(orig, reduced, ${COUNT}$, ${MPITYPE}$, reductionop, mycomm%comm, error0)
+    call handle_errorflag(error0, 'MPI_ALLREDUCE in mpifx_allreduce_${SUFFIX}$', error)
+
+  end subroutine mpifx_allreduce_with_type${SUFFIX}$
+
+
+  subroutine mpifx_allreduce_with_id${SUFFIX}$(mycomm, orig, reduced, reductionop, error)
 
     !> MPI communicator.
     type(mpifx_comm), intent(in) :: mycomm
@@ -126,20 +160,13 @@ contains
     !>  Error code on exit.
     integer, intent(out), optional :: error
 
-    integer :: error0
+    type(mpi_op) :: newop
 
-    #:if RANK > 0
-      @:ASSERT(size(orig) == size(reduced))
-    #:endif
+    newop%mpi_val = reductionop
 
-    #:set SIZE = '1' if RANK == 0 else 'size(orig)'
-    #:set COUNT = SIZE
+    call mpifx_allreduce(mycomm, orig, reduced, newop, error)
 
-    call mpi_allreduce(orig, reduced, ${COUNT}$, ${MPITYPE}$, reductionop, mycomm%id, error0)
-    call handle_errorflag(error0, 'MPI_ALLREDUCE in mpifx_allreduce_${SUFFIX}$', error)
-
-  end subroutine mpifx_allreduce_${SUFFIX}$
-
+  end subroutine mpifx_allreduce_with_id${SUFFIX}$
 #:enddef mpifx_allreduce_template
 
 
@@ -151,7 +178,32 @@ contains
   !!
   !! See MPI documentation (mpi_allreduce()) for further details.
   !!
-  subroutine mpifx_allreduceip_${SUFFIX}$(mycomm, origreduced, reductionop, error)
+  subroutine mpifx_allreduceip_with_type${SUFFIX}$(mycomm, origreduced, reductionop, error)
+
+    !>  MPI communicator.
+    type(mpifx_comm), intent(in) :: mycomm
+
+    !>  Quantity to be reduced on input, reduced on exit.
+    ${TYPE}$, intent(inout) :: origreduced${RANKSUFFIX(RANK)}$
+
+    !> Reduction operator.
+    type(mpi_op), intent(in) :: reductionop
+
+    !> Error code on exit.
+    integer, intent(out), optional :: error
+
+    integer :: error0
+
+    #:set SIZE = '1' if RANK == 0 else 'size(origreduced)'
+    #:set COUNT = SIZE
+
+    call mpi_allreduce(MPI_IN_PLACE, origreduced, ${COUNT}$, ${MPITYPE}$, reductionop, mycomm%comm,&
+        & error0)
+    call handle_errorflag(error0, "MPI_REDUCE in mpifx_allreduceip_${SUFFIX}$", error)
+
+  end subroutine mpifx_allreduceip_with_type${SUFFIX}$
+
+  subroutine mpifx_allreduceip_with_id${SUFFIX}$(mycomm, origreduced, reductionop, error)
 
     !>  MPI communicator.
     type(mpifx_comm), intent(in) :: mycomm
@@ -165,16 +217,14 @@ contains
     !> Error code on exit.
     integer, intent(out), optional :: error
 
-    integer :: error0
+    type(mpi_op) :: newop
 
-    #:set SIZE = '1' if RANK == 0 else 'size(origreduced)'
-    #:set COUNT = SIZE
+    newop%mpi_val = reductionop
 
-    call mpi_allreduce(MPI_IN_PLACE, origreduced, ${COUNT}$, ${MPITYPE}$, reductionop, mycomm%id,&
-        & error0)
-    call handle_errorflag(error0, "MPI_REDUCE in mpifx_allreduceip_${SUFFIX}$", error)
+    call mpifx_allreduceip(mycomm, origreduced, newop, error)
 
-  end subroutine mpifx_allreduceip_${SUFFIX}$
+  end subroutine mpifx_allreduceip_with_id${SUFFIX}$
+
 
 #:enddef mpifx_allreduceip_template
 

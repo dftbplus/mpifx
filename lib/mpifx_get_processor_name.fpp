@@ -1,6 +1,6 @@
 !> Contains the extended MPI communicator.
 module mpifx_get_processor_name_module
-  use mpi
+  use mpi_f08
   implicit none
   private
 

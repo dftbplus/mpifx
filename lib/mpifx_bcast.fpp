@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_BCAST.
 module mpifx_bcast_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none
@@ -75,7 +75,7 @@ contains
     #:set COUNT = ('len(msg) * ' + SIZE if HASLENGTH else SIZE)
 
     call getoptarg(mycomm%leadrank, root0, root)
-    call mpi_bcast(msg, ${COUNT}$, ${MPITYPE}$, root0, mycomm%id, error0)
+    call mpi_bcast(msg, ${COUNT}$, ${MPITYPE}$, root0, mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_BCAST in mpifx_bcast_${SUFFIX}$", error)
 
   end subroutine mpifx_bcast_${SUFFIX}$

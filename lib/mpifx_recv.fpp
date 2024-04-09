@@ -4,7 +4,7 @@
 
 !> Contains wrapper for \c MPI_RECV
 module mpifx_recv_module
-  use mpi
+  use mpi_f08
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, sp
   implicit none
@@ -52,7 +52,8 @@ module mpifx_recv_module
   interface mpifx_recv
 #:for TYPE in TYPES
   #:for RANK in RANKS
-    module procedure mpifx_recv_${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_recv_mpi_f08${TYPE_ABBREVS[TYPE]}$${RANK}$
+    module procedure mpifx_recv_mpi${TYPE_ABBREVS[TYPE]}$${RANK}$
   #:endfor
 #:endfor
   end interface mpifx_recv
@@ -68,18 +69,18 @@ contains
   !! \param msg  Msg to be received.
   !! \param source  Optional source process (default: MPI_ANY_SOURCE)
   !! \param tag  Optional message tag (default: MPI_ANY_TAG).
-  !! \param status  Optional status array.
+  !! \param status  Optional status array as integer.
   !! \param error  Optional error handling flag.
   !!
-  subroutine mpifx_recv_${SUFFIX}$(mycomm, msg, source, tag, status, error)
+  subroutine mpifx_recv_mpi_f08${SUFFIX}$(mycomm, msg, source, tag, status, error)
     type(mpifx_comm), intent(in) :: mycomm
     ${TYPE}$, intent(out) :: msg${RANKSUFFIX(RANK)}$
     integer, intent(in), optional :: source, tag
-    integer, intent(out), optional :: status(MPI_STATUS_SIZE)
+    type(mpi_status), intent(out), optional :: status
     integer, intent(out), optional :: error
 
     integer :: source0, tag0, error0
-    integer :: status0(MPI_STATUS_SIZE)
+    type(mpi_status) :: status0
 
     call getoptarg(MPI_ANY_TAG, tag0, tag)
     call getoptarg(MPI_ANY_SOURCE, source0, source)
@@ -87,11 +88,34 @@ contains
     #:set SIZE = '1' if RANK == 0 else 'size(msg)'
     #:set COUNT = ('len(msg) * ' + SIZE if HASLENGTH else SIZE)
 
-    call mpi_recv(msg, ${COUNT}$, ${MPITYPE}$, source0, tag0, mycomm%id, status0, error0)
+    call mpi_recv(msg, ${COUNT}$, ${MPITYPE}$, source0, tag0, mycomm%comm, status0, error0)
     call handle_errorflag(error0, "MPI_RECV in mpifx_recv_${SUFFIX}$", error)
-    call setoptarg(status0, status)
 
-  end subroutine mpifx_recv_${SUFFIX}$
+    if (present(status)) status = status0
+
+  end subroutine mpifx_recv_mpi_f08${SUFFIX}$
+
+  !> Receives a message from a given process.
+  !! \param mycomm  MPI descriptor.
+  !! \param msg  Msg to be received.
+  !! \param source  Optional source process (default: MPI_ANY_SOURCE)
+  !! \param tag  Optional message tag (default: MPI_ANY_TAG).
+  !! \param status  Optional status array as type(mpi_status).
+  !! \param error  Optional error handling flag.
+  !!
+  subroutine mpifx_recv_mpi${SUFFIX}$(mycomm, msg, source, tag, status, error)
+    type(mpifx_comm), intent(in) :: mycomm
+    ${TYPE}$, intent(out) :: msg${RANKSUFFIX(RANK)}$
+    integer, intent(in) :: source, tag
+    integer, intent(out) :: status(MPI_STATUS_SIZE)
+    integer, intent(out), optional :: error
+
+    type(mpi_status) :: newstatus
+
+    call mpifx_recv(mycomm, msg, source, tag, newstatus, error)
+    call mpi_status_f082f(newstatus, status)
+
+  end subroutine mpifx_recv_mpi${SUFFIX}$
 
 #:enddef mpifx_recv_template
 
