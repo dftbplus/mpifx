@@ -3,7 +3,7 @@ MpiFx - Modern Fortran Interface for MPI
 ****************************************
 
 The open source library `MpiFx <https://github.com/dftbplus/mpifx>`_ provides
-modern Fortran (Fortran 2003) wrappers around routines of the MPI library to
+modern Fortran (Fortran 2008) wrappers around routines of the MPI library to
 make their use as simple as possible. Currently several data distribution
 routines are covered.
 
@@ -14,14 +14,36 @@ The documentation is included inside the repository, but is also available at
 Installation
 ============
 
+The preferred way of obtaining MpiFx is to install it via the Conda package
+management framework using `Miniconda
+<https://docs.conda.io/en/latest/miniconda.html>`_ or `Anaconda
+<https://www.anaconda.com/products/individual>`_. Make sure to add/enable the
+``conda-forge`` channel in order to be able to access MpiFx, and ensure that the
+``conda-forge`` channel is the first repository to be searched for packages.
+
+We provide both, OpenMPI and MPICH based build variants, choose the one suiting
+your needs. For example, issue ::
+
+  conda install 'mpifx=*=mpi_mpich_*'
+
+or ::
+
+  conda install 'mpifx=*=mpi_openmpi_*'
+
+to get the last stable release of MpiFx for the respective MPI framework.
+
+
+Building from source
+====================
+
 Prerequisites
 -------------
 
 * CMake (version >= 3.16)
 
-* Fortran 2003 compatible Fortran compiler
+* Fortran 2008 compatible Fortran compiler
 
-* MPI-library and wrappers for your compiler
+* MPI-library and wrappers for your compiler supporting the `mpi_f08` interface
 
 * `Fypp preprocessor <https://github.com/aradi/fypp>`_
 
@@ -40,7 +62,7 @@ You can influence the configuration via CMake-variables, which are listed in
 or pass them as command line options at the configuration phase, e.g.::
 
   FC=ifort cmake -B _build -DBUILD_TESTING=NO .
-  
+
 
 Testing
 -------
@@ -61,15 +83,15 @@ CMake build
 * Make sure to add the root folder of the installed library to the
   ``CMAKE_PREFIX_PATH`` environment variable.
 
-* Use ``find_package()`` in `CMakeLists.txt` to locate the library and link 
+* Use ``find_package()`` in `CMakeLists.txt` to locate the library and link
   ``MpiFx::MpiFx`` to every target which relies directly on the library ::
 
     cmake_minimum_required(VERSION 3.16)
-   
+
     project(TestMpiFx LANGUAGES Fortran)
-    
+
     find_package(MpiFx REQUIRED)
-    
+
     add_executable(test_mpifx test_mpifx.f90)
     target_link_libraries(test_mpifx MpiFx::MpiFx)
 

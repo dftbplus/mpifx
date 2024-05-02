@@ -6,7 +6,7 @@
 module mpifx_recv_module
   use mpi
   use mpifx_comm_module, only : mpifx_comm
-  use mpifx_helper_module, only : dp, sp
+  use mpifx_helper_module, only : dp, sp, getoptarg, handle_errorflag, setoptarg
   implicit none
   private
 
