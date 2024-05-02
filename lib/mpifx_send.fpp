@@ -6,7 +6,7 @@
 module mpifx_send_module
   use mpi
   use mpifx_comm_module, only : mpifx_comm
-  use mpifx_helper_module, only : default_tag, dp, sp
+  use mpifx_helper_module, only : default_tag, dp, sp, getoptarg, handle_errorflag
   implicit none
   private
 
