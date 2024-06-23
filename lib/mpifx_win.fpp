@@ -6,8 +6,8 @@
 module mpifx_win_module
   use mpi_f08, only : MPI_ADDRESS_KIND, mpi_barrier, mpi_comm, MPI_INFO_NULL, MPI_MODE_NOCHECK,&
       & mpi_win, mpi_win_allocate_shared, mpi_win_fence, mpi_win_free, mpi_win_lock_all,&
-      & mpi_win_shared_query, mpi_win_sync, mpi_win_unlock
-  use mpifx_helper_module, only : handle_errorflag, sp, dp
+      & mpi_win_shared_query, mpi_win_sync, mpi_win_unlock_all
+  use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_constants_module, only : MPIFX_SIZE_T
   use iso_c_binding, only : c_ptr, c_f_pointer
@@ -24,19 +24,26 @@ module mpifx_win_module
     type(mpi_comm) :: comm  !< MPI communicator handle.
   contains
 
-  #:for TYPE in WIN_DATA_TYPES
-    #:for _, ADDRESS_SUFFIX in ADDRESS_KINDS_SUFFIXES
-      #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + ADDRESS_SUFFIX
-      procedure, private :: mpifx_win_allocate_shared_${SUFFIX}$
-      generic :: allocate_shared => mpifx_win_allocate_shared_${SUFFIX}$
-    #:endfor
+#:for TYPE in WIN_DATA_TYPES
+  #:for _, ADDRESS_SUFFIX in ADDRESS_KINDS_SUFFIXES
+    #:set SUFFIX = TYPE_ABBREVS[TYPE] + '_' + ADDRESS_SUFFIX
+    procedure, private :: mpifx_win_allocate_shared_${SUFFIX}$
+    generic :: allocate_shared => mpifx_win_allocate_shared_${SUFFIX}$
   #:endfor
+#:endfor
 
     !> Locks a shared memory segment for remote access.
-    procedure :: lock => mpifx_win_lock
+    !!
+    !! Notes based on the MPI3.1 documentation: Start RMA access epoch for all processes in win,
+    !! (lock of type MPI_LOCK_SHARED). During the epoch, any window member processses calling
+    !! lock_all can access the window memory on all processes (using RMA ops). Routine is not
+    !! collective — All is a from being a lock on all members of the win group.
+    !! Accesses protected by a shared lock are not concurrent in the window.
+    procedure :: lock_all => mpifx_win_lock_all
 
-    !> Unlocks a shared memory segment.
-    procedure :: unlock => mpifx_win_unlock
+    !> Unlocks a shared memory window.
+    !! Ends the RMA access epoch at all processes with access to the window.
+    procedure :: unlock_all => mpifx_win_unlock_all
 
     !> Synchronizes shared memory across MPI ranks after remote access.
     procedure :: sync => mpifx_win_sync
@@ -112,21 +119,32 @@ contains
 
   !> Locks a shared memory segment for remote access. Starts a remote access epoch.
   !!
-  !! \param self  Handle of the shared memory window.
-  !! \param error  Optional error code on return.
+  !! \param self      Handle of the shared memory window.
+  !! \param checkLock Optional check if other locks are also applied to the window.
+  !! \param error     Optional error code on return.
   !!
   !! \see MPI documentation (\c MPI_WIN_LOCK_ALL)
   !!
-  subroutine mpifx_win_lock(self, error)
+  subroutine mpifx_win_lock_all(self, checkLock, error)
     class(mpifx_win), intent(inout) :: self
+    logical, intent(in), optional :: checkLock
     integer, intent(out), optional :: error
 
     integer :: error0
+    ! May be MPI implementation dependent, but if true no other process holds (or attempts to
+    ! acquire) a conflicting lock, while the caller(s) holds the window lock:
+    logical :: assert
 
-    call mpi_win_lock_all(MPI_MODE_NOCHECK, self%win, error0)
-    call handle_errorflag(error0, "MPI_WIN_LOCK_ALL in mpifx_win_lock", error)
+    call getoptarg(.false., assert, checkLock)
 
-  end subroutine mpifx_win_lock
+    if (assert) then
+      call mpi_win_lock_all(0, self%win, error0)
+    else
+      call mpi_win_lock_all(MPI_MODE_NOCHECK, self%win, error0)
+    end if
+    call handle_errorflag(error0, "MPI_WIN_LOCK_ALL in mpifx_win_lock_all", error)
+
+  end subroutine mpifx_win_lock_all
 
 
   !> Unlocks a shared memory segment. Finishes a remote access epoch.
@@ -136,16 +154,16 @@ contains
   !!
   !! \see MPI documentation (\c MPI_WIN_UNLOCK_ALL)
   !!
-  subroutine mpifx_win_unlock(self, error)
+  subroutine mpifx_win_unlock_all(self, error)
     class(mpifx_win), intent(inout) :: self
     integer, intent(out), optional :: error
 
     integer :: error0
 
     call mpi_win_unlock_all(self%win, error0)
-    call handle_errorflag(error0, "MPI_WIN_UNLOCK_ALL in mpifx_win_unlock", error)
+    call handle_errorflag(error0, "MPI_WIN_UNLOCK_ALL in mpifx_win_unlock_all", error)
 
-  end subroutine mpifx_win_unlock
+  end subroutine mpifx_win_unlock_all
 
 
   !> Synchronizes shared memory across MPI ranks after remote access.
