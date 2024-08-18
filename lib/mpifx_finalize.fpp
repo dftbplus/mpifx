@@ -1,6 +1,6 @@
 !> Contains wrapper for \c MPI_FINALIZE.
 module mpifx_finalize_module
-  use mpi_f08
+  use mpi_f08, only : mpi_finalize
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : handle_errorflag
   implicit none

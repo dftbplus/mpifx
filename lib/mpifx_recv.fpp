@@ -4,9 +4,11 @@
 
 !> Contains wrapper for \c MPI_RECV
 module mpifx_recv_module
-  use mpi_f08
+  use mpi_f08, only : MPI_ANY_SOURCE, MPI_ANY_TAG, mpi_character, mpi_complex, mpi_double_complex,&
+      & mpi_double_precision, mpi_integer, mpi_logical, mpi_real, mpi_status, mpi_status_f082f,&
+      & MPI_STATUS_SIZE
   use mpifx_comm_module, only : mpifx_comm
-  use mpifx_helper_module, only : dp, sp
+  use mpifx_helper_module, only : dp, sp, getoptarg, handle_errorflag
   implicit none
   private
 
@@ -81,6 +83,8 @@ contains
 
     integer :: source0, tag0, error0
     type(mpi_status) :: status0
+
+    print *, "routine mpif08"
 
     call getoptarg(MPI_ANY_TAG, tag0, tag)
     call getoptarg(MPI_ANY_SOURCE, source0, source)

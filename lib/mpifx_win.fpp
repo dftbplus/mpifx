@@ -4,7 +4,7 @@
 
 !> Contains routined for MPI shared memory windows.
 module mpifx_win_module
-  use mpi_f08
+  use mpi_f08, only : MPI_ADDRESS_KIND, mpi_comm, MPI_INFO_NULL, MPI_MODE_NOCHECK, mpi_win
   use mpifx_helper_module, only : handle_errorflag, sp, dp
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_constants_module, only : MPIFX_SIZE_T
