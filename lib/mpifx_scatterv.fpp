@@ -4,7 +4,8 @@
 
 !> Contains wrapper for \c MPI_SCATTER
 module mpifx_scatterv_module
-  use mpi_f08
+  use mpi_f08, only : mpi_double_complex, mpi_double_precision, mpi_character, mpi_complex,&
+      & mpi_integer, mpi_logical, mpi_real, mpi_scatterv
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
   implicit none

@@ -4,7 +4,8 @@
 
 !> Contains wrapper for \c MPI_ALLGATHER
 module mpifx_allgather_module
-  use mpi_f08
+  use mpi_f08, only : mpi_allgather, mpi_character, mpi_complex, mpi_double_complex,&
+      & mpi_double_precision, mpi_integer, mpi_logical, mpi_real
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
   implicit none

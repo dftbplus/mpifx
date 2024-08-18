@@ -4,7 +4,7 @@
 !> Exports constants and helper routine(s).
 !! \cond HIDDEN
 module mpifx_helper_module
-  use mpi_f08
+  use mpi_f08, only : mpi_abort, MPI_COMM_WORLD
   use, intrinsic :: iso_fortran_env, only : stderr => error_unit
   use mpifx_constants_module, only : MPIFX_ASSERT_FAILED, MPIFX_UNHANDLED_ERROR
   implicit none

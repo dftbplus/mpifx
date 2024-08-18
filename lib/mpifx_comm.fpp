@@ -1,6 +1,6 @@
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
-  use mpi_f08
+  use mpi_f08, only : mpi_comm, mpi_comm_world, mpi_info_null
   use mpifx_helper_module, only : getoptarg, handle_errorflag
   implicit none
   private
@@ -49,11 +49,13 @@ contains
     integer, intent(out), optional :: error
 
     integer :: error0
+    type(mpi_comm) :: default_comm
+    default_comm = MPI_COMM_WORLD
 
     if (present(comm)) then
       self%comm = comm
     else
-      self%comm = MPI_COMM_WORLD
+      self%comm = default_comm
     end if
     self%id = self%comm%mpi_val
     call mpi_comm_size(self%comm, self%size, error0)

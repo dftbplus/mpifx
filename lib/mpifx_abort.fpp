@@ -1,6 +1,6 @@
 !> Contains wrapper for \c MPI_ABORT.
 module mpifx_abort_module
-  use mpi_f08
+  use mpi_f08, only : mpi_abort
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : handle_errorflag
   implicit none

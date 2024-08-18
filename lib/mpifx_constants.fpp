@@ -1,7 +1,7 @@
 !> Exports some MPI constants.
 !! \cond HIDDEN
 module mpifx_constants_module
-  use mpi_f08
+  use mpi_f08, only : MPI_ADDRESS_KIND
   private
 
   public :: MPI_MAX, MPI_MIN, MPI_SUM, MPI_PROD
