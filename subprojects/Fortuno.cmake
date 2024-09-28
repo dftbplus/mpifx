@@ -7,6 +7,7 @@ set(CMAKE_DISABLE_FIND_PACKAGE_Fortuno ${MYPROJECT_SUBPROJECT_DISABLE_FIND})
 option(
   FORTUNO_BUILD_SHARED_LIBS "Fortuno: Build as shared library" ${MYPROJECT_BUILD_SHARED_LIBS}
 )
+option(FORTUNO_WITH_MPI "Fortuno: Whether mpi interface should be built" ON)
 
 # Make subproject available
 FetchContent_Declare(

@@ -1,7 +1,7 @@
 set(fypp_flags ${FYPP_FLAGS})
 get_target_property(
   _fortuno_mpi_incdir
-  Fortuno::fortuno_mpi_include_dir
+  Fortuno::fortuno_include_dir
   INTERFACE_INCLUDE_DIRECTORIES
 )
 list(APPEND fypp_flags "-I${_fortuno_mpi_incdir}" "-I${CMAKE_SOURCE_DIR}/src/dftbp/include")

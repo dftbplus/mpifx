@@ -37,7 +37,6 @@ include(CTest) # note: this adds a BUILD_TESTING which defaults to ON
 if(BUILD_TESTING)
   include(FetchContent)
   include(subprojects/Fortuno.cmake)
-  include(subprojects/FortunoMpi.cmake)
   enable_testing()
   add_subdirectory(test)
 endif()

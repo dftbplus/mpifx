@@ -2,12 +2,9 @@
 
 module test_bcast
   use libmpifx_module, only : mpifx_comm, mpifx_barrier, mpifx_bcast
-  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_item, this_rank
+  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, this_rank
   $:FORTUNO_MPI_IMPORTS()
   implicit none
-
-  private
-  public :: bcast_test_items
 
   integer, parameter :: dp = kind(1.0d0)
 
@@ -96,16 +93,16 @@ contains
   $:END_TEST()
 
 
-  function bcast_test_items() result(testitems)
-    type(test_item), allocatable :: testitems(:)
+  function tests()
+    type(test_list) :: tests
 
-    testitems = [&
-        suite("bcast", [&
+    tests = test_list([&
+        suite("bcast", test_list([&
             $:TEST_ITEMS()
-        ])&
-    ]
+        ]))&
+    ])
     @:STOP_ON_MISSING_TEST_ITEMS()
 
-  end function bcast_test_items
+  end function tests
 
 end module test_bcast
