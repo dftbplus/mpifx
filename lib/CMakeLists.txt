@@ -21,7 +21,7 @@ set(sources-fpp
   mpifx_send.fpp
   mpifx_win.fpp)
 
-fypp_preprocess("${sources-fpp}" sources-f90)
+fypp_preprocess("${FYPP_FLAGS}" "${sources-fpp}" sources-f90)
 
 # Some MPI frameworks (e.g. MPICH) do not provide all possible argument
 # combinations explicitely in their mpi module. Consequently, compilers
