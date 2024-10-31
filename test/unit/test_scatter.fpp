@@ -2,7 +2,7 @@
 
 module test_scatter
   use libmpifx_module, only : mpifx_comm, mpifx_scatter
-  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, is_equal
+  use fortuno_mpi, only : all_equal, global_comm_id, suite => mpi_suite_item, test_list, is_equal
   $:FORTUNO_MPI_IMPORTS()
   implicit none
 
@@ -40,8 +40,7 @@ contains
     allocate(recv1(2), source = 0)
     call mpifx_scatter(mycomm, send1, recv1)
 
-    @:ASSERT(is_equal(recv1(1), 2*mycomm%rank + 1))
-    @:ASSERT(is_equal(recv1(2), 2*mycomm%rank + 2))
+    @:ASSERT(all_equal(recv1, [2*mycomm%rank + 1, 2*mycomm%rank + 2]))
   $:END_TEST()
 
   $:TEST("I2_to_I1")
@@ -60,8 +59,7 @@ contains
     allocate(recv1(2), source = 0)
     call mpifx_scatter(mycomm, send2, recv1)
 
-    @:ASSERT(is_equal(recv1(1), 2*mycomm%rank + 1))
-    @:ASSERT(is_equal(recv1(2), 2*mycomm%rank + 2))
+    @:ASSERT(all_equal(recv1, [2*mycomm%rank + 1, 2*mycomm%rank + 2]))
   $:END_TEST()
 
   function tests()

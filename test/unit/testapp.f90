@@ -14,7 +14,7 @@ program testapp
   use test_send_recv, only : send_recv_tests => tests
   implicit none
 
-  call execute_mpi_cmd_app(
+  call execute_mpi_cmd_app(&
       test_list([&
           allgather_tests(),&
           allgatherv_tests(),&
@@ -29,6 +29,6 @@ program testapp
           scatterv_tests(),&
           send_recv_tests()&
       ]&
-  )
+  ))
 
 end program testapp

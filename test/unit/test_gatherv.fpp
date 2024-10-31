@@ -2,7 +2,7 @@
 
 module test_gatherv
   use libmpifx_module, only : mpifx_comm, mpifx_gatherv
-  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, is_equal
+  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, is_close, is_equal
   $:FORTUNO_MPI_IMPORTS()
   implicit none
 
@@ -34,11 +34,10 @@ contains
     call mpifx_gatherv(mycomm, send1, recv1, recvcounts)
 
     if (mycomm%lead) then
-      @:ASSERT(is_equal(nint(sum(recv1)), (2*mycomm%size**3+3*mycomm%size**2+mycomm%size)/6))
-      @:ASSERT((abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp)))
+      @:ASSERT(is_close(sum(recv1), (2*mycomm%size**3+3*mycomm%size**2+mycomm%size)/6.0_sp, &
+          & atol=epsilon(1.0_sp), rtol=0.0_sp))
     else
-      @:ASSERT(is_equal(nint(sum(recv1)), 0))
-      @:ASSERT((abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp)))
+      @:ASSERT(is_close(sum(recv1), 0.0_sp, atol=epsilon(1.0_sp), rtol=0.0_sp))
     end if
   $:END_TEST()
 
@@ -69,11 +68,10 @@ contains
     call mpifx_gatherv(mycomm, send2, recv2, recvcounts)
 
     if (mycomm%lead) then
-      @:ASSERT(is_equal(nint(sum(recv2)), nCol*mycomm%size*(mycomm%size+1)*(2*mycomm%size+1)/6))
-      @:ASSERT((abs(sum(recv2)-nint(sum(recv2))) < epsilon(1.0_sp)))
+      @:ASSERT(is_close(sum(recv2), nCol*mycomm%size*(mycomm%size+1)*(2*mycomm%size+1)/6.0_sp, &
+          & atol=epsilon(1.0_sp), rtol=0.0_sp))
     else
-      @:ASSERT(is_equal(nint(sum(recv2)), 0))
-      @:ASSERT((abs(sum(recv2)-nint(sum(recv2))) < epsilon(1.0_sp)))
+      @:ASSERT(is_close(sum(recv2), 0.0_sp, atol=epsilon(1.0_sp), rtol=0.0_sp))
     end if
   $:END_TEST()
 
@@ -108,11 +106,10 @@ contains
     call mpifx_gatherv(mycomm, send0, recv1, recvcounts, displs)
 
     if (mycomm%lead) then
-      @:ASSERT(is_equal(nint(sum(recv1)), (mycomm%size*(mycomm%size+1))/2 - mycomm%size))
-      @:ASSERT((abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp)))
+      @:ASSERT(is_close(sum(recv1), (mycomm%size*(mycomm%size+1))/2.0_sp - mycomm%size, &
+          & atol=epsilon(1.0_sp), rtol=0.0_sp))
     else
-      @:ASSERT(is_equal(nint(sum(recv1)), 0))
-      @:ASSERT((abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp)))
+      @:ASSERT(is_close(sum(recv1), 0.0_sp, atol=epsilon(1.0_sp), rtol=0.0_sp))
     end if
   $:END_TEST()
 

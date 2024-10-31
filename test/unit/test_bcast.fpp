@@ -2,7 +2,7 @@
 
 module test_bcast
   use libmpifx_module, only : mpifx_comm, mpifx_barrier, mpifx_bcast
-  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, this_rank
+  use fortuno_mpi, only : all_close, global_comm_id, suite => mpi_suite_item, test_list, this_rank
   $:FORTUNO_MPI_IMPORTS()
   implicit none
 
@@ -56,7 +56,7 @@ contains
     buffer(:,:) = 0.0_dp
     if (mycomm%lead) buffer(:,:) = msg
     call mpifx_bcast(mycomm, buffer)
-    @:ASSERT(all(abs(buffer - msg) < tol))
+    @:ASSERT(all_close(buffer, msg, rtol=tol))
   $:END_TEST()
 
 

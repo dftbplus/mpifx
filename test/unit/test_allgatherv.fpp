@@ -3,7 +3,7 @@
 
 module test_allgatherv
   use libmpifx_module, only : mpifx_comm, mpifx_allgatherv
-  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, is_equal
+  use fortuno_mpi, only : global_comm_id, suite => mpi_suite_item, test_list, is_close, is_equal
   $:FORTUNO_MPI_IMPORTS()
   implicit none
 
@@ -29,8 +29,8 @@ contains
     end do
     call mpifx_allgatherv(mycomm, send1, recv1, recvcounts)
 
-    @:ASSERT(is_equal(nint(sum(recv1)), (2*mycomm%size**3+3*mycomm%size**2+mycomm%size)/6))
-    @:ASSERT((abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp)))
+    @:ASSERT(is_close(sum(recv1), (2*mycomm%size**3+3*mycomm%size**2+mycomm%size)/6.0_sp, &
+        & atol=epsilon(1.0_sp), rtol=0.0_sp))
   $:END_TEST()
 
   $:TEST("R2_to_R2")
@@ -53,8 +53,8 @@ contains
     end do
     call mpifx_allgatherv(mycomm, send2, recv2, recvcounts)
 
-    @:ASSERT(is_equal(nint(sum(recv2)), nCol*mycomm%size*(mycomm%size+1)*(2*mycomm%size+1)/6))
-    @:ASSERT((abs(sum(recv2)-nint(sum(recv2))) < epsilon(1.0_sp)))
+    @:ASSERT(is_close(sum(recv2), nCol*mycomm%size*(mycomm%size+1)*(2*mycomm%size+1)/6.0_sp, &
+        & atol=epsilon(1.0_sp), rtol=0.0_sp))
   $:END_TEST()
 
   $:TEST("R0_to_R1")
@@ -79,8 +79,8 @@ contains
     end do
     call mpifx_allgatherv(mycomm, send0, recv1, recvcounts, displs)
 
-    @:ASSERT(is_equal(nint(sum(recv1)), (mycomm%size*(mycomm%size+1))/2))
-    @:ASSERT((abs(sum(recv1)-nint(sum(recv1))) < epsilon(1.0_sp)))
+    @:ASSERT(is_close(sum(recv1), (mycomm%size*(mycomm%size+1))/2.0_sp, &
+        & atol=epsilon(1.0_sp), rtol=0.0_sp))
   $:END_TEST()
 
   function tests()

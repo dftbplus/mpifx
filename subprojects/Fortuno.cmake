@@ -12,8 +12,10 @@ option(FORTUNO_WITH_MPI "Fortuno: Whether mpi interface should be built" ON)
 # Make subproject available
 FetchContent_Declare(
   Fortuno
-  GIT_REPOSITORY "https://github.com/fortuno-repos/fortuno.git"
-  GIT_TAG "main"
+  # GIT_REPOSITORY "https://github.com/fortuno-repos/fortuno.git"
+  # GIT_TAG "main"
+  GIT_REPOSITORY "https://github.com/aradi/fortuno.git"
+  GIT_TAG "isequal"
   FIND_PACKAGE_ARGS
 )
 FetchContent_MakeAvailable(Fortuno)
