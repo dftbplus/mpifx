@@ -149,7 +149,7 @@ contains
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for scattering.
   !! \param sendcounts Counts of sent data from each process
-  !! \param recv  Received data on receive node (indefined on other nodes)
+  !! \param recv  Received data on receive node (undefined on other nodes)
   !! \param displs Entry i specifies where to take data to send to rank i
   !!        (default: computed from sendcounts assuming order with rank)
   !! \param root  Root process for the result (default: mycomm%leadrank)
