@@ -61,7 +61,7 @@
   #! ${BUFFER_SIZE}$: send buffer size (1 or size(send))
   #! ${MPI_TYPE}$: corresponding MPI type
   #!
-  !> Gathers results on one process (type ${SUFFIX}$).
+  !> Gathers results on all processes (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for gathering.
