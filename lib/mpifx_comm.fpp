@@ -127,7 +127,7 @@ contains
   !! \see MPI documentation (\c MPI_COMM_SPLIT)
   !!
   subroutine mpifx_comm_split(self, splitkey, rankkey, newcomm, error)
-    class(mpifx_comm), intent(inout) :: self
+    class(mpifx_comm), intent(in) :: self
     integer, intent(in) :: splitkey, rankkey
     class(mpifx_comm), intent(out) :: newcomm
     integer, intent(out), optional :: error
