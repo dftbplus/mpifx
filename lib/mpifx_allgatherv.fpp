@@ -61,11 +61,11 @@
   #! ${BUFFER_SIZE}$: send buffer size (1 or size(send))
   #! ${MPI_TYPE}$: corresponding MPI type
   #!
-  !> Gathers results on one process (type ${SUFFIX}$).
+  !> Gathers results on all processes (type ${SUFFIX}$).
   !!
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for gathering.
-  !! \param recv  Received data on receive node (indefined on other nodes)
+  !! \param recv  Received data on receive node (undefined on other nodes)
   !! \param recvcounts Counts of received data from each process
   !! \param displs Entry i specifies where to place data from process rank i-1
   !!               (default: computed from recvcounts assuming order with rank)

@@ -140,7 +140,7 @@ contains
   !!
   !! \param mycomm  MPI communicator.
   !! \param send  Quantity to be sent for scattering.
-  !! \param recv  Received data on receive node (indefined on other nodes)
+  !! \param recv  Received data on receive node (undefined on other nodes)
   !! \param root  Root process for the result (default: mycomm%leadrank)
   !! \param error  Error code on exit.
   !!
