@@ -1,17 +1,18 @@
 # Register custom commands for processing source files with fypp (.fpp -> .f90)
 #
 # Args:
+#     fyppflags [in]: Flags to use when invoking the fypp preprocessor (using ${FYPP})
 #     oldfiles [in]: List of files to preprocess (must have .fpp suffix)
 #     newfiles [out]: List of preprocessed files (will have .f90 suffix).
 #
-function(fypp_preprocess oldfiles newfiles)
+function(fypp_preprocess fyppflags oldfiles newfiles)
 
   set(_newfiles)
   foreach(oldfile IN LISTS oldfiles)
     string(REGEX REPLACE "\\.fpp" ".f90" newfile ${oldfile})
     add_custom_command(
       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${newfile}
-      COMMAND ${FYPP} ${FYPP_FLAGS} ${CMAKE_CURRENT_SOURCE_DIR}/${oldfile} ${CMAKE_CURRENT_BINARY_DIR}/${newfile}
+      COMMAND ${FYPP} ${fyppflags} ${CMAKE_CURRENT_SOURCE_DIR}/${oldfile} ${CMAKE_CURRENT_BINARY_DIR}/${newfile}
       MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${oldfile})
     list(APPEND _newfiles ${CMAKE_CURRENT_BINARY_DIR}/${newfile})
   endforeach()

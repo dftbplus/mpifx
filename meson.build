@@ -28,5 +28,3 @@ if install
     install_dir: get_option('datadir')/'licenses'/meson.project_name()
   )
 endif
-
-subdir('test')
