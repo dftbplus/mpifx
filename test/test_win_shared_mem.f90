@@ -109,8 +109,8 @@ program test_win_shared_mem
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   ! Initialize again with int32 sizes
-  global_length_int32 = global_length
-  local_length_int32 = local_length
+  global_length_int32 = int(global_length, MPIFX_SIZE_T)
+  local_length_int32 = int(local_length, MPIFX_SIZE_T)
   call win%allocate_shared(nodecomm, global_length_int32, global_pointer, local_length_int32,&
       & local_pointer)
 

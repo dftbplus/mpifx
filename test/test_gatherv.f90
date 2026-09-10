@@ -10,7 +10,6 @@ program test_gatherv
   integer, allocatable :: recvcounts(:)
   integer, allocatable :: displs(:)
   integer :: ii, nrecv
-  character(100) :: formstr
   character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
 
   call mpifx_init()
