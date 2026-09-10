@@ -12,7 +12,6 @@ program test_allgatherv
   integer, allocatable :: recvcounts(:)
   integer, allocatable :: displs(:)
   integer :: ii, nrecv, nCol
-  character(100) :: formstr
   character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
   logical :: tPassed
   integer :: iCount
