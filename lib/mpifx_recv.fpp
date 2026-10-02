@@ -84,8 +84,6 @@ contains
     integer :: source0, tag0, error0
     type(mpi_status) :: status0
 
-    print *, "routine mpif08"
-
     call getoptarg(MPI_ANY_TAG, tag0, tag)
     call getoptarg(MPI_ANY_SOURCE, source0, source)
 
