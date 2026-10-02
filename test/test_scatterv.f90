@@ -7,7 +7,7 @@ program test_scatterv
   integer :: recv0
   integer, allocatable :: recv1(:), sendcount(:), displs(:)
   character(100) :: formstr
-  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
+  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X,"
   integer :: ii
 
   call mpifx_init()

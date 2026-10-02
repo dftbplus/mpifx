@@ -1,9 +1,10 @@
 !> Exports some MPI constants.
 !! \cond HIDDEN
 module mpifx_constants_module
-  use mpi_f08, only : MPI_ADDRESS_KIND
+  use mpi_f08
+  implicit none (type, external)
+  
   private
-
   public :: MPI_MAX, MPI_MIN, MPI_SUM, MPI_PROD
   public :: MPI_LAND, MPI_BAND, MPI_LOR, MPI_BOR, MPI_LXOR ,MPI_BXOR
   public :: MPI_MAXLOC, MPI_MINLOC

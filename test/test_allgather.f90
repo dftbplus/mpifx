@@ -9,7 +9,7 @@ program test_allgather
   integer, allocatable :: send1(:)
   integer, allocatable :: recv1(:), recv2(:,:)
   character(100) :: formstr
-  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
+  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X,"
   logical :: isPassed
 
   call mpifx_init()
@@ -19,7 +19,7 @@ program test_allgather
   send0 = mycomm%rank * 2
   allocate(recv1(1 * mycomm%size))
   recv1(:) = 0
-  write(*, label // ",A,1X,I0)") 1, mycomm%rank, "Send0 buffer:", send0
+  write(*, label // "A,1X,I0)") 1, mycomm%rank, "Send0 buffer:", send0
   call mpifx_allgather(mycomm, send0, recv1)
   write(formstr, "(A,I0,A)") "A,", size(recv1), "(1X,I0))"
   write(*, label // formstr) 2, mycomm%rank, "Recv1 buffer:", recv1(:)
