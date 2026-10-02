@@ -4,10 +4,11 @@
 
 !> Contains wrapper for \c MPI_SCATTER
 module mpifx_scatter_module
-  use mpi
+  use mpi_f08, only : mpi_double_complex, mpi_double_precision, mpi_character, mpi_complex,&
+      & mpi_integer, mpi_logical, mpi_real, mpi_scatter
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_scatter
@@ -31,7 +32,7 @@ module mpifx_scatter_module
   !!
   !!     program test_scatter
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!       integer, allocatable :: send1(:), send2(:,:)
@@ -124,7 +125,7 @@ contains
 
     call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
 
   end subroutine mpifx_scatter_${SUFFIX}$
@@ -164,7 +165,7 @@ contains
 
     call getoptarg(mycomm%leadrank, root0, root)
     call mpi_scatter(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, root0,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SCATTER in mpifx_scatter_${SUFFIX}$", error)
 
   end subroutine mpifx_scatter_${SUFFIX}$

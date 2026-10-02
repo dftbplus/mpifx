@@ -45,7 +45,7 @@
     end if
 
     call mpi_allgatherv(send, size(send), ${MPI_TYPE}$, recv, recvcounts, displs0, &
-        & ${MPI_TYPE}$, mycomm%id, error0)
+        & ${MPI_TYPE}$, mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_ALLGATHERV in mpifx_allgatherv_${SUFFIX}$", error)
 
@@ -96,7 +96,7 @@
     end if
 
     call mpi_allgatherv(send, ${SEND_BUFFER_SIZE}$, ${MPI_TYPE}$, recv, recvcounts, displs0, &
-         & ${MPI_TYPE}$,  mycomm%id, error0)
+         & ${MPI_TYPE}$,  mycomm%comm, error0)
 
     call handle_errorflag(error0, "MPI_ALLGATHERV in mpifx_allgatherv_${SUFFIX}$", error)
 
@@ -106,10 +106,11 @@
 
 !> Contains wrapper for \c MPI_allgatherv
 module mpifx_allgatherv_module
-  use mpi
+  use mpi_f08, only : mpi_allgatherv, mpi_character, mpi_complex, mpi_double_complex,&
+      & mpi_double_precision, mpi_integer, mpi_logical, mpi_real
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_allgatherv
@@ -134,7 +135,7 @@ module mpifx_allgatherv_module
   !!
   !!     program test_allgatherv
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!       real, allocatable :: send1(:)

@@ -12,7 +12,7 @@ module mpifx_win_module
   use mpifx_constants_module, only : MPIFX_SIZE_T
   use iso_c_binding, only : c_ptr, c_f_pointer
   use iso_fortran_env, only : int32, int64
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_win
@@ -97,7 +97,7 @@ contains
       local_mem_size = int(global_length, kind=MPI_ADDRESS_KIND) * disp_unit
     end if
 
-    self%comm%mpi_val = mycomm%id
+    self%comm = mycomm%comm
     call mpi_win_allocate_shared(local_mem_size, disp_unit, MPI_INFO_NULL, self%comm,&
         & local_baseptr, self%win, error0)
     call handle_errorflag(error0,&

@@ -1,8 +1,9 @@
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
-  use mpi_f08
+  use mpi_f08, only : mpi_comm, mpi_comm_free, mpi_comm_rank, mpi_comm_size, mpi_comm_split,&
+      & mpi_comm_split_type, mpi_comm_world, mpi_info_null
   use mpifx_helper_module, only : getoptarg, handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_comm
@@ -18,10 +19,10 @@ module mpifx_comm_module
   contains
 
     !> Initializes the MPI environment.
-    procedure, private :: mpifx_comm_from_id
-    procedure, private :: mpifx_comm_from_type
+    procedure, private :: mpifx_comm_init_int
+    procedure, private :: mpifx_comm_init_comm
 
-    generic :: init => mpifx_comm_from_id, mpifx_comm_from_type
+    generic :: init => mpifx_comm_init_int, mpifx_comm_init_comm
 
     !> Creates a new communicator by splitting the old one.
     procedure :: split => mpifx_comm_split
@@ -43,17 +44,19 @@ contains
   !! \param error  Error flag on return containing the first error occurring
   !!     during the calls mpi_comm_size and mpi_comm_rank.
   !!
-  subroutine mpifx_comm_from_type(self, comm, error)
+  subroutine mpifx_comm_init_comm(self, comm, error)
     class(mpifx_comm), intent(out) :: self
     type(mpi_comm), intent(in), optional :: comm
     integer, intent(out), optional :: error
 
     integer :: error0
+    type(mpi_comm) :: default_comm
+    default_comm = MPI_COMM_WORLD
 
     if (present(comm)) then
       self%comm = comm
     else
-      self%comm = MPI_COMM_WORLD
+      self%comm = default_comm
     end if
     self%id = self%comm%mpi_val
     call mpi_comm_size(self%comm, self%size, error0)
@@ -69,17 +72,17 @@ contains
     self%leadrank = 0
     self%lead = (self%rank == self%leadrank)
 
-  end subroutine mpifx_comm_from_type
+  end subroutine mpifx_comm_init_comm
 
 
-  !> Initializes a communicator from a numerical id.
+  !> Initializes a communicator from a integer id.
   !!
   !! \param self  Initialized instance on exit.
   !! \param commid  Numerical MPI Communicator ID
   !! \param error  Error flag on return containing the first error occurring
   !!     during the calls mpi_comm_size and mpi_comm_rank.
   !!
-  subroutine mpifx_comm_from_id(self, commid, error)
+  subroutine mpifx_comm_init_int(self, commid, error)
     class(mpifx_comm), intent(out) :: self
     integer, intent(in) :: commid
     integer, intent(out), optional :: error
@@ -87,9 +90,9 @@ contains
     type(mpi_comm) :: newcomm
 
     newcomm%mpi_val = commid
-    call self%mpifx_comm_from_type(newcomm, error)
+    call self%mpifx_comm_init_comm(newcomm, error)
 
-  end subroutine mpifx_comm_from_id
+  end subroutine mpifx_comm_init_int
 
 
   !> Creates a new communicators by splitting the old one.
@@ -108,7 +111,7 @@ contains
   !!
   !!     program test_split
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: allproc, groupproc
   !!       integer :: groupsize, mygroup
@@ -161,7 +164,7 @@ contains
   !!
   !!     program test_split_type
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: allproc, splitproc
   !!

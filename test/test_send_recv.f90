@@ -1,6 +1,6 @@
 program test_send_recv
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   character(100) :: msg
   type(mpifx_comm) :: mycomm

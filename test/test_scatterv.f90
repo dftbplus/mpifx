@@ -1,13 +1,13 @@
 program test_scatterv
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: mycomm
   integer, allocatable :: send1(:), send2(:,:)
   integer :: recv0
   integer, allocatable :: recv1(:), sendcount(:), displs(:)
   character(100) :: formstr
-  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
+  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X,"
   integer :: ii
 
   call mpifx_init()

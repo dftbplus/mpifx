@@ -4,10 +4,11 @@
 
 !> Contains wrapper for \c MPI_ALLGATHER
 module mpifx_allgather_module
-  use mpi
+  use mpi_f08, only : mpi_allgather, mpi_character, mpi_complex, mpi_double_complex,&
+      & mpi_double_precision, mpi_integer, mpi_logical, mpi_real
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_allgather
@@ -30,7 +31,7 @@ module mpifx_allgather_module
   !!
   !!     program test_gather
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!       integer :: send0
@@ -122,7 +123,7 @@ contains
     @:ASSERT(size(recv) == ${SIZE}$ * mycomm%size)
     @:ASSERT(size(recv, dim=${RANK}$) == size(send, dim=${RANK}$) * mycomm%size)
 
-    call mpi_allgather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, mycomm%id,&
+    call mpi_allgather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$, mycomm%comm,&
         & error0)
     call handle_errorflag(error0, 'MPI_ALLGATHER in mpifx_allgather_${SUFFIX}$', error)
 
@@ -162,7 +163,7 @@ contains
     @:ASSERT(size(recv, dim=${RANK + 1}$) == mycomm%size)
 
     call mpi_allgather(send, ${COUNT}$, ${MPITYPE}$, recv, ${COUNT}$, ${MPITYPE}$,&
-        & mycomm%id, error0)
+        & mycomm%comm, error0)
     call handle_errorflag(error0, 'MPI_ALLGATHER in mpifx_allgather_${SUFFIX}$', error)
 
   end subroutine mpifx_allgather_${SUFFIX}$

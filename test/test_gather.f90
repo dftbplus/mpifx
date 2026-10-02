@@ -1,13 +1,13 @@
 program test_gather
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: mycomm
   integer :: send0
   integer, allocatable :: send1(:)
   integer, allocatable :: recv1(:), recv2(:,:)
   character(100) :: formstr
-  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X"
+  character(*), parameter :: label = "(I2.2,'-',I3.3,'|',1X,"
 
   call mpifx_init()
   call mycomm%init()
@@ -20,7 +20,7 @@ program test_gather
   else
     allocate(recv1(0))
   end if
-  write(*, label // ",A,1X,I0)") 1, mycomm%rank, &
+  write(*, label // "A,1X,I0)") 1, mycomm%rank, &
       & "Send0 buffer:", send0
   call mpifx_gather(mycomm, send0, recv1)
   if (mycomm%lead) then

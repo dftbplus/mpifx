@@ -1,9 +1,9 @@
 !> Contains wrapper for \c MPI_ABORT.
 module mpifx_abort_module
-  use mpi
+  use mpi_f08, only : mpi_abort
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_abort
@@ -22,7 +22,7 @@ contains
   !!
   !!     program test_abort
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!
@@ -47,7 +47,7 @@ contains
       errorcode0 = -1
     end if
 
-    call mpi_abort(mycomm%id, errorcode0, error0)
+    call mpi_abort(mycomm%comm, errorcode0, error0)
     call handle_errorflag(error0, "MPI_ABORT in mpifx_abort", error)
 
   end subroutine mpifx_abort
