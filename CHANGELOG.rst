@@ -4,14 +4,14 @@ Change Log
 
 Notable project changes in various releases.
 
-Unreleased
-==========
+1.6
+===
 
 Fixed
 -----
 
-For windows, lock and unlock renamed to lock_all() and unlock_all() to
-match the MPI calls they are actually using.
+* For windows, lock and unlock renamed to lock_all() and unlock_all() to
+  match the MPI calls they are actually using.
 
 
 1.5
