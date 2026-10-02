@@ -8,7 +8,7 @@ module mpifx_allreduce_module
       & mpi_in_place, mpi_integer, mpi_logical, mpi_op, mpi_real
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_allreduce, mpifx_allreduceip
@@ -28,7 +28,7 @@ module mpifx_allreduce_module
   !!
   !!     program test_allreduce
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       integer, parameter :: dp = kind(1.0d0)
   !!
@@ -73,7 +73,7 @@ module mpifx_allreduce_module
   !!
   !!     program test_allreduceip
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       integer, parameter :: dp = kind(1.0d0)
   !!

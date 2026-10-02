@@ -1,6 +1,6 @@
 program test_gather
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: mycomm
   integer :: send0

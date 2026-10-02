@@ -8,7 +8,7 @@ module mpifx_send_module
       & mpi_integer, mpi_logical, mpi_real, mpi_send
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : default_tag, dp, sp, getoptarg, handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_send
@@ -28,7 +28,7 @@ module mpifx_send_module
   !!
   !!     program hello
   !!     use libmpifx_module
-  !!     implicit none
+  !!     implicit none (type, external)
   !!
   !!     character(100) :: msg
   !!     type(mpifx) :: mycomm

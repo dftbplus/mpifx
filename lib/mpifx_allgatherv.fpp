@@ -110,7 +110,7 @@ module mpifx_allgatherv_module
       & mpi_double_precision, mpi_integer, mpi_logical, mpi_real
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_allgatherv
@@ -135,7 +135,7 @@ module mpifx_allgatherv_module
   !!
   !!     program test_allgatherv
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!       real, allocatable :: send1(:)

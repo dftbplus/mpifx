@@ -1,6 +1,6 @@
 program test_scatter
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: mycomm
   integer, allocatable :: send1(:), send2(:,:)

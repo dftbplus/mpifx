@@ -5,7 +5,7 @@ module mpifx_barrier_module
   use mpi_f08, only : mpi_barrier
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_barrier
@@ -21,7 +21,7 @@ contains
   !!
   !!     program test_barrier
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!

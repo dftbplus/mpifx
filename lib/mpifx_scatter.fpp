@@ -8,7 +8,7 @@ module mpifx_scatter_module
       & mpi_integer, mpi_logical, mpi_real, mpi_scatter
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, getoptarg, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_scatter
@@ -32,7 +32,7 @@ module mpifx_scatter_module
   !!
   !!     program test_scatter
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!       integer, allocatable :: send1(:), send2(:,:)

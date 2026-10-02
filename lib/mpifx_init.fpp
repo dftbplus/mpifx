@@ -4,7 +4,7 @@ module mpifx_init_module
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_constants_module, only : MPIFX_UNHANDLED_ERROR
   use mpifx_helper_module, only : handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_init, mpifx_init_thread
@@ -22,7 +22,7 @@ contains
   !!
   !!     program test_mpifx
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!
@@ -58,7 +58,7 @@ contains
   !!
   !!     program test_mpifx
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!

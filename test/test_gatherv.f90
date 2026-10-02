@@ -1,6 +1,6 @@
 program test_gatherv
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: mycomm
   integer, parameter :: sp = kind(1.0)

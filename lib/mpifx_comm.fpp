@@ -1,8 +1,9 @@
 !> Contains the extended MPI communicator.
 module mpifx_comm_module
-  use mpi_f08, only : mpi_comm, mpi_comm_world, mpi_info_null
+  use mpi_f08, only : mpi_comm, mpi_comm_free, mpi_comm_rank, mpi_comm_size, mpi_comm_split,&
+      & mpi_comm_split_type, mpi_comm_world, mpi_info_null
   use mpifx_helper_module, only : getoptarg, handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_comm
@@ -110,7 +111,7 @@ contains
   !!
   !!     program test_split
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: allproc, groupproc
   !!       integer :: groupsize, mygroup
@@ -163,7 +164,7 @@ contains
   !!
   !!     program test_split_type
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: allproc, splitproc
   !!

@@ -6,10 +6,10 @@
 module mpifx_recv_module
   use mpi_f08, only : MPI_ANY_SOURCE, MPI_ANY_TAG, mpi_character, mpi_complex, mpi_double_complex,&
       & mpi_double_precision, mpi_integer, mpi_logical, mpi_real, mpi_status, mpi_status_f082f,&
-      & MPI_STATUS_SIZE
+      & MPI_STATUS_SIZE, mpi_recv
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, sp, getoptarg, handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_recv
@@ -29,7 +29,7 @@ module mpifx_recv_module
   !!
   !!     program hello
   !!     use libmpifx_module
-  !!     implicit none
+  !!     implicit none (type, external)
   !!
   !!     character(100) :: msg
   !!     type(mpifx) :: mycomm

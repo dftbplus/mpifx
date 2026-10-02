@@ -3,7 +3,7 @@ module mpifx_finalize_module
   use mpi_f08, only : mpi_finalize
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_finalize
@@ -21,7 +21,7 @@ contains
   !!
   !!     program test_mpifx
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!

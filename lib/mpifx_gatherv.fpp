@@ -131,11 +131,11 @@
 
 !> Contains wrapper for \c MPI_gatherv
 module mpifx_gatherv_module
-  use mpi_f08, only : mpi_character, MPI_COMM_WORLD, mpi_complex, mpi_double_complex,&
-      & mpi_double_precision, mpi_integer, mpi_logical, mpi_real
+  use mpi_f08, only : mpi_abort, mpi_character, MPI_COMM_WORLD, mpi_complex, mpi_double_complex,&
+      & mpi_double_precision, mpi_gatherv, mpi_integer, mpi_logical, mpi_real
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : dp, handle_errorflag, sp
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_gatherv
@@ -160,7 +160,7 @@ module mpifx_gatherv_module
   !!
   !!     program test_gatherv
   !!       use libmpifx_module
-  !!       implicit none
+  !!       implicit none (type, external)
   !!
   !!       type(mpifx_comm) :: mycomm
   !!       real, allocatable :: send1(:)

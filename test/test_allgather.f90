@@ -2,7 +2,7 @@
 program test_allgather
   use libmpifx_module
   use testhelper
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: mycomm
   integer :: send0

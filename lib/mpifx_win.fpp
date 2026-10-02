@@ -12,7 +12,7 @@ module mpifx_win_module
   use mpifx_constants_module, only : MPIFX_SIZE_T
   use iso_c_binding, only : c_ptr, c_f_pointer
   use iso_fortran_env, only : int32, int64
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_win
