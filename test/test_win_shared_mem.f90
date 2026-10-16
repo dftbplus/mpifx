@@ -1,6 +1,6 @@
 program test_win_shared_mem
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   ! global communicator and within each shared memory node
   type(mpifx_comm) :: globalcomm, nodecomm

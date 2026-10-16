@@ -1,6 +1,6 @@
 program test_comm_split
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: allproc, groupproc
   integer :: groupsize, mygroup

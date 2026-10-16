@@ -1,7 +1,7 @@
 !> Helper routines for testers
 module testhelper
   use libmpifx_module, only : mpifx_comm, mpifx_barrier, mpifx_finalize
-  implicit none
+  implicit none (type, external)
 
   private
   public :: testReturn

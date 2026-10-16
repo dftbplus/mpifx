@@ -1,5 +1,5 @@
 program test_mpifxbuild
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
 end program test_mpifxbuild

@@ -1,6 +1,6 @@
 program test_allreduce
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   integer, parameter :: dp = kind(1.0d0)
 

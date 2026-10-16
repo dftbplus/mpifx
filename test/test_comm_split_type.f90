@@ -1,6 +1,6 @@
 program test_split_type
   use libmpifx_module
-  implicit none
+  implicit none (type, external)
 
   type(mpifx_comm) :: allproc, splitproc
 

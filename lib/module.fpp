@@ -31,7 +31,7 @@ module libmpifx_module
   use mpifx_scatter_module
   use mpifx_scatterv_module
   use mpifx_win_module
-  implicit none
+  implicit none (type, external)
   public
 
 end module libmpifx_module

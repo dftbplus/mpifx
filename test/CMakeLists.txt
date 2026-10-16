@@ -13,7 +13,8 @@ set(targets
   test_reduce
   test_scatter
   test_scatterv
-  test_win_shared_mem)
+  test_win_shared_mem
+  test_send_recv)
 
 set(sources-helper
   testhelper.f90)

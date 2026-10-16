@@ -4,10 +4,11 @@
 
 !> Contains wrapper for \c MPI_SEND
 module mpifx_send_module
-  use mpi
+  use mpi_f08, only: mpi_character, mpi_complex, mpi_double_complex, mpi_double_precision,&
+      & mpi_integer, mpi_logical, mpi_real, mpi_send
   use mpifx_comm_module, only : mpifx_comm
   use mpifx_helper_module, only : default_tag, dp, sp, getoptarg, handle_errorflag
-  implicit none
+  implicit none (type, external)
   private
 
   public :: mpifx_send
@@ -27,7 +28,7 @@ module mpifx_send_module
   !!
   !!     program hello
   !!     use libmpifx_module
-  !!     implicit none
+  !!     implicit none (type, external)
   !!
   !!     character(100) :: msg
   !!     type(mpifx) :: mycomm
@@ -81,7 +82,7 @@ contains
     #:set COUNT = ('len(msg) * ' + SIZE if HASLENGTH else SIZE)
 
     call getoptarg(default_tag, tag0, tag)
-    call mpi_send(msg, ${COUNT}$, ${MPITYPE}$, dest, tag0, mycomm%id, error0)
+    call mpi_send(msg, ${COUNT}$, ${MPITYPE}$, dest, tag0, mycomm%comm, error0)
     call handle_errorflag(error0, "MPI_SEND in mpifx_send_${SUFFIX}$", error)
 
   end subroutine mpifx_send_${SUFFIX}$
