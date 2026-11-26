@@ -85,10 +85,11 @@ contains
     integer, intent(out), optional :: error
 
     integer :: disp_unit, error0, error1
+    integer, parameter :: bitsPerByte = 8
     integer(MPI_ADDRESS_KIND) :: global_mem_size, local_mem_size
     type(c_ptr) :: global_baseptr, local_baseptr
 
-    disp_unit = storage_size(global_pointer) / 8
+    disp_unit = storage_size(global_pointer) / bitsPerByte
 
     local_mem_size = 0
     if (present(local_length)) then
